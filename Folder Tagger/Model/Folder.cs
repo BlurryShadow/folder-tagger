@@ -35,11 +35,12 @@ namespace Folder_Tagger
 
         public virtual Tag Tag { get; set; }
 
-        public Folder(string location)
+        public Folder(string location, string thumbnail = null)
         {
             Location = location;
             Translated = false;
             TagID = 1;
+            Thumbnail = thumbnail;
         }
     }
 }

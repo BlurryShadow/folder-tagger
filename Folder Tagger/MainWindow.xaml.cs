@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Windows;
+using System.Linq;
 using System.Windows.Forms;
+using System.IO;
 
 namespace Folder_Tagger
 {
@@ -14,21 +16,32 @@ namespace Folder_Tagger
             InitializeComponent();
         }
 
-        private void AddFolder(string location)
+        private void AddFolder(string location, string type = "multiple")
         {
             using (var db = new Model1())
             {
-                var folder = new Folder(location);
+                string thumbnail = null;
+                DirectoryInfo dr = new DirectoryInfo(location);
+                thumbnail = dr.EnumerateFiles()
+                            .Select(t => t.FullName)
+                            .FirstOrDefault(FullName => (FullName.ToLower() == "folder.jpg")
+                                                    || (FullName.ToLower().Contains(".png"))
+                                                    || (FullName.ToLower().Contains(".jpg"))
+                                                    || (FullName.ToLower().Contains(".jpeg"))
+                                                    || (FullName.ToLower().Contains(".bmp")));
+
+                var folder = new Folder(location, thumbnail);
                 db.Folders.Add(folder);
-                
-                try
+
+                if (db.Folders.Any(f => f.Location == location))
                 {
-                    db.SaveChanges();
+                    if (type == "single")
+                    {
+                        System.Windows.MessageBox.Show("This Folder Has Already Been Added!");                       
+                    }
+                    return;
                 }
-                catch
-                {
-                    System.Windows.MessageBox.Show("This Folder Has Already Been Added!");
-                }
+                db.SaveChanges();
             }
         }
 
@@ -41,7 +54,7 @@ namespace Folder_Tagger
                 if (result == System.Windows.Forms.DialogResult.OK)
                 {
                     string location = fbd.SelectedPath;
-                    AddFolder(location);
+                    AddFolder(location, "single");
                 }
             }
         }
