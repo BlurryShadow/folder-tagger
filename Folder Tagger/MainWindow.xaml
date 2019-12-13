@@ -10,15 +10,15 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="25*"/>
             <RowDefinition Height="30*"/>
-            <RowDefinition Height="800*"/>
+            <RowDefinition Height="790*"/>
             <RowDefinition Height="25*"/>
         </Grid.RowDefinitions>
         <Menu
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Height="25"            
-            Width="1600"
-            Grid.Row="0"
+            Width="1590"
+            Grid.Row="0" Margin="0,0,-8,0"
         >
             <MenuItem Header="Add" FontSize="16">
                 <MenuItem Header="Folder" />
@@ -30,10 +30,10 @@
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Height="30"            
-            Width="1600"            
+            Width="1590"            
             FontSize="16"
-            Grid.Row="1"
-        >            
+            Grid.Row="1" Margin="0,0,-8,0"
+        >
             <Label
                 Content="Artist"
                 Height="25"
@@ -42,13 +42,14 @@
             />
             <ComboBox
                 x:Name="cbBoxArtist"
+                Height="30"
                 Width="160"
                 Margin="10, 0, 0, 0"
                 SelectedIndex="0"
             >
-                <ComboBoxItem Content="Undefined" />
+                <ComboBoxItem Content="Newly Added" />
             </ComboBox>
-            
+
             <Label
                 Content="Group"
                 Height="25"
@@ -57,13 +58,14 @@
             />
             <ComboBox
                 x:Name="cbBoxGroup"
+                Height="30"
                 Width="160"
                 Margin="10, 0, 0, 0"
                 SelectedIndex="0"
             >
-                <ComboBoxItem Content="Undefined" />
+                <ComboBoxItem Content="Newly Added" />
             </ComboBox>
-            
+
             <Label
                 Content="Tag"
                 Height="25"
@@ -72,9 +74,17 @@
             />
             <TextBox
                 x:Name="tbTag"
+                Height="30"
                 Width="400"
                 Margin="10,0,0,0"
             />
-        </ToolBar>        
+        </ToolBar>
+        <DataGrid
+            Height="790"
+            Width="1590"
+            VerticalAlignment="Top"
+            Grid.RowSpan="8"
+            Grid.Row="2"
+        />
     </Grid>
 </Window>
