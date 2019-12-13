@@ -6,5 +6,75 @@
         xmlns:local="clr-namespace:Folder_Tagger"
         mc:Ignorable="d"
         Title="MainWindow" Height="900" Width="1600" WindowStartupLocation="CenterScreen">
-    <Grid/>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25*"/>
+            <RowDefinition Height="30*"/>
+            <RowDefinition Height="800*"/>
+            <RowDefinition Height="25*"/>
+        </Grid.RowDefinitions>
+        <Menu
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Height="25"            
+            Width="1600"
+            Grid.Row="0"
+        >
+            <MenuItem Header="Add" FontSize="16">
+                <MenuItem Header="Folder" />
+                <MenuItem Header="Parent Folder" />
+                <MenuItem Header="Tag" />
+            </MenuItem>
+        </Menu>
+        <ToolBar
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Height="30"            
+            Width="1600"            
+            FontSize="16"
+            Grid.Row="1"
+        >            
+            <Label
+                Content="Artist"
+                Height="25"
+                Padding="5,2,5,0"
+                Margin="5,0,0,0"
+            />
+            <ComboBox
+                x:Name="cbBoxArtist"
+                Width="160"
+                Margin="10, 0, 0, 0"
+                SelectedIndex="0"
+            >
+                <ComboBoxItem Content="Undefined" />
+            </ComboBox>
+            
+            <Label
+                Content="Group"
+                Height="25"
+                Padding="5,2,5,0"
+                Margin="20,0,0,0"
+            />
+            <ComboBox
+                x:Name="cbBoxGroup"
+                Width="160"
+                Margin="10, 0, 0, 0"
+                SelectedIndex="0"
+            >
+                <ComboBoxItem Content="Undefined" />
+            </ComboBox>
+            
+            <Label
+                Content="Tag"
+                Height="25"
+                Padding="5,2,5,0"
+                Margin="20,0,0,0"
+            />
+            <TextBox
+                x:Name="tbTag"
+                Width="400"
+                Margin="10,0,0,0"
+            />
+        </ToolBar>        
+    </Grid>
 </Window>
