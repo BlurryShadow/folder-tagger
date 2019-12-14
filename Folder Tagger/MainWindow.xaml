@@ -22,7 +22,7 @@
         >
             <MenuItem Header="Add" FontSize="16">
                 <MenuItem Header="Folder" Click="MenuAddFolder_Click"/>
-                <MenuItem Header="Parent Folder" />
+                <MenuItem Header="Parent Folder"  Click="MenuAddParentFolder_Click"/>
                 <MenuItem Header="Tag" />
             </MenuItem>
         </Menu>

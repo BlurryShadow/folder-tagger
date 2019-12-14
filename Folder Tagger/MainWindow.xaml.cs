@@ -58,5 +58,23 @@ namespace Folder_Tagger
                 }
             }
         }
+
+        private void MenuAddParentFolder_Click(object sender, RoutedEventArgs e)
+        {
+            using (var fbd = new FolderBrowserDialog())
+            {
+                fbd.RootFolder = Environment.SpecialFolder.MyComputer;
+                DialogResult result = fbd.ShowDialog();
+                if (result == System.Windows.Forms.DialogResult.OK)
+                {
+                    string location = fbd.SelectedPath;
+                    DirectoryInfo parentFolder = new DirectoryInfo(location);
+                    foreach (DirectoryInfo subFolder in parentFolder.GetDirectories())
+                    {
+                        AddFolder(subFolder.FullName, "multiple");
+                    }                    
+                }
+            }
+        }
     }
 }
