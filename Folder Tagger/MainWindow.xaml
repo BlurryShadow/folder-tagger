@@ -144,7 +144,7 @@
                         Width="250"
                     >
                         <Image
-                            Source="{Binding Thumbnail}"
+                            Source="{Binding Root}"
                             Height="336"
                             Width="250"
                         />
@@ -166,7 +166,7 @@
             Height="20"
             Width="20"
             Margin="-120,0,0,0"
-            Grid.Row="3"
+            Grid.Row="3" Click="btnFirstPage_Click"
         />
 
         <Button            
@@ -176,11 +176,11 @@
             Height="20"
             Width="20"
             Margin="-60,0,0,0"
-            Grid.Row="3"
+            Grid.Row="3" Click="btnPreviousPage_Click"
         />
 
         <Label
-            x:Name="lbCurrentPage"
+            x:Name="lblCurrentPage"
             HorizontalAlignment="Center"
             HorizontalContentAlignment="Center"
             Content="1"
@@ -198,7 +198,7 @@
             Height="20"
             Width="20"
             Margin="60,0,0,0"
-            Grid.Row="3"
+            Grid.Row="3" Click="btnNextPage_Click"
         />
 
         <Button
@@ -208,7 +208,7 @@
             Height="20"
             Width="20"
             Margin="120,0,0,0"
-            Grid.Row="3"
+            Grid.Row="3" Click="btnLastPage_Click"
         />
     </Grid>
 </Window>

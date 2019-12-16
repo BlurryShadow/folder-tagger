@@ -14,12 +14,11 @@ namespace Folder_Tagger
     {
 
         private int imagesPerPage = 30;
-        private int foldersCount;
-        private int pagesCount;
+        private int pagesCount = 1;
+        List<List<Thumbnail>> thumbnailList = new List<List<Thumbnail>>();
         public MainWindow()
         {
             InitializeComponent();
-            loadBasicData();
         }
 
         private void AddFolder(string location, string name, string type = "multiple")
@@ -49,8 +48,6 @@ namespace Folder_Tagger
                 }
                 db.SaveChanges();
             }
-
-            loadBasicData();
         }
 
         private void Search()
@@ -79,28 +76,22 @@ namespace Folder_Tagger
                     foreach (string tag in tagList)
                         query = query.Where(f => f.Tag.TagName.ToLower() == tag.ToLower());
 
-                var thumbnailList = takeDataOffset(query, 1);
-                DataContext = thumbnailList;
-            }
-        }
+                int foldersCount = query.GroupBy(f => f.Thumbnail).Count();
+                pagesCount = (int)Math.Ceiling(((double)foldersCount / imagesPerPage));                
 
-        private dynamic takeDataOffset(System.Linq.IQueryable<Folder> query, int page)
-        {
-            return query
-                .OrderBy(f => f.Name)
-                .Skip((page - 1) * imagesPerPage)
-                .Take(imagesPerPage)
-                .Select(f => new { f.Name, f.Thumbnail })
-                .Distinct()
-                .ToList();
-        }
+                for (int i = 0; i < pagesCount; i++)
+                {
+                    thumbnailList.Add(query
+                                        .OrderBy(f => f.Name)
+                                        .Skip(i * imagesPerPage)
+                                        .Take(imagesPerPage)
+                                        .Select(f => new Thumbnail { Root = f.Thumbnail, Name = f.Name })
+                                        .Distinct()
+                                        .ToList()
+                    );
+                }
 
-        private void loadBasicData()
-        {
-            using (var db = new Model1())
-            {
-                foldersCount = db.Folders.GroupBy(f => f.Thumbnail).Count();
-                pagesCount = (int)Math.Ceiling(((double)foldersCount / imagesPerPage));
+                DataContext = thumbnailList.ElementAt(0);
             }
         }
 
@@ -140,6 +131,40 @@ namespace Folder_Tagger
         private void btnSearch_Click(object sender, RoutedEventArgs e)
         {
             Search();
+        }
+
+        private void btnFirstPage_Click(object sender, RoutedEventArgs e)
+        {
+            if (lblCurrentPage.Content.Equals("1")) return;
+
+            lblCurrentPage.Content = "1";
+            DataContext = thumbnailList.ElementAt(1 - 1);
+        }
+
+        private void btnPreviousPage_Click(object sender, RoutedEventArgs e)
+        {
+            if (lblCurrentPage.Content.Equals("1")) return;
+
+            int previousPage = Int32.Parse(lblCurrentPage.Content.ToString()) - 1;
+            lblCurrentPage.Content = previousPage.ToString();
+            DataContext = thumbnailList.ElementAt(previousPage - 1);
+        }
+
+        private void btnNextPage_Click(object sender, RoutedEventArgs e)
+        {
+            if (lblCurrentPage.Content.Equals(pagesCount.ToString())) return;
+
+            int nextPage =  Int32.Parse(lblCurrentPage.Content.ToString()) + 1;
+            lblCurrentPage.Content = nextPage.ToString();
+            DataContext = thumbnailList.ElementAt(nextPage - 1);
+        }
+
+        private void btnLastPage_Click(object sender, RoutedEventArgs e)
+        {
+            if (lblCurrentPage.Content.Equals(pagesCount.ToString())) return;
+
+            lblCurrentPage.Content = pagesCount.ToString();
+            DataContext = thumbnailList.ElementAt(pagesCount - 1);
         }
     }
 }
