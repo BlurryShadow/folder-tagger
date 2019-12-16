@@ -14,16 +14,19 @@ namespace Folder_Tagger
         [StringLength(260)]
         public string Location { get; set; }
 
+        [StringLength(260)]
+        public string Name { get; set; }
+
         [StringLength(50)]
         public string Group { get; set; }
 
         [StringLength(50)]
         public string Artist { get; set; }
 
-        public bool Translated { get; set; }
-
         [StringLength(50)]
         public string Type { get; set; }
+
+        public bool Translated { get; set; }
 
         [Key]
         [Column(Order = 1)]
@@ -35,12 +38,15 @@ namespace Folder_Tagger
 
         public virtual Tag Tag { get; set; }
 
-        public Folder(string location, string thumbnail = null)
+        public Folder(string location, string name, string thumbnail = null)
         {
             Location = location;
+            Name = name;
             Translated = false;
             TagID = 1;
             Thumbnail = thumbnail;
         }
+
+        public Folder() { }
     }
 }

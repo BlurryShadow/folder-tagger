@@ -11,14 +11,15 @@
             <RowDefinition Height="25*"/>
             <RowDefinition Height="30*"/>
             <RowDefinition Height="790*"/>
-            <RowDefinition Height="25*"/>
+            <RowDefinition Height="35*"/>
         </Grid.RowDefinitions>
+
         <Menu
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Height="25"            
             Width="1590"
-            Grid.Row="0" Margin="0,0,-8,0"
+            Grid.Row="0"
         >
             <MenuItem Header="Add" FontSize="16">
                 <MenuItem Header="Folder" Click="MenuAddFolder_Click"/>
@@ -26,13 +27,14 @@
                 <MenuItem Header="Tag" />
             </MenuItem>
         </Menu>
+
         <ToolBar
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Height="30"            
             Width="1590"            
             FontSize="16"
-            Grid.Row="1" Margin="0,0,-8,0"
+            Grid.Row="1"
         >
             <Label
                 Content="Artist"
@@ -43,11 +45,11 @@
             <ComboBox
                 x:Name="cbBoxArtist"
                 Height="30"
-                Width="160"
+                Width="180"
                 Margin="10, 0, 0, 0"
                 SelectedIndex="0"
             >
-                <ComboBoxItem Content="Newly Added" />
+                <ComboBoxItem Content="" />
             </ComboBox>
 
             <Label
@@ -63,8 +65,39 @@
                 Margin="10, 0, 0, 0"
                 SelectedIndex="0"
             >
-                <ComboBoxItem Content="Newly Added" />
+                <ComboBoxItem Content="" />
             </ComboBox>
+
+            <Label
+                Content="Type"
+                Height="25"
+                Padding="5,2,5,0"
+                Margin="20,0,0,0"
+            />
+            <ComboBox
+                x:Name="cbBoxType"
+                Height="30"
+                Width="140"
+                Margin="10, 0, 0, 0"
+                SelectedIndex="0"
+            >
+                <ComboBoxItem Content="" />
+            </ComboBox>
+
+            <Label
+                Content="Translated"
+                Height="25"
+                Padding="5,2,5,0"
+                Margin="20,0,0,0"
+            />
+            <CheckBox
+                x:Name="checkBTranslated"
+                Height="10"
+                Margin="5,3,0,0"
+                Width="10"
+                BorderBrush="Black"
+                BorderThickness="1"
+            />
 
             <Label
                 Content="Tag"
@@ -78,13 +111,52 @@
                 Width="400"
                 Margin="10,0,0,0"
             />
+
+            <Button
+                x:Name="btnSearch"
+                Content="Search"
+                Height="25"
+                Margin="50,0,0,0"
+                Padding="0,0,0,5"
+                Click="btnSearch_Click"
+                BorderBrush="Black"                
+            />
         </ToolBar>
-        <DataGrid
+
+        <ListBox
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
             Height="790"
             Width="1590"
-            VerticalAlignment="Top"
-            Grid.RowSpan="8"
             Grid.Row="2"
-        />
+            ItemsSource="{Binding}"
+        >
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Columns="5" />
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel
+                        Orientation="Vertical"
+                        Height="490"
+                        Width="300"
+                    >
+                        <Image
+                            Source="{Binding Thumbnail}"
+                            Height="400"
+                            Width="300"
+                        />
+                        <TextBlock
+                            FontSize="16"
+                            TextWrapping="WrapWithOverflow"
+                            TextAlignment="Center"
+                            Text="{Binding Name}"
+                        />
+                    </StackPanel>                    
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
     </Grid>
 </Window>
