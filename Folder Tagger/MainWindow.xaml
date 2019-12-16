@@ -158,5 +158,57 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
+
+        <Button            
+            x:Name="btnFirstPage"
+            HorizontalAlignment="Center"
+            Content="&lt;&lt;"
+            Height="20"
+            Width="20"
+            Margin="-120,0,0,0"
+            Grid.Row="3"
+        />
+
+        <Button            
+            x:Name="btnPreviousPage"
+            HorizontalAlignment="Center"
+            Content="&lt;"
+            Height="20"
+            Width="20"
+            Margin="-60,0,0,0"
+            Grid.Row="3"
+        />
+
+        <Label
+            x:Name="lbCurrentPage"
+            HorizontalAlignment="Center"
+            HorizontalContentAlignment="Center"
+            Content="1"
+            Height="35"
+            Width="35"
+            FontSize="20"
+            Padding="0,3,0,0"
+            Grid.Row="3"
+        />
+
+        <Button            
+            x:Name="btnNextPage"
+            HorizontalAlignment="Center"
+            Content="&gt;"
+            Height="20"
+            Width="20"
+            Margin="60,0,0,0"
+            Grid.Row="3"
+        />
+
+        <Button
+            x:Name="btnLastPage"
+            HorizontalAlignment="Center"
+            Content="&gt;&gt;"
+            Height="20"
+            Width="20"
+            Margin="120,0,0,0"
+            Grid.Row="3"
+        />
     </Grid>
 </Window>
