@@ -13,11 +13,13 @@ namespace Folder_Tagger
     public partial class MainWindow : Window
     {
 
-        private int imagesPerPage = 50;
+        private int imagesPerPage = 30;
+        private int foldersCount;
+        private int pagesCount;
         public MainWindow()
         {
             InitializeComponent();
-            
+            loadBasicData();
         }
 
         private void AddFolder(string location, string name, string type = "multiple")
@@ -47,6 +49,8 @@ namespace Folder_Tagger
                 }
                 db.SaveChanges();
             }
+
+            loadBasicData();
         }
 
         private void Search()
@@ -59,9 +63,7 @@ namespace Folder_Tagger
             if (!string.IsNullOrWhiteSpace(tbTag.Text)) tagList = tbTag.Text.Split(new string[] { ", " }, StringSplitOptions.None).ToList();
 
             using (var db = new Model1())
-            {
-                int foldersCount = db.Folders.GroupBy(f => f.Thumbnail).Count();
-                int pageCount = (int)Math.Ceiling(((double)foldersCount / imagesPerPage));
+            {                
                 var query = db.Folders.Where(f => f.Translated == isTranslated);
 
                 if (!string.IsNullOrWhiteSpace(artist))
@@ -77,19 +79,29 @@ namespace Folder_Tagger
                     foreach (string tag in tagList)
                         query = query.Where(f => f.Tag.TagName.ToLower() == tag.ToLower());
 
-                var thumbnailList = takeDataOffset(query, foldersCount, 1);
+                var thumbnailList = takeDataOffset(query, 1);
                 DataContext = thumbnailList;
             }
         }
 
-        private dynamic takeDataOffset(System.Linq.IQueryable<Folder> query, int foldersCount, int page)
+        private dynamic takeDataOffset(System.Linq.IQueryable<Folder> query, int page)
         {
             return query
                 .OrderBy(f => f.Name)
                 .Skip((page - 1) * imagesPerPage)
                 .Take(imagesPerPage)
+                .Select(f => new { f.Name, f.Thumbnail })
                 .Distinct()
                 .ToList();
+        }
+
+        private void loadBasicData()
+        {
+            using (var db = new Model1())
+            {
+                foldersCount = db.Folders.GroupBy(f => f.Thumbnail).Count();
+                pagesCount = (int)Math.Ceiling(((double)foldersCount / imagesPerPage));
+            }
         }
 
         private void MenuAddFolder_Click(object sender, RoutedEventArgs e)

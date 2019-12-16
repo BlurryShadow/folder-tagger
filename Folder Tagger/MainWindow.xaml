@@ -133,23 +133,23 @@
         >
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <UniformGrid Columns="5" />
+                    <UniformGrid Columns="6" />
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel
                         Orientation="Vertical"
-                        Height="490"
-                        Width="300"
+                        Height="386"
+                        Width="250"
                     >
                         <Image
                             Source="{Binding Thumbnail}"
-                            Height="400"
-                            Width="300"
+                            Height="336"
+                            Width="250"
                         />
                         <TextBlock
-                            FontSize="16"
+                            FontSize="14"
                             TextWrapping="WrapWithOverflow"
                             TextAlignment="Center"
                             Text="{Binding Name}"
