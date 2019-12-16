@@ -139,6 +139,7 @@ namespace Folder_Tagger
 
             lblCurrentPage.Content = "1";
             DataContext = thumbnailList.ElementAt(1 - 1);
+            listboxGallery.ScrollIntoView(listboxGallery.Items[0]);
         }
 
         private void btnPreviousPage_Click(object sender, RoutedEventArgs e)
@@ -148,6 +149,7 @@ namespace Folder_Tagger
             int previousPage = Int32.Parse(lblCurrentPage.Content.ToString()) - 1;
             lblCurrentPage.Content = previousPage.ToString();
             DataContext = thumbnailList.ElementAt(previousPage - 1);
+            listboxGallery.ScrollIntoView(listboxGallery.Items[0]);
         }
 
         private void btnNextPage_Click(object sender, RoutedEventArgs e)
@@ -157,6 +159,7 @@ namespace Folder_Tagger
             int nextPage =  Int32.Parse(lblCurrentPage.Content.ToString()) + 1;
             lblCurrentPage.Content = nextPage.ToString();
             DataContext = thumbnailList.ElementAt(nextPage - 1);
+            listboxGallery.ScrollIntoView(listboxGallery.Items[0]);
         }
 
         private void btnLastPage_Click(object sender, RoutedEventArgs e)
@@ -165,6 +168,7 @@ namespace Folder_Tagger
 
             lblCurrentPage.Content = pagesCount.ToString();
             DataContext = thumbnailList.ElementAt(pagesCount - 1);
+            listboxGallery.ScrollIntoView(listboxGallery.Items[0]);
         }
     }
 }

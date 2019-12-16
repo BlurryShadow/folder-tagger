@@ -124,6 +124,7 @@
         </ToolBar>
 
         <ListBox
+            x:Name="listboxGallery"
             VerticalAlignment="Center"
             HorizontalAlignment="Center"
             Height="790"
@@ -144,7 +145,7 @@
                         Width="250"
                     >
                         <Image
-                            Source="{Binding Root}"
+                            Source="{Binding Root, IsAsync=True}"
                             Height="336"
                             Width="250"
                         />
