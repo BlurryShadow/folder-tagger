@@ -23,11 +23,6 @@ namespace Folder_Tagger
         [StringLength(50)]
         public string Artist { get; set; }
 
-        [StringLength(50)]
-        public string Type { get; set; }
-
-        public bool Translated { get; set; }
-
         [Key]
         [Column(Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
@@ -42,7 +37,6 @@ namespace Folder_Tagger
         {
             Location = location;
             Name = name;
-            Translated = false;
             TagID = 1;
             Thumbnail = thumbnail;
         }

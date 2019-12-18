@@ -14,7 +14,8 @@ namespace Folder_Tagger
     {
 
         private int imagesPerPage = 30;
-        private int pagesCount = 1;
+        private int maxPage = 1;
+        private int currentPage = 1;
         List<List<Thumbnail>> thumbnailList = new List<List<Thumbnail>>();
         public MainWindow()
         {
@@ -53,15 +54,13 @@ namespace Folder_Tagger
         private void Search()
         {
             string artist = cbBoxArtist.Text;
-            string group = cbBoxGroup.Text;            
-            string type = cbBoxType.Text;
-            bool isTranslated = (bool)checkBTranslated.IsChecked;
+            string group = cbBoxGroup.Text;
             List<string> tagList = new List<string>();
             if (!string.IsNullOrWhiteSpace(tbTag.Text)) tagList = tbTag.Text.Split(new string[] { ", " }, StringSplitOptions.None).ToList();
 
             using (var db = new Model1())
             {                
-                var query = db.Folders.Where(f => f.Translated == isTranslated);
+                var query = (System.Linq.IQueryable<Folder>)db.Folders;
 
                 if (!string.IsNullOrWhiteSpace(artist))
                     query = query.Where(f => f.Artist == artist);
@@ -69,17 +68,14 @@ namespace Folder_Tagger
                 if (!string.IsNullOrWhiteSpace(group))
                     query = query.Where(f => f.Group == group);
 
-                if (!string.IsNullOrEmpty(type))
-                    query = query.Where(f => f.Type == type);
-
                 if (tagList.Any())
                     foreach (string tag in tagList)
                         query = query.Where(f => f.Tag.TagName.ToLower() == tag.ToLower());
 
                 int foldersCount = query.GroupBy(f => f.Thumbnail).Count();
-                pagesCount = (int)Math.Ceiling(((double)foldersCount / imagesPerPage));                
+                maxPage = (int)Math.Ceiling(((double)foldersCount / imagesPerPage));                
 
-                for (int i = 0; i < pagesCount; i++)
+                for (int i = 0; i < maxPage; i++)
                 {
                     thumbnailList.Add(query
                                         .OrderBy(f => f.Name)
@@ -131,43 +127,48 @@ namespace Folder_Tagger
         private void btnSearch_Click(object sender, RoutedEventArgs e)
         {
             Search();
+            currentPage = 1;
+            if (maxPage > 1)
+                lblCurrentPage.Content = currentPage + ".." + maxPage;
         }
 
         private void btnFirstPage_Click(object sender, RoutedEventArgs e)
         {
-            if (lblCurrentPage.Content.Equals("1")) return;
+            if (currentPage == 1) return;
 
-            lblCurrentPage.Content = "1";
+            currentPage = 1;
+            lblCurrentPage.Content = currentPage + ".." + maxPage;
             DataContext = thumbnailList.ElementAt(1 - 1);
             listboxGallery.ScrollIntoView(listboxGallery.Items[0]);
         }
 
         private void btnPreviousPage_Click(object sender, RoutedEventArgs e)
         {
-            if (lblCurrentPage.Content.Equals("1")) return;
+            if (currentPage == 1) return;
 
-            int previousPage = Int32.Parse(lblCurrentPage.Content.ToString()) - 1;
-            lblCurrentPage.Content = previousPage.ToString();
-            DataContext = thumbnailList.ElementAt(previousPage - 1);
+            currentPage--;
+            lblCurrentPage.Content = currentPage + ".." + maxPage;
+            DataContext = thumbnailList.ElementAt(currentPage - 1);
             listboxGallery.ScrollIntoView(listboxGallery.Items[0]);
         }
 
         private void btnNextPage_Click(object sender, RoutedEventArgs e)
         {
-            if (lblCurrentPage.Content.Equals(pagesCount.ToString())) return;
+            if (currentPage == maxPage) return;
 
-            int nextPage =  Int32.Parse(lblCurrentPage.Content.ToString()) + 1;
-            lblCurrentPage.Content = nextPage.ToString();
-            DataContext = thumbnailList.ElementAt(nextPage - 1);
+            currentPage++;
+            lblCurrentPage.Content = currentPage + ".." + maxPage;
+            DataContext = thumbnailList.ElementAt(currentPage - 1);
             listboxGallery.ScrollIntoView(listboxGallery.Items[0]);
         }
 
         private void btnLastPage_Click(object sender, RoutedEventArgs e)
         {
-            if (lblCurrentPage.Content.Equals(pagesCount.ToString())) return;
+            if (currentPage == maxPage) return;
 
-            lblCurrentPage.Content = pagesCount.ToString();
-            DataContext = thumbnailList.ElementAt(pagesCount - 1);
+            currentPage = maxPage;
+            lblCurrentPage.Content = currentPage + ".." + maxPage;
+            DataContext = thumbnailList.ElementAt(maxPage - 1);
             listboxGallery.ScrollIntoView(listboxGallery.Items[0]);
         }
     }

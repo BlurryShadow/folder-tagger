@@ -10,7 +10,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="25*"/>
             <RowDefinition Height="30*"/>
-            <RowDefinition Height="790*"/>
+            <RowDefinition Height="780*"/>
             <RowDefinition Height="35*"/>
         </Grid.RowDefinitions>
 
@@ -69,37 +69,6 @@
             </ComboBox>
 
             <Label
-                Content="Type"
-                Height="25"
-                Padding="5,2,5,0"
-                Margin="20,0,0,0"
-            />
-            <ComboBox
-                x:Name="cbBoxType"
-                Height="30"
-                Width="140"
-                Margin="10, 0, 0, 0"
-                SelectedIndex="0"
-            >
-                <ComboBoxItem Content="" />
-            </ComboBox>
-
-            <Label
-                Content="Translated"
-                Height="25"
-                Padding="5,2,5,0"
-                Margin="20,0,0,0"
-            />
-            <CheckBox
-                x:Name="checkBTranslated"
-                Height="10"
-                Margin="5,3,0,0"
-                Width="10"
-                BorderBrush="Black"
-                BorderThickness="1"
-            />
-
-            <Label
                 Content="Tag"
                 Height="25"
                 Padding="5,2,5,0"
@@ -127,7 +96,7 @@
             x:Name="listboxGallery"
             VerticalAlignment="Center"
             HorizontalAlignment="Center"
-            Height="790"
+            Height="780"
             Width="1590"
             Grid.Row="2"
             ItemsSource="{Binding}"
@@ -143,7 +112,7 @@
                         Orientation="Vertical"
                         Height="386"
                         Width="250"
-                    >
+                    >                        
                         <Image
                             Source="{Binding Root, IsAsync=True}"
                             Height="336"
@@ -155,6 +124,20 @@
                             TextAlignment="Center"
                             Text="{Binding Name}"
                         />
+
+                        <StackPanel.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Open Folder" />
+                                <MenuItem Header="Open In Mangareader" />
+                                <MenuItem Header="Add Tag" />
+                                <Separator />
+                                <MenuItem Header="Edit Artist" />
+                                <MenuItem Header="Edit Group" />
+                                <MenuItem Header="Edit Tag" />
+                                <Separator />
+                                <MenuItem Header="Remove" />
+                            </ContextMenu>
+                        </StackPanel.ContextMenu>
                     </StackPanel>                    
                 </DataTemplate>
             </ListBox.ItemTemplate>
@@ -166,7 +149,7 @@
             Content="&lt;&lt;"
             Height="20"
             Width="20"
-            Margin="-120,0,0,0"
+            Margin="-140,0,0,0"
             Grid.Row="3" Click="btnFirstPage_Click"
         />
 
@@ -176,7 +159,7 @@
             Content="&lt;"
             Height="20"
             Width="20"
-            Margin="-60,0,0,0"
+            Margin="-80,0,0,0"
             Grid.Row="3" Click="btnPreviousPage_Click"
         />
 
@@ -186,7 +169,7 @@
             HorizontalContentAlignment="Center"
             Content="1"
             Height="35"
-            Width="35"
+            Width="55"
             FontSize="20"
             Padding="0,3,0,0"
             Grid.Row="3"
@@ -198,7 +181,7 @@
             Content="&gt;"
             Height="20"
             Width="20"
-            Margin="60,0,0,0"
+            Margin="80,0,0,0"
             Grid.Row="3" Click="btnNextPage_Click"
         />
 
@@ -208,7 +191,7 @@
             Content="&gt;&gt;"
             Height="20"
             Width="20"
-            Margin="120,0,0,0"
+            Margin="140,0,0,0"
             Grid.Row="3" Click="btnLastPage_Click"
         />
     </Grid>
