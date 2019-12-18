@@ -81,9 +81,16 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Model\Tag.cs" />
+    <Compile Include="View\FullEditWindow.xaml.cs">
+      <DependentUpon>FullEditWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\SmallEditWindow.xaml.cs">
       <DependentUpon>SmallEditWindow.xaml</DependentUpon>
     </Compile>
+    <Page Include="View\FullEditWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

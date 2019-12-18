@@ -188,5 +188,16 @@ namespace Folder_Tagger
             smallEditWindow.ShowInTaskbar = false;
             smallEditWindow.ShowDialog();
         }
+
+        private void openFullEditWindow(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Controls.MenuItem itemClicked = (System.Windows.Controls.MenuItem)sender;
+            string folder = itemClicked.CommandParameter.ToString();
+            Window fullEditWindow = new FullEditWindow(folder);
+            fullEditWindow.Owner = App.Current.MainWindow;
+            fullEditWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            fullEditWindow.ShowInTaskbar = false;
+            fullEditWindow.ShowDialog();
+        }
     }
 }

@@ -141,7 +141,11 @@
                                     Header="Edit Group" 
                                     Click="openSmallEditWindow" 
                                 />
-                                <MenuItem Header="Edit Tag" />
+                                <MenuItem
+                                    CommandParameter="{Binding Folder}"
+                                    Header="Edit Tag"
+                                    Click="openFullEditWindow"
+                                />
                                 <Separator />
                                 <MenuItem Header="Remove" />
                             </ContextMenu>
