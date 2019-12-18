@@ -112,7 +112,7 @@
                         Orientation="Vertical"
                         Height="386"
                         Width="250"
-                    >                        
+                    >
                         <Image
                             Source="{Binding Root, IsAsync=True}"
                             Height="336"
@@ -131,14 +131,22 @@
                                 <MenuItem Header="Open In Mangareader" />
                                 <MenuItem Header="Add Tag" />
                                 <Separator />
-                                <MenuItem Header="Edit Artist" />
-                                <MenuItem Header="Edit Group" />
+                                <MenuItem 
+                                    CommandParameter="{Binding Folder}" 
+                                    Header="Edit Artist" 
+                                    Click="openSmallEditWindow" 
+                                />
+                                <MenuItem 
+                                    CommandParameter="{Binding Folder}" 
+                                    Header="Edit Group" 
+                                    Click="openSmallEditWindow" 
+                                />
                                 <MenuItem Header="Edit Tag" />
                                 <Separator />
                                 <MenuItem Header="Remove" />
                             </ContextMenu>
                         </StackPanel.ContextMenu>
-                    </StackPanel>                    
+                    </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>

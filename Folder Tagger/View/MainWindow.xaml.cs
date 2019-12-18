@@ -81,7 +81,12 @@ namespace Folder_Tagger
                                         .OrderBy(f => f.Name)
                                         .Skip(i * imagesPerPage)
                                         .Take(imagesPerPage)
-                                        .Select(f => new Thumbnail { Root = f.Thumbnail, Name = f.Name })
+                                        .Select(f => new Thumbnail 
+                                        { 
+                                            Folder = f.Location, 
+                                            Root = f.Thumbnail, 
+                                            Name = f.Name 
+                                        })
                                         .Distinct()
                                         .ToList()
                     );
@@ -170,6 +175,18 @@ namespace Folder_Tagger
             lblCurrentPage.Content = currentPage + ".." + maxPage;
             DataContext = thumbnailList.ElementAt(maxPage - 1);
             listboxGallery.ScrollIntoView(listboxGallery.Items[0]);
+        }
+
+        private void openSmallEditWindow(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Controls.MenuItem itemClicked = (System.Windows.Controls.MenuItem)sender;
+            string type = itemClicked.Header.ToString().Replace("Edit ", "");
+            string folder = itemClicked.CommandParameter.ToString();
+            Window smallEditWindow = new SmallEditWindow(type, folder);
+            smallEditWindow.Owner = App.Current.MainWindow;
+            smallEditWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            smallEditWindow.ShowInTaskbar = false;
+            smallEditWindow.ShowDialog();
         }
     }
 }
