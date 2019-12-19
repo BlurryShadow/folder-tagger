@@ -26,6 +26,15 @@ namespace Folder_Tagger
         {
             using (var db = new Model1())
             {
+                if (db.Folders.Any(f => f.Location == location))
+                {
+                    if (type == "single")
+                    {
+                        System.Windows.MessageBox.Show("This Folder Has Already Been Added!");
+                    }
+                    return;
+                }
+
                 string thumbnail = null;
                 DirectoryInfo dr = new DirectoryInfo(location);
                 thumbnail = dr.EnumerateFiles()
@@ -37,22 +46,14 @@ namespace Folder_Tagger
                                                      || (FullName.ToLower().Contains(".bmp")));
 
                 var folder = new Folder(location, name, thumbnail);
-                db.Folders.Add(folder);
-
-                if (db.Folders.Any(f => f.Location == location))
-                {
-                    if (type == "single")
-                    {
-                        System.Windows.MessageBox.Show("This Folder Has Already Been Added!");                       
-                    }
-                    return;
-                }
+                db.Folders.Add(folder);                
                 db.SaveChanges();
             }
         }
 
         private void Search()
         {
+            thumbnailList.Clear();
             string artist = cbBoxArtist.Text;
             string group = cbBoxGroup.Text;
             List<string> tagList = new List<string>();
@@ -92,7 +93,8 @@ namespace Folder_Tagger
                     );
                 }
 
-                DataContext = thumbnailList.ElementAt(0);
+                if (thumbnailList.Count > 0)
+                    DataContext = thumbnailList.ElementAt(0);
             }
         }
 
@@ -181,7 +183,7 @@ namespace Folder_Tagger
         {
             System.Windows.Controls.MenuItem itemClicked = (System.Windows.Controls.MenuItem)sender;
             string type = itemClicked.Header.ToString().Replace("Edit ", "");
-            string folder = itemClicked.CommandParameter.ToString();
+            string folder = itemClicked.Tag.ToString();
             Window smallEditWindow = new SmallEditWindow(type, folder);
             smallEditWindow.Owner = App.Current.MainWindow;
             smallEditWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
@@ -192,7 +194,7 @@ namespace Folder_Tagger
         private void openFullEditWindow(object sender, RoutedEventArgs e)
         {
             System.Windows.Controls.MenuItem itemClicked = (System.Windows.Controls.MenuItem)sender;
-            string folder = itemClicked.CommandParameter.ToString();
+            string folder = itemClicked.Tag.ToString();
             Window fullEditWindow = new FullEditWindow(folder);
             fullEditWindow.Owner = App.Current.MainWindow;
             fullEditWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;

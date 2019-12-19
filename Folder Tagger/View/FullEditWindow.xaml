@@ -5,81 +5,37 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Folder_Tagger"
         mc:Ignorable="d"
-        Title="FullEditWindow" Height="450" Width="450">
+        Title="FullEditWindow" Height="450" Width="350">
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="367*"/>
-            <ColumnDefinition Width="75*"/>
-        </Grid.ColumnDefinitions>
-
-        <Border BorderBrush="Black" BorderThickness="0,0,1,0" Grid.Column="0" />
-
         <StackPanel
             VerticalAlignment="Center"
             HorizontalAlignment="Center"
             Height="400"
-            Width="350"
-            Grid.Column="0"
+            Width="325"
         >
             <ListBox
+                x:Name="listboxTag"
                 Height="400"
-                Width="350"
+                Width="325"
                 BorderThickness="0"
                 ItemsSource="{Binding}"
             >
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <TextBox
+                            Width="315"
                             FontSize="16"
                             BorderThickness="0"
-                            Focusable="False"
-                            Text="{Binding Path=.}"
+                            Margin="-3,0,0,0"
+                            Tag="{Binding TagID}"
+                            Text="{Binding TagName}"
+                            LostFocus="EditTag"
+                            KeyDown="TextBoxPressEnter"
+                            GotFocus="GetCurrentTagName"
                         />
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-        </StackPanel>
-
-        <StackPanel
-            VerticalAlignment="Center"
-            HorizontalAlignment="Center"
-            Height="400"
-            Width="60"
-            Orientation="Vertical"
-            Grid.Column="1"
-        >
-            <Button 
-                x:Name="btnAdd"
-                VerticalAlignment="Top"
-                HorizontalAlignment="Center"
-                Height="25"
-                Width="50"
-                FontSize="14"
-                Content="Add"
-                Margin="0,15,0,0"
-            />
-
-            <Button 
-                x:Name="btnEdit"
-                VerticalAlignment="Top"
-                HorizontalAlignment="Center"
-                Height="25"
-                Width="50"
-                FontSize="14"
-                Content="Edit"
-                Margin="0,10,0,0"
-            />
-
-            <Button 
-                x:Name="btnRemove"
-                VerticalAlignment="Top"
-                HorizontalAlignment="Center"
-                Height="25"
-                Width="50"
-                FontSize="14"
-                Content="Delete"
-                Margin="0,10,0,0"
-            />
         </StackPanel>
     </Grid>
 </Window>

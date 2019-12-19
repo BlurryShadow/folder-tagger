@@ -9,8 +9,9 @@ namespace Folder_Tagger
     [Table("Folder")]
     public partial class Folder
     {
-        [Key]
-        [Column(Order = 0)]
+        public int ID { get; set; }
+
+        [Required]
         [StringLength(260)]
         public string Location { get; set; }
 
@@ -23,9 +24,6 @@ namespace Folder_Tagger
         [StringLength(50)]
         public string Artist { get; set; }
 
-        [Key]
-        [Column(Order = 1)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int TagID { get; set; }
 
         [StringLength(260)]
@@ -33,11 +31,11 @@ namespace Folder_Tagger
 
         public virtual Tag Tag { get; set; }
 
-        public Folder(string location, string name, string thumbnail = null)
+        public Folder(string location, string name, string thumbnail = null, int tagID = 1)
         {
             Location = location;
             Name = name;
-            TagID = 1;
+            TagID = tagID;
             Thumbnail = thumbnail;
         }
 

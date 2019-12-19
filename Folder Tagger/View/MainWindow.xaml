@@ -23,7 +23,7 @@
         >
             <MenuItem Header="Add" FontSize="16">
                 <MenuItem Header="Folder" Click="MenuAddFolder_Click"/>
-                <MenuItem Header="Parent Folder"  Click="MenuAddParentFolder_Click"/>
+                <MenuItem Header="Parent Folder" Click="MenuAddParentFolder_Click"/>
                 <MenuItem Header="Tag" />
             </MenuItem>
         </Menu>
@@ -132,17 +132,17 @@
                                 <MenuItem Header="Add Tag" />
                                 <Separator />
                                 <MenuItem 
-                                    CommandParameter="{Binding Folder}" 
+                                    Tag="{Binding Folder}" 
                                     Header="Edit Artist" 
                                     Click="openSmallEditWindow" 
                                 />
                                 <MenuItem 
-                                    CommandParameter="{Binding Folder}" 
+                                    Tag="{Binding Folder}" 
                                     Header="Edit Group" 
                                     Click="openSmallEditWindow" 
                                 />
                                 <MenuItem
-                                    CommandParameter="{Binding Folder}"
+                                    Tag="{Binding Folder}"
                                     Header="Edit Tag"
                                     Click="openFullEditWindow"
                                 />

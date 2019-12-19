@@ -17,10 +17,6 @@ namespace Folder_Tagger
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Tag>()
-                .HasMany(e => e.Folders)
-                .WithRequired(e => e.Tag)
-                .WillCascadeOnDelete(false);
         }
     }
 }
