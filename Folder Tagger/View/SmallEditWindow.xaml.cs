@@ -3,9 +3,6 @@ using System.Windows;
 
 namespace Folder_Tagger
 {
-    /// <summary>
-    /// Interaction logic for SmallEditWindow.xaml
-    /// </summary>
     public partial class SmallEditWindow : Window
     {
         private string type = "";

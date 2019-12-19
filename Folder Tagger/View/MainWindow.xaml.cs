@@ -7,12 +7,8 @@ using System.Collections.Generic;
 
 namespace Folder_Tagger
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
-
         private int imagesPerPage = 30;
         private int maxPage = 1;
         private int currentPage = 1;
@@ -21,6 +17,7 @@ namespace Folder_Tagger
         {
             InitializeComponent();
             GenerateAGList();
+            Search(null, null, new List<string>() { "Newly Added" });
         }
 
         private void GenerateAGList()
@@ -77,13 +74,9 @@ namespace Folder_Tagger
             }
         }
 
-        private void Search()
+        private void Search(string artist = null, string group = null, List<string> tagList = null)
         {
             thumbnailList.Clear();
-            string artist = cbBoxArtist.Text;
-            string group = cbBoxGroup.Text;
-            List<string> tagList = new List<string>();
-            if (!string.IsNullOrWhiteSpace(tbTag.Text)) tagList = tbTag.Text.Split(new string[] { ", " }, StringSplitOptions.None).ToList();
 
             using (var db = new Model1())
             {                
@@ -120,7 +113,12 @@ namespace Folder_Tagger
                 }
 
                 if (thumbnailList.Count > 0)
+                {
                     DataContext = thumbnailList.ElementAt(0);
+                    currentPage = 1;
+                    if (maxPage > 1)
+                        lblCurrentPage.Content = currentPage + ".." + maxPage;
+                }
             }
         }
 
@@ -135,6 +133,7 @@ namespace Folder_Tagger
                     string location = fbd.SelectedPath;
                     string name = Path.GetFileName(location);
                     AddFolder(location, name, "single");
+                    Search(null, null, new List<string>() { "Newly Added" });
                 }
             }
         }
@@ -152,17 +151,20 @@ namespace Folder_Tagger
                     foreach (DirectoryInfo subFolder in parentFolder.GetDirectories())
                     {
                         AddFolder(subFolder.FullName, subFolder.Name, "multiple");
-                    }                    
+                    }
+                    Search(null, null, new List<string>() { "Newly Added" });
                 }
             }
         }
 
         private void SearchFolders(object sender, RoutedEventArgs e)
         {
-            Search();
-            currentPage = 1;
-            if (maxPage > 1)
-                lblCurrentPage.Content = currentPage + ".." + maxPage;
+            string artist = cbBoxArtist.Text;
+            string group = cbBoxGroup.Text;
+            List<string> tagList = new List<string>();
+            if (!string.IsNullOrWhiteSpace(tbTag.Text)) tagList = tbTag.Text.Split(new string[] { ", " }, StringSplitOptions.None).ToList();
+
+            Search(artist, group, tagList);            
         }
 
         private void ToFirstPage(object sender, RoutedEventArgs e)
