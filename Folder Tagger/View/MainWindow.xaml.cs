@@ -98,7 +98,7 @@ namespace Folder_Tagger
             }
         }
 
-        private void MenuAddFolder_Click(object sender, RoutedEventArgs e)
+        private void AddOneFolder(object sender, RoutedEventArgs e)
         {
             using(var fbd = new FolderBrowserDialog())
             {
@@ -113,7 +113,7 @@ namespace Folder_Tagger
             }
         }
 
-        private void MenuAddParentFolder_Click(object sender, RoutedEventArgs e)
+        private void AddManyFolders(object sender, RoutedEventArgs e)
         {
             using (var fbd = new FolderBrowserDialog())
             {
@@ -131,7 +131,7 @@ namespace Folder_Tagger
             }
         }
 
-        private void btnSearch_Click(object sender, RoutedEventArgs e)
+        private void SearchFolders(object sender, RoutedEventArgs e)
         {
             Search();
             currentPage = 1;
@@ -139,7 +139,7 @@ namespace Folder_Tagger
                 lblCurrentPage.Content = currentPage + ".." + maxPage;
         }
 
-        private void btnFirstPage_Click(object sender, RoutedEventArgs e)
+        private void ToFirstPage(object sender, RoutedEventArgs e)
         {
             if (currentPage == 1) return;
 
@@ -149,7 +149,7 @@ namespace Folder_Tagger
             listboxGallery.ScrollIntoView(listboxGallery.Items[0]);
         }
 
-        private void btnPreviousPage_Click(object sender, RoutedEventArgs e)
+        private void ToPreviousPage(object sender, RoutedEventArgs e)
         {
             if (currentPage == 1) return;
 
@@ -159,7 +159,7 @@ namespace Folder_Tagger
             listboxGallery.ScrollIntoView(listboxGallery.Items[0]);
         }
 
-        private void btnNextPage_Click(object sender, RoutedEventArgs e)
+        private void ToNextPage(object sender, RoutedEventArgs e)
         {
             if (currentPage == maxPage) return;
 
@@ -169,7 +169,7 @@ namespace Folder_Tagger
             listboxGallery.ScrollIntoView(listboxGallery.Items[0]);
         }
 
-        private void btnLastPage_Click(object sender, RoutedEventArgs e)
+        private void ToLastPage(object sender, RoutedEventArgs e)
         {
             if (currentPage == maxPage) return;
 
@@ -179,7 +179,7 @@ namespace Folder_Tagger
             listboxGallery.ScrollIntoView(listboxGallery.Items[0]);
         }
 
-        private void openSmallEditWindow(object sender, RoutedEventArgs e)
+        private void OpenSmallEditWindow(object sender, RoutedEventArgs e)
         {
             System.Windows.Controls.MenuItem itemClicked = (System.Windows.Controls.MenuItem)sender;
             string type = itemClicked.Header.ToString().Replace("Edit ", "");
@@ -191,7 +191,7 @@ namespace Folder_Tagger
             smallEditWindow.ShowDialog();
         }
 
-        private void openFullEditWindow(object sender, RoutedEventArgs e)
+        private void OpenFullEditWindow(object sender, RoutedEventArgs e)
         {
             System.Windows.Controls.MenuItem itemClicked = (System.Windows.Controls.MenuItem)sender;
             string folder = itemClicked.Tag.ToString();

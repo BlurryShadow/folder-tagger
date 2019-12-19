@@ -37,7 +37,7 @@ namespace Folder_Tagger
             }
         }
 
-        private void btnUpdate_Click(object sender, RoutedEventArgs e)
+        private void UpdateData(object sender, RoutedEventArgs e)
         {
             string input = tbInput.Text;
             if (string.IsNullOrWhiteSpace(input)) input = null;

@@ -22,8 +22,8 @@
             Grid.Row="0"
         >
             <MenuItem Header="Add" FontSize="16">
-                <MenuItem Header="Folder" Click="MenuAddFolder_Click"/>
-                <MenuItem Header="Parent Folder" Click="MenuAddParentFolder_Click"/>
+                <MenuItem Header="Folder" Click="AddOneFolder"/>
+                <MenuItem Header="Parent Folder" Click="AddManyFolders"/>
                 <MenuItem Header="Tag" />
             </MenuItem>
         </Menu>
@@ -87,7 +87,7 @@
                 Height="25"
                 Margin="50,0,0,0"
                 Padding="0,0,0,5"
-                Click="btnSearch_Click"
+                Click="SearchFolders"
                 BorderBrush="Black"                
             />
         </ToolBar>
@@ -134,17 +134,17 @@
                                 <MenuItem 
                                     Tag="{Binding Folder}" 
                                     Header="Edit Artist" 
-                                    Click="openSmallEditWindow" 
+                                    Click="OpenSmallEditWindow" 
                                 />
                                 <MenuItem 
                                     Tag="{Binding Folder}" 
                                     Header="Edit Group" 
-                                    Click="openSmallEditWindow" 
+                                    Click="OpenSmallEditWindow" 
                                 />
                                 <MenuItem
                                     Tag="{Binding Folder}"
                                     Header="Edit Tag"
-                                    Click="openFullEditWindow"
+                                    Click="OpenFullEditWindow"
                                 />
                                 <Separator />
                                 <MenuItem Header="Remove" />
@@ -162,7 +162,7 @@
             Height="20"
             Width="20"
             Margin="-140,0,0,0"
-            Grid.Row="3" Click="btnFirstPage_Click"
+            Grid.Row="3" Click="ToFirstPage"
         />
 
         <Button            
@@ -172,7 +172,7 @@
             Height="20"
             Width="20"
             Margin="-80,0,0,0"
-            Grid.Row="3" Click="btnPreviousPage_Click"
+            Grid.Row="3" Click="ToPreviousPage"
         />
 
         <Label
@@ -194,7 +194,7 @@
             Height="20"
             Width="20"
             Margin="80,0,0,0"
-            Grid.Row="3" Click="btnNextPage_Click"
+            Grid.Row="3" Click="ToNextPage"
         />
 
         <Button
@@ -204,7 +204,7 @@
             Height="20"
             Width="20"
             Margin="140,0,0,0"
-            Grid.Row="3" Click="btnLastPage_Click"
+            Grid.Row="3" Click="ToLastPage"
         />
     </Grid>
 </Window>
