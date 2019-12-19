@@ -1,10 +1,10 @@
-﻿using System;
-using System.Windows;
-using System.Linq;
-using System.Windows.Forms;
-using System.IO;
+﻿using LinqKit;
+using System;
 using System.Collections.Generic;
-using System.Windows.Input;
+using System.IO;
+using System.Linq;
+using System.Windows;
+using System.Windows.Forms;
 
 namespace Folder_Tagger
 {
@@ -91,9 +91,24 @@ namespace Folder_Tagger
                 if (!string.IsNullOrWhiteSpace(group))
                     query = query.Where(f => f.Group == group);
 
-                if (tagList.Any())
+                if (tagList.Count() == 1)
+                {
+                    string tagName = tagList.ElementAt(0);
+                    query = query.Where(f => f.Tag.TagName == tagName);
+                } else if (tagList.Count() > 1)
+                {
+                    var predicate = PredicateBuilder.New<Folder>();
                     foreach (string tag in tagList)
-                        query = query.Where(f => f.Tag.TagName.ToLower() == tag.ToLower());
+                        predicate = predicate.Or(f => f.Tag.TagName.ToLower() == tag.ToLower());
+                    query = query.Where(predicate);
+
+                    List<string> acceptFolders = db.Folders
+                                      .GroupBy(f => f.Location)
+                                      .Where(f => f.Count() == tagList.Count())
+                                      .Select(f => f.Key)
+                                      .ToList();
+                    query = query.Where(f => acceptFolders.Contains(f.Location));
+                }
 
                 int foldersCount = query.GroupBy(f => f.Thumbnail).Count();
                 if (foldersCount == 0)
