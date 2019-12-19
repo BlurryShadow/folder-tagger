@@ -17,6 +17,10 @@ namespace Folder_Tagger
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Folder>()
+                .HasMany(e => e.Tags)
+                .WithMany(e => e.Folders)
+                .Map(m => m.ToTable("FolderTag").MapLeftKey("FolderID").MapRightKey("TagID"));
         }
     }
 }

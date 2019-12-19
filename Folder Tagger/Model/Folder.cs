@@ -9,6 +9,12 @@ namespace Folder_Tagger
     [Table("Folder")]
     public partial class Folder
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Folder()
+        {
+            Tags = new HashSet<Tag>();
+        }
+
         public int ID { get; set; }
 
         [Required]
@@ -24,21 +30,17 @@ namespace Folder_Tagger
         [StringLength(50)]
         public string Artist { get; set; }
 
-        public int TagID { get; set; }
-
         [StringLength(260)]
         public string Thumbnail { get; set; }
 
-        public virtual Tag Tag { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Tag> Tags { get; set; }
 
-        public Folder(string location, string name, string thumbnail = null, int tagID = 1)
+        public Folder(string location, string name, string thumbnail = null)
         {
             Location = location;
             Name = name;
-            TagID = tagID;
             Thumbnail = thumbnail;
         }
-
-        public Folder() { }
     }
 }
