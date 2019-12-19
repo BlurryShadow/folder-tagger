@@ -80,6 +80,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Helper\UriToBitmapConverter.cs" />
     <Compile Include="Model\Folder.cs" />
     <Compile Include="Model\Model1.cs" />
     <Compile Include="Model\Tag.cs" />
@@ -159,5 +160,6 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

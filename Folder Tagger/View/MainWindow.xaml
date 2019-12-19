@@ -4,8 +4,19 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Folder_Tagger"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
-        Title="MainWindow" Height="900" Width="1600" WindowStartupLocation="CenterScreen">
+        Title="MainWindow"
+        Height="900"
+        Width="1600"
+        WindowStartupLocation="CenterScreen"
+>
+    <Window.Resources>
+        <sys:Double x:Key="ThumbnailHolderHeigth">383</sys:Double>
+        <sys:Double x:Key="ThumbnailHeigth">333</sys:Double>
+        <sys:Double x:Key="ThumbnailWidth">250</sys:Double>
+        <local:UriToBitmapConverter x:Key="UriToBitmapConverter" />
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="25*"/>
@@ -105,13 +116,18 @@
                 <DataTemplate>
                     <StackPanel
                         Orientation="Vertical"
-                        Height="386"
-                        Width="250"
+                        Height="{StaticResource ThumbnailHolderHeigth}"
+                        Width="{StaticResource ThumbnailWidth}"
                     >
                         <Image
-                            Source="{Binding Root, IsAsync=True}"
-                            Height="336"
-                            Width="250"
+                            Source="{
+                                Binding Root,
+                                IsAsync=True,
+                                Converter={StaticResource UriToBitmapConverter}
+                            }"
+                            Height="{StaticResource ThumbnailHeigth}"
+                            Width="{StaticResource ThumbnailWidth}"
+                            Margin="0,10,0,0"
                         />
                         <TextBlock
                             FontSize="14"

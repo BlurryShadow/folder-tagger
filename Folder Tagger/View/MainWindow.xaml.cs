@@ -9,7 +9,7 @@ namespace Folder_Tagger
 {
     public partial class MainWindow : Window
     {
-        private int imagesPerPage = 30;
+        private int imagesPerPage = 120;
         private int maxPage = 1;
         private int currentPage = 1;
         List<List<Thumbnail>> thumbnailList = new List<List<Thumbnail>>();
