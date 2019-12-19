@@ -20,6 +20,32 @@ namespace Folder_Tagger
         public MainWindow()
         {
             InitializeComponent();
+            GenerateAGList();
+        }
+
+        private void GenerateAGList()
+        {
+            using (var db = new Model1())
+            {
+                var artistList = db.Folders
+                                   .OrderBy(f => f.Artist)
+                                   .Where(f => f.Artist != null)
+                                   .Select(f => f.Artist)
+                                   .Distinct()
+                                   .ToList();
+                var groupList = db.Folders
+                                  .OrderBy(f => f.Group)
+                                  .Where(f => f.Group != null)
+                                  .Select(f => f.Group)
+                                  .Distinct()
+                                  .ToList();
+
+                artistList.Insert(0, "");
+                groupList.Insert(0, "");
+
+                cbBoxArtist.ItemsSource = artistList;
+                cbBoxGroup.ItemsSource = groupList;
+            }
         }
 
         private void AddFolder(string location, string name, string type = "multiple")
@@ -188,7 +214,13 @@ namespace Folder_Tagger
             smallEditWindow.Owner = App.Current.MainWindow;
             smallEditWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             smallEditWindow.ShowInTaskbar = false;
-            smallEditWindow.ShowDialog();
+            smallEditWindow.Closed += SmallEditWindow_Closed;
+            smallEditWindow.ShowDialog();            
+        }
+
+        private void SmallEditWindow_Closed(object sender, EventArgs e)
+        {
+            GenerateAGList();
         }
 
         private void OpenFullEditWindow(object sender, RoutedEventArgs e)

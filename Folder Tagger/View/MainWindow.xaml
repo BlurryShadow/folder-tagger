@@ -24,7 +24,6 @@
             <MenuItem Header="Add" FontSize="16">
                 <MenuItem Header="Folder" Click="AddOneFolder"/>
                 <MenuItem Header="Parent Folder" Click="AddManyFolders"/>
-                <MenuItem Header="Tag" />
             </MenuItem>
         </Menu>
 
@@ -48,9 +47,7 @@
                 Width="180"
                 Margin="10, 0, 0, 0"
                 SelectedIndex="0"
-            >
-                <ComboBoxItem Content="" />
-            </ComboBox>
+            />
 
             <Label
                 Content="Group"
@@ -64,9 +61,7 @@
                 Width="160"
                 Margin="10, 0, 0, 0"
                 SelectedIndex="0"
-            >
-                <ComboBoxItem Content="" />
-            </ComboBox>
+            />
 
             <Label
                 Content="Tag"
