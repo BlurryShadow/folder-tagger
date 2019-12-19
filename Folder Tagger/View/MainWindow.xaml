@@ -41,8 +41,8 @@
         <ToolBar
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            Height="30"            
-            Width="1590"            
+            Height="30"
+            Width="1590"
             FontSize="16"
             Grid.Row="1"
         >
@@ -88,13 +88,14 @@
             />
 
             <Button
-                x:Name="btnSearch"
-                Content="Search"
+                x:Name="btnSearch"                
                 Height="25"
                 Margin="50,0,0,0"
                 Padding="0,0,0,5"
-                Click="SearchFolders"
-                BorderBrush="Black"                
+                BorderBrush="Black"
+                Content="Search"
+                IsDefault="True"
+                Click="SearchFolders"                
             />
         </ToolBar>
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows.Forms;
 using System.IO;
 using System.Collections.Generic;
+using System.Windows.Input;
 
 namespace Folder_Tagger
 {
@@ -18,6 +19,8 @@ namespace Folder_Tagger
             InitializeComponent();
             GenerateAGList();
             Search(null, null, new List<string>() { "Newly Added" });
+
+            Loaded += (sender, e) => tbTag.Focus();
         }
 
         private void GenerateAGList()
@@ -93,8 +96,16 @@ namespace Folder_Tagger
                         query = query.Where(f => f.Tag.TagName.ToLower() == tag.ToLower());
 
                 int foldersCount = query.GroupBy(f => f.Thumbnail).Count();
-                maxPage = (int)Math.Ceiling(((double)foldersCount / imagesPerPage));                
+                if (foldersCount == 0)
+                {
+                    DataContext = null;
+                    currentPage = 1;
+                    maxPage = 1;
+                    lblCurrentPage.Content = currentPage;
+                    return;
+                }
 
+                maxPage = (int)Math.Ceiling(((double)foldersCount / imagesPerPage));
                 for (int i = 0; i < maxPage; i++)
                 {
                     thumbnailList.Add(query
@@ -118,6 +129,8 @@ namespace Folder_Tagger
                     currentPage = 1;
                     if (maxPage > 1)
                         lblCurrentPage.Content = currentPage + ".." + maxPage;
+                    else
+                        lblCurrentPage.Content = currentPage;
                 }
             }
         }
