@@ -22,9 +22,9 @@ namespace Folder_Tagger
             using (var db = new Model1())
             {
                 var query = db.Folders
-                              .Where(f => f.Location == folder)
-                              .Select(f => new { f.Artist, f.Group })
-                              .FirstOrDefault();
+                    .Where(f => f.Location == folder)
+                    .Select(f => new { f.Artist, f.Group })
+                    .FirstOrDefault();
 
                 artist = query.Artist;
                 group = query.Group;
@@ -42,9 +42,9 @@ namespace Folder_Tagger
             using (var db = new Model1())
             {
                 var query = db.Folders
-                              .Where(f => f.Location == folder)
-                              .Select(f => f)
-                              .ToList();
+                    .Where(f => f.Location == folder)
+                    .Select(f => f)
+                    .ToList();
 
                 query.ForEach(f => 
                 { 

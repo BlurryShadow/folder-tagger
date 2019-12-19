@@ -23,8 +23,8 @@ namespace Folder_Tagger
             using (var db = new Model1())
             {
                 var query = db.Folders
-                              .Where(f => f.Location == location)
-                              .Select(f => f.Tag);
+                    .Where(f => f.Location == location)
+                    .Select(f => f.Tag);
 
                 var result = query.ToList();
                 DataContext = result;
@@ -77,16 +77,16 @@ namespace Folder_Tagger
                 } else
                 {
                     newTagID = db.Tags
-                                 .Where(t => t.TagName.ToLower() == newTagName.ToLower())
-                                 .Select(t => t.TagID)
-                                 .First();                    
+                        .Where(t => t.TagName.ToLower() == newTagName.ToLower())
+                        .Select(t => t.TagID)
+                        .First();                    
                 }
 
                 Folder newTagFolder = db.Folders
-                                        .Where(f => f.Location == location)
-                                        .Where(f => f.TagID == tagID)
-                                        .Select(f => f)
-                                        .First();
+                    .Where(f => f.Location == location)
+                    .Where(f => f.TagID == tagID)
+                    .Select(f => f)
+                    .First();
 
                 newTagFolder.TagID = newTagID;
                 tb.Tag = newTagID.ToString();

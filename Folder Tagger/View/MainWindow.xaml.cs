@@ -28,17 +28,17 @@ namespace Folder_Tagger
             using (var db = new Model1())
             {
                 var artistList = db.Folders
-                                   .OrderBy(f => f.Artist)
-                                   .Where(f => f.Artist != null)
-                                   .Select(f => f.Artist)
-                                   .Distinct()
-                                   .ToList();
+                    .OrderBy(f => f.Artist)
+                    .Where(f => f.Artist != null)
+                    .Select(f => f.Artist)
+                    .Distinct()
+                    .ToList();
                 var groupList = db.Folders
-                                  .OrderBy(f => f.Group)
-                                  .Where(f => f.Group != null)
-                                  .Select(f => f.Group)
-                                  .Distinct()
-                                  .ToList();
+                    .OrderBy(f => f.Group)
+                    .Where(f => f.Group != null)
+                    .Select(f => f.Group)
+                    .Distinct()
+                    .ToList();
 
                 artistList.Insert(0, "");
                 groupList.Insert(0, "");
@@ -103,10 +103,10 @@ namespace Folder_Tagger
                     query = query.Where(predicate);
 
                     List<string> acceptFolders = db.Folders
-                                      .GroupBy(f => f.Location)
-                                      .Where(f => f.Count() == tagList.Count())
-                                      .Select(f => f.Key)
-                                      .ToList();
+                        .GroupBy(f => f.Location)
+                        .Where(f => f.Count() == tagList.Count())
+                        .Select(f => f.Key)
+                        .ToList();
                     query = query.Where(f => acceptFolders.Contains(f.Location));
                 }
 
@@ -123,18 +123,19 @@ namespace Folder_Tagger
                 maxPage = (int)Math.Ceiling(((double)foldersCount / imagesPerPage));
                 for (int i = 0; i < maxPage; i++)
                 {
-                    thumbnailList.Add(query
-                                        .OrderBy(f => f.Name)
-                                        .Skip(i * imagesPerPage)
-                                        .Take(imagesPerPage)
-                                        .Select(f => new Thumbnail 
-                                        { 
-                                            Folder = f.Location, 
-                                            Root = f.Thumbnail, 
-                                            Name = f.Name 
-                                        })
-                                        .Distinct()
-                                        .ToList()
+                    thumbnailList.Add(
+                        query
+                            .OrderBy(f => f.Name)
+                            .Skip(i * imagesPerPage)
+                            .Take(imagesPerPage)
+                            .Select(f => new Thumbnail 
+                            { 
+                                Folder = f.Location, 
+                                Root = f.Thumbnail, 
+                                Name = f.Name 
+                            })
+                            .Distinct()
+                            .ToList()
                     );
                 }
 
