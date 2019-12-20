@@ -32,6 +32,7 @@
             Content="Update"
             Grid.Column="1"
             Click="UpdateData"
+            IsDefault="True"
         />
     </Grid>
 </Window>

@@ -222,13 +222,8 @@ namespace Folder_Tagger
             smallEditWindow.Owner = App.Current.MainWindow;
             smallEditWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             smallEditWindow.ShowInTaskbar = false;
-            smallEditWindow.Closed += SmallEditWindow_Closed;
+            smallEditWindow.Closed += (newWindowSender, newWindowEvent) => GenerateAGList();
             smallEditWindow.ShowDialog();            
-        }
-
-        private void SmallEditWindow_Closed(object sender, EventArgs e)
-        {
-            GenerateAGList();
         }
 
         private void OpenFullEditWindow(object sender, RoutedEventArgs e)

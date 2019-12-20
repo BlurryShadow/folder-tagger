@@ -5,16 +5,17 @@ namespace Folder_Tagger
 {
     public partial class SmallEditWindow : Window
     {
-        private string type = "";
-        private string folder = "";
+        private readonly string type = "";
+        private readonly string location = "";
         private string artist = "";
         private string group = "";
-        public SmallEditWindow(string type, string folder)
+        public SmallEditWindow(string type, string location)
         {
             InitializeComponent();
             this.type = type;
-            this.folder = folder;
+            this.location = location;
             getFolderData();
+            Loaded += (sender, e) => tbInput.Focus();
         }
 
         private void getFolderData()
@@ -22,9 +23,9 @@ namespace Folder_Tagger
             using (var db = new Model1())
             {
                 var query = db.Folders
-                    .Where(f => f.Location == folder)
+                    .Where(f => f.Location == location)
                     .Select(f => new { f.Artist, f.Group })
-                    .FirstOrDefault();
+                    .Single();
 
                 artist = query.Artist;
                 group = query.Group;
@@ -42,7 +43,7 @@ namespace Folder_Tagger
             using (var db = new Model1())
             {
                 var query = db.Folders
-                    .Where(f => f.Location == folder)
+                    .Where(f => f.Location == location)
                     .Select(f => f)
                     .ToList();
 
