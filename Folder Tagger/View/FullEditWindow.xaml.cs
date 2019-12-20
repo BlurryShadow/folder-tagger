@@ -49,11 +49,8 @@ namespace Folder_Tagger
             int oldTagID = Int32.Parse(tb.Tag.ToString());
             string newTagName = tb.Text.Trim();
 
-            if (string.IsNullOrWhiteSpace(newTagName) || newTagName == oldTagName)
-            {
-                tb.Text = oldTagName;
+            if (newTagName == oldTagName)
                 return;
-            }
 
             using (var db = new Model1())
             {
@@ -63,10 +60,22 @@ namespace Folder_Tagger
                     return;
                 }
 
+                Folder folder = db.Folders
+                    .Where(f => f.Location == location)
+                    .Select(f => f)
+                    .First();
                 Tag oldTag = db.Tags
                     .Where(t => t.TagID == oldTagID)
                     .Select(t => t)
                     .First();
+                folder.Tags.Remove(oldTag);
+
+                if (string.IsNullOrEmpty(newTagName))
+                {
+                    db.SaveChanges();
+                    LoadTag();
+                    return;
+                }                    
 
                 Tag newTag = db.Tags
                         .Where(t => t.TagName.ToLower() == newTagName.ToLower())
@@ -75,13 +84,7 @@ namespace Folder_Tagger
 
                 if (newTag == null)
                     newTag = new Tag(newTagName);
-
-                Folder folder = db.Folders
-                    .Where(f => f.Location == location)
-                    .Select(f => f)
-                    .First();
-
-                folder.Tags.Remove(oldTag);
+                
                 folder.Tags.Add(newTag);
                 db.SaveChanges();
             }

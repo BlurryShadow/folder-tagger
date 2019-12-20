@@ -91,9 +91,14 @@ namespace Folder_Tagger
                 if (!string.IsNullOrWhiteSpace(group))
                     query = query.Where(f => f.Group == group);
 
-                if (tagList != null)
-                    foreach (string tag in tagList)
-                        query = query.Where(f => f.Tags.Any(t => t.TagName.ToLower() == tag.ToLower()));
+                if (tagList.Count() > 0)
+                {
+                    if (tagList.ElementAt(0).ToLower().Equals("no tags"))
+                        query = query.Where(f => f.Tags.Count() == 0);
+                    else
+                        foreach (string tag in tagList)
+                            query = query.Where(f => f.Tags.Any(t => t.TagName.ToLower() == tag.ToLower()));
+                }
 
                 int foldersCount = query.Count();
                 if (foldersCount == 0)
@@ -155,9 +160,7 @@ namespace Folder_Tagger
                     string location = fbd.SelectedPath;
                     DirectoryInfo parentFolder = new DirectoryInfo(location);
                     foreach (DirectoryInfo subFolder in parentFolder.GetDirectories())
-                    {
                         AddFolder(subFolder.FullName, subFolder.Name, "multiple");
-                    }
                     Search(null, null, new List<string>() { "Newly Added" });
                 }
             }
@@ -168,7 +171,8 @@ namespace Folder_Tagger
             string artist = cbBoxArtist.Text;
             string group = cbBoxGroup.Text;
             List<string> tagList = new List<string>();
-            if (!string.IsNullOrWhiteSpace(tbTag.Text)) tagList = tbTag.Text.Split(new string[] { ", " }, StringSplitOptions.None).ToList();
+            if (!string.IsNullOrWhiteSpace(tbTag.Text)) tagList = 
+                    tbTag.Text.Split(new string[] { ", " }, StringSplitOptions.None).ToList();
 
             Search(artist, group, tagList);            
         }
