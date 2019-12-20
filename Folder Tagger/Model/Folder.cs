@@ -15,9 +15,7 @@ namespace Folder_Tagger
             Tags = new HashSet<Tag>();
         }
 
-        public int ID { get; set; }
-
-        [Required]
+        [Key]
         [StringLength(260)]
         public string Location { get; set; }
 
@@ -38,6 +36,8 @@ namespace Folder_Tagger
 
         public Folder(string location, string name, string thumbnail = null)
         {
+            Tags = new HashSet<Tag>();
+
             Location = location;
             Name = name;
             Thumbnail = thumbnail;

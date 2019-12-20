@@ -20,7 +20,7 @@ namespace Folder_Tagger
             modelBuilder.Entity<Folder>()
                 .HasMany(e => e.Tags)
                 .WithMany(e => e.Folders)
-                .Map(m => m.ToTable("FolderTag").MapLeftKey("FolderID").MapRightKey("TagID"));
+                .Map(m => m.ToTable("FolderTag").MapLeftKey("FolderLocation").MapRightKey("TagID"));
         }
     }
 }

@@ -25,6 +25,8 @@ namespace Folder_Tagger
 
         public Tag(string tagName)
         {
+            Folders = new HashSet<Folder>();
+
             TagName = tagName;
         }
     }

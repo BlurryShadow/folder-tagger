@@ -1,5 +1,4 @@
-﻿using LinqKit;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -55,9 +54,7 @@ namespace Folder_Tagger
                 if (db.Folders.Any(f => f.Location == location))
                 {
                     if (type == "single")
-                    {
                         System.Windows.MessageBox.Show("This Folder Has Already Been Added!");
-                    }
                     return;
                 }
 
@@ -72,7 +69,9 @@ namespace Folder_Tagger
                                                      || (FullName.ToLower().Contains(".bmp")));
 
                 var folder = new Folder(location, name, thumbnail);
-                db.Folders.Add(folder);                
+                var defaultTag = db.Tags.Where(t => t.TagID == 1).Single();
+                folder.Tags.Add(defaultTag);
+                db.Folders.Add(folder);
                 db.SaveChanges();
             }
         }
@@ -80,9 +79,10 @@ namespace Folder_Tagger
         private void Search(string artist = null, string group = null, List<string> tagList = null)
         {
             thumbnailList.Clear();
+            currentPage = 1;
 
             using (var db = new Model1())
-            {                
+            {
                 var query = (System.Linq.IQueryable<Folder>)db.Folders;
 
                 if (!string.IsNullOrWhiteSpace(artist))
@@ -91,30 +91,14 @@ namespace Folder_Tagger
                 if (!string.IsNullOrWhiteSpace(group))
                     query = query.Where(f => f.Group == group);
 
-                if (tagList.Count() == 1)
-                {
-                    string tagName = tagList.ElementAt(0);
-                    query = query.Where(f => f.Tag.TagName == tagName);
-                } else if (tagList.Count() > 1)
-                {
-                    var predicate = PredicateBuilder.New<Folder>();
+                if (tagList != null)
                     foreach (string tag in tagList)
-                        predicate = predicate.Or(f => f.Tag.TagName.ToLower() == tag.ToLower());
-                    query = query.Where(predicate);
+                        query = query.Where(f => f.Tags.Any(t => t.TagName.ToLower() == tag.ToLower()));
 
-                    List<string> acceptFolders = db.Folders
-                        .GroupBy(f => f.Location)
-                        .Where(f => f.Count() == tagList.Count())
-                        .Select(f => f.Key)
-                        .ToList();
-                    query = query.Where(f => acceptFolders.Contains(f.Location));
-                }
-
-                int foldersCount = query.GroupBy(f => f.Thumbnail).Count();
+                int foldersCount = query.Count();
                 if (foldersCount == 0)
                 {
-                    DataContext = null;
-                    currentPage = 1;
+                    DataContext = null;                    
                     maxPage = 1;
                     lblCurrentPage.Content = currentPage;
                     return;
@@ -122,32 +106,25 @@ namespace Folder_Tagger
 
                 maxPage = (int)Math.Ceiling(((double)foldersCount / imagesPerPage));
                 for (int i = 0; i < maxPage; i++)
-                {
                     thumbnailList.Add(
                         query
                             .OrderBy(f => f.Name)
                             .Skip(i * imagesPerPage)
                             .Take(imagesPerPage)
-                            .Select(f => new Thumbnail 
-                            { 
-                                Folder = f.Location, 
-                                Root = f.Thumbnail, 
-                                Name = f.Name 
+                            .Select(f => new Thumbnail
+                            {
+                                Folder = f.Location,
+                                Root = f.Thumbnail,
+                                Name = f.Name
                             })
-                            .Distinct()
                             .ToList()
                     );
-                }
 
-                if (thumbnailList.Count > 0)
-                {
-                    DataContext = thumbnailList.ElementAt(0);
-                    currentPage = 1;
-                    if (maxPage > 1)
-                        lblCurrentPage.Content = currentPage + ".." + maxPage;
-                    else
-                        lblCurrentPage.Content = currentPage;
-                }
+                DataContext = thumbnailList.ElementAt(0);
+                if (maxPage > 1)
+                    lblCurrentPage.Content = currentPage + ".." + maxPage;
+                else
+                    lblCurrentPage.Content = currentPage;
             }
         }
 
