@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Windows;
+using System.Windows.Input;
 
 namespace Folder_Tagger
 {
@@ -16,6 +17,7 @@ namespace Folder_Tagger
             this.location = location;
             getFolderData();
             Loaded += (sender, e) => tbInput.Focus();
+            PreviewKeyDown += (sender, e) => { if (e.Key == Key.Escape) Close(); };
         }
 
         private void getFolderData()

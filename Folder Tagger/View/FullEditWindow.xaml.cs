@@ -16,6 +16,7 @@ namespace Folder_Tagger
             InitializeComponent();
             this.location = location;
             LoadTag();
+            PreviewKeyDown += (sender, e) => { if (e.Key == Key.Escape) Close(); };
         }
 
         private void LoadTag()

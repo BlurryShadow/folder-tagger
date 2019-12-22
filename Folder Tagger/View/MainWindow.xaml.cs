@@ -240,5 +240,16 @@ namespace Folder_Tagger
             fullEditWindow.ShowInTaskbar = false;
             fullEditWindow.ShowDialog();
         }
+
+        private void OpenAddTagWindow(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Controls.MenuItem itemClicked = (System.Windows.Controls.MenuItem)sender;
+            string folder = itemClicked.Tag.ToString();
+            Window addTagWindow = new AddTagWindow(folder);
+            addTagWindow.Owner = App.Current.MainWindow;
+            addTagWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            addTagWindow.ShowInTaskbar = false;
+            addTagWindow.ShowDialog();
+        }
     }
 }

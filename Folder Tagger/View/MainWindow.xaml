@@ -107,6 +107,7 @@
             Width="1590"
             Grid.Row="2"
             ItemsSource="{Binding}"
+            SelectionMode="Extended"
         >
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -141,7 +142,11 @@
                             <ContextMenu>
                                 <MenuItem Header="Open Folder" />
                                 <MenuItem Header="Open In Mangareader" />
-                                <MenuItem Header="Add Tag" />
+                                <MenuItem
+                                    Tag="{Binding Folder}" 
+                                    Header="Add Tag"
+                                    Click="OpenAddTagWindow"
+                                />
                                 <Separator />
                                 <MenuItem 
                                     Tag="{Binding Folder}" 
