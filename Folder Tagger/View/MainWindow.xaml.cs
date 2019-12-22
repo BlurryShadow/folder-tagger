@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -253,6 +254,21 @@ namespace Folder_Tagger
             addTagWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             addTagWindow.ShowInTaskbar = false;
             addTagWindow.ShowDialog();
+        }
+
+        private void OpenFolder(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Controls.MenuItem itemClicked = (System.Windows.Controls.MenuItem)sender;
+            string folder = itemClicked.Tag.ToString();
+            Process.Start(folder);
+        }
+
+        private void OpenInMangareader(object sender, RoutedEventArgs e)
+        {
+            string mangaReaderRoot = @"E:\Data\Programs\Basic Programs\Mangareader\mangareader.exe";
+            System.Windows.Controls.MenuItem itemClicked = (System.Windows.Controls.MenuItem)sender;
+            string folder = itemClicked.Tag.ToString();
+            Process.Start(mangaReaderRoot, '\"' + folder + '\"');
         }
     }
 }

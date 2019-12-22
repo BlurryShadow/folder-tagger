@@ -140,14 +140,24 @@
 
                         <StackPanel.ContextMenu>
                             <ContextMenu>
-                                <MenuItem Header="Open Folder" />
-                                <MenuItem Header="Open In Mangareader" />
                                 <MenuItem
-                                    Tag="{Binding Folder}" 
+                                    Tag="{Binding Folder}"
+                                    Header="Open Folder"
+                                    Click="OpenFolder"
+                                />
+                                <MenuItem
+                                    Tag="{Binding Folder}"
+                                    Header="Open In Mangareader"
+                                    Click="OpenInMangareader"
+                                />
+                                <MenuItem
+                                    Tag="{Binding Folder}"
                                     Header="Add Tag"
                                     Click="OpenAddTagWindow"
                                 />
+                                
                                 <Separator />
+                                
                                 <MenuItem 
                                     Tag="{Binding Folder}" 
                                     Header="Edit Artist" 
@@ -163,7 +173,9 @@
                                     Header="Edit Tag"
                                     Click="OpenFullEditWindow"
                                 />
+                                
                                 <Separator />
+                                
                                 <MenuItem Header="Remove" />
                             </ContextMenu>
                         </StackPanel.ContextMenu>
