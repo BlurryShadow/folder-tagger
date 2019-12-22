@@ -48,14 +48,14 @@ namespace Folder_Tagger
         {
             TextBox tb = (TextBox)sender;
             int oldTagID = Int32.Parse(tb.Tag.ToString());
-            string newTagName = tb.Text.Trim();
+            string newTagName = tb.Text.Trim().ToLower();
 
             if (newTagName == oldTagName)
                 return;
 
             using (var db = new Model1())
             {
-                if (db.Folders.Any(f => f.Location == location && f.Tags.Any(t => t.TagName.ToLower() == newTagName.ToLower())))
+                if (db.Folders.Any(f => f.Location == location && f.Tags.Any(t => t.TagName == newTagName)))
                 {
                     tb.Text = oldTagName;
                     return;
@@ -79,7 +79,7 @@ namespace Folder_Tagger
                 }                    
 
                 Tag newTag = db.Tags
-                        .Where(t => t.TagName.ToLower() == newTagName.ToLower())
+                        .Where(t => t.TagName == newTagName)
                         .Select(t => t)
                         .FirstOrDefault();
 
@@ -88,6 +88,7 @@ namespace Folder_Tagger
                 
                 folder.Tags.Add(newTag);
                 db.SaveChanges();
+                tb.Text = newTagName;
             }
         }
     }

@@ -93,11 +93,14 @@ namespace Folder_Tagger
 
                 if (tagList.Count() > 0)
                 {
-                    if (tagList.ElementAt(0).ToLower().Equals("no tags"))
+                    if (tagList.ElementAt(0).Trim().ToLower().Equals("no tags"))
                         query = query.Where(f => f.Tags.Count() == 0);
                     else
                         foreach (string tag in tagList)
-                            query = query.Where(f => f.Tags.Any(t => t.TagName.ToLower() == tag.ToLower()));
+                        {
+                            string currentTag = tag.Trim().ToLower();
+                            query = query.Where(f => f.Tags.Any(t => t.TagName == currentTag));
+                        }                            
                 }
 
                 int foldersCount = query.Count();

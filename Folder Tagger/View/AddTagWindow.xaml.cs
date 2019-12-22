@@ -27,15 +27,17 @@ namespace Folder_Tagger
             using (var db = new Model1())
                 foreach (string tag in tagList)
                 {
-                    if (db.Folders.Any(f => f.Location == location && f.Tags.Any(t => t.TagName.ToLower() == tag.ToLower())))
+                    string currentTag = tag.Trim().ToLower();
+
+                    if (db.Folders.Any(f => f.Location == location && f.Tags.Any(t => t.TagName == currentTag)))
                         continue;
 
                     Folder folder = db.Folders.Where(f => f.Location == location).Select(f => f).Single();
 
-                    Tag newTag = db.Tags.Where(t => t.TagName.ToLower() == tag.ToLower()).Select(t => t).FirstOrDefault();
+                    Tag newTag = db.Tags.Where(t => t.TagName == currentTag).Select(t => t).FirstOrDefault();
                     if (newTag == null)
                     {
-                        newTag = new Tag(tag);
+                        newTag = new Tag(currentTag);
                         db.Tags.Add(newTag);
                         db.SaveChanges();
                     }

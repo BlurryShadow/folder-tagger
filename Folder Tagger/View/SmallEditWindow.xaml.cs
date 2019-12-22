@@ -39,8 +39,8 @@ namespace Folder_Tagger
 
         private void UpdateData(object sender, RoutedEventArgs e)
         {
-            string input = tbInput.Text;
-            if (string.IsNullOrWhiteSpace(input)) input = null;
+            string input = tbInput.Text.Trim().ToLower();
+            if (string.IsNullOrEmpty(input)) input = null;
 
             using (var db = new Model1())
             {
