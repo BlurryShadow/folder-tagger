@@ -97,6 +97,14 @@
                 IsDefault="True"
                 Click="SearchFolders"                
             />
+
+            <TextBlock
+                x:Name="textbTotalFolder"
+                Height="25"
+                Padding="5,2,5,0"
+                Margin="200,0,0,0"
+                Text="Total folders found = 0"
+            />
         </ToolBar>
 
         <ListBox

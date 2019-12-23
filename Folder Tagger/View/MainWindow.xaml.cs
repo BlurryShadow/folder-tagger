@@ -14,6 +14,7 @@ namespace Folder_Tagger
         private int imagesPerPage = 120;
         private int maxPage = 1;
         private int currentPage = 1;
+        private int totalFolders = 0;
         List<List<Thumbnail>> thumbnailList = new List<List<Thumbnail>>();
         public MainWindow()
         {
@@ -106,16 +107,17 @@ namespace Folder_Tagger
                         }                            
                 }
 
-                int foldersCount = query.Count();
-                if (foldersCount == 0)
+                totalFolders = query.Count();
+                if (totalFolders == 0)
                 {
                     DataContext = null;                    
                     maxPage = 1;
                     lblCurrentPage.Content = currentPage;
+                    textbTotalFolder.Text = "Total folders count = " + totalFolders;
                     return;
                 }
 
-                maxPage = (int)Math.Ceiling(((double)foldersCount / imagesPerPage));
+                maxPage = (int)Math.Ceiling(((double)totalFolders / imagesPerPage));
                 for (int i = 0; i < maxPage; i++)
                     thumbnailList.Add(
                         query
@@ -132,6 +134,7 @@ namespace Folder_Tagger
                     );
 
                 DataContext = thumbnailList.ElementAt(0);
+                textbTotalFolder.Text = "Total folders count = " + totalFolders;
                 if (maxPage > 1)
                     lblCurrentPage.Content = currentPage + ".." + maxPage;
                 else
@@ -294,7 +297,6 @@ namespace Folder_Tagger
                 MessageBoxButtons.OKCancel,
                 MessageBoxIcon.Warning);
             if (dialogResult == System.Windows.Forms.DialogResult.OK)
-            {
                 using (var db = new Model1())
                 {
                     foreach (Thumbnail thumbnail in listboxGallery.SelectedItems)
@@ -310,12 +312,16 @@ namespace Folder_Tagger
                                 UIOption.OnlyErrorDialogs,
                                 RecycleOption.SendToRecycleBin
                             );
-                        } catch (Exception)
+                        }
+                        catch (Exception)
                         {
                             System.Windows.Forms.MessageBox.Show("The folder " + thumbnail.Folder + " is being used.");
                             continue;
                         }
                     }
+
+                    totalFolders -= listboxGallery.SelectedItems.Count;
+                    textbTotalFolder.Text = "Total folders count = " + totalFolders;
 
                     if (thumbnailList.ElementAt(currentPage - 1).Count == 0)
                     {
@@ -324,13 +330,13 @@ namespace Folder_Tagger
                         currentPage = 1;
                         maxPage = thumbnailList.Count() == 0 ? 1 : thumbnailList.Count();
                         lblCurrentPage.Content = maxPage == 1 ? "1" : currentPage + ".." + maxPage;
-                        DataContext =  thumbnailList.Count == 0 ? null : thumbnailList.ElementAt(0);
+                        DataContext = thumbnailList.Count == 0 ? null : thumbnailList.ElementAt(0);
                         if (listboxGallery.Items.Count > 0)
                             listboxGallery.ScrollIntoView(listboxGallery.Items[0]);
-                    } else
+                    }
+                    else
                         listboxGallery.Items.Refresh();
                 }
-            }
         }
 
         private void DeleteNonexistFolder()
