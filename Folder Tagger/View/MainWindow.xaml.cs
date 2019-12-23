@@ -18,6 +18,7 @@ namespace Folder_Tagger
         public MainWindow()
         {
             InitializeComponent();
+            DeleteNonexistFolder();
             GenerateAGList();
             Search(null, null, new List<string>() { "Newly Added" });
 
@@ -329,6 +330,20 @@ namespace Folder_Tagger
                     } else
                         listboxGallery.Items.Refresh();
                 }
+            }
+        }
+
+        private void DeleteNonexistFolder()
+        {
+            using (var db = new Model1())
+            {
+                List<Folder> folderList = db.Folders.Select(f => f).ToList();
+                foreach (Folder folder in folderList)
+                {
+                    if (!Directory.Exists(folder.Location))
+                        db.Folders.Remove(folder);
+                }
+                db.SaveChanges();
             }
         }
     }
