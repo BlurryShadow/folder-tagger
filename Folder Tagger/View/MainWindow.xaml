@@ -151,7 +151,6 @@
                                     Click="OpenInMangareader"
                                 />
                                 <MenuItem
-                                    Tag="{Binding Folder}"
                                     Header="Add Tag"
                                     Click="OpenAddTagWindow"
                                 />
