@@ -175,7 +175,11 @@
                                 
                                 <Separator />
                                 
-                                <MenuItem Header="Remove" />
+                                <MenuItem
+                                    Header="Remove Tag"
+                                    Click="OpenRemoveTagWindow"
+                                />
+                                <MenuItem Header="Delete Folder" />
                             </ContextMenu>
                         </StackPanel.ContextMenu>
                     </StackPanel>

@@ -257,6 +257,18 @@ namespace Folder_Tagger
             addTagWindow.ShowDialog();
         }
 
+        private void OpenRemoveTagWindow(object sender, RoutedEventArgs e)
+        {
+            List<string> folderList = new List<string>();
+            foreach (Thumbnail t in listboxGallery.SelectedItems)
+                folderList.Add(t.Folder);
+            Window removeTagWindow = new RemoveTagWindow(folderList);
+            removeTagWindow.Owner = App.Current.MainWindow;
+            removeTagWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            removeTagWindow.ShowInTaskbar = false;
+            removeTagWindow.ShowDialog();
+        }
+
         private void OpenFolder(object sender, RoutedEventArgs e)
         {
             System.Windows.Controls.MenuItem itemClicked = (System.Windows.Controls.MenuItem)sender;

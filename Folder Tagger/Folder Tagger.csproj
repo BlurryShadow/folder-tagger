@@ -90,6 +90,9 @@
     <Compile Include="View\FullEditWindow.xaml.cs">
       <DependentUpon>FullEditWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\RemoveTagWindow.xaml.cs">
+      <DependentUpon>RemoveTagWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\SmallEditWindow.xaml.cs">
       <DependentUpon>SmallEditWindow.xaml</DependentUpon>
     </Compile>
@@ -113,6 +116,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="View\RemoveTagWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\SmallEditWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -6,10 +6,10 @@ using System.Windows.Input;
 
 namespace Folder_Tagger
 {
-    public partial class AddTagWindow : Window
+    public partial class RemoveTagWindow : Window
     {
         private readonly List<string> folderList = new List<string>();
-        public AddTagWindow(List<string> folderList)
+        public RemoveTagWindow(List<string> folderList)
         {
             InitializeComponent();
             this.folderList = folderList;
@@ -17,7 +17,7 @@ namespace Folder_Tagger
             PreviewKeyDown += (sender, e) => { if (e.Key == Key.Escape) Close(); };
         }
 
-        private void AddTag(object sender, RoutedEventArgs e)
+        private void RemoveTag(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(tbInput.Text))
                 Close();
@@ -29,20 +29,12 @@ namespace Folder_Tagger
                     foreach (string tag in tagList)
                     {
                         string currentTag = tag.Trim().ToLower();
+                        Tag deletedTag = db.Tags.Where(t => t.TagName == currentTag && t.Folders.Any(f => f.Location == location)).FirstOrDefault();
 
-                        if (db.Folders.Any(f => f.Location == location && f.Tags.Any(t => t.TagName == currentTag)))
-                            continue;
+                        if (deletedTag == null) continue;
 
                         Folder folder = db.Folders.Where(f => f.Location == location).Select(f => f).First();
-                        Tag newTag = db.Tags.Where(t => t.TagName == currentTag).Select(t => t).FirstOrDefault();
-                        if (newTag == null)
-                        {
-                            newTag = new Tag(currentTag);
-                            db.Tags.Add(newTag);
-                            db.SaveChanges();
-                        }
-
-                        folder.Tags.Add(newTag);
+                        folder.Tags.Remove(deletedTag);
                         db.SaveChanges();
                     }
             Close();
