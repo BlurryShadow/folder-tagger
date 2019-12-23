@@ -179,7 +179,10 @@
                                     Header="Remove Tag"
                                     Click="OpenRemoveTagWindow"
                                 />
-                                <MenuItem Header="Delete Folder" />
+                                <MenuItem
+                                    Header="Delete Folder"
+                                    Click="DeleteSelectedFolders"
+                                />
                             </ContextMenu>
                         </StackPanel.ContextMenu>
                     </StackPanel>

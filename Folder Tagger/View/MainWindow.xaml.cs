@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Forms;
+using Microsoft.VisualBasic.FileIO;
 
 namespace Folder_Tagger
 {
@@ -282,6 +283,53 @@ namespace Folder_Tagger
             System.Windows.Controls.MenuItem itemClicked = (System.Windows.Controls.MenuItem)sender;
             string folder = itemClicked.Tag.ToString();
             Process.Start(mangaReaderRoot, '\"' + folder + '\"');
+        }
+
+        private void DeleteSelectedFolders(object sender, RoutedEventArgs e)
+        {
+            DialogResult dialogResult = System.Windows.Forms.MessageBox.Show(
+                "Are you sure you want to delete these folders?",
+                "Confirm",
+                MessageBoxButtons.OKCancel,
+                MessageBoxIcon.Warning);
+            if (dialogResult == System.Windows.Forms.DialogResult.OK)
+            {
+                using (var db = new Model1())
+                {
+                    foreach (Thumbnail thumbnail in listboxGallery.SelectedItems)
+                    {
+                        Folder folder = db.Folders.Where(f => f.Location == thumbnail.Folder).First();
+                        db.Folders.Remove(folder);
+                        db.SaveChanges();
+                        thumbnailList.ElementAt(currentPage - 1).RemoveAll(th => th.Folder == thumbnail.Folder);
+                        try
+                        {
+                            FileSystem.DeleteDirectory(
+                                thumbnail.Folder,
+                                UIOption.OnlyErrorDialogs,
+                                RecycleOption.SendToRecycleBin
+                            );
+                        } catch (Exception)
+                        {
+                            System.Windows.Forms.MessageBox.Show("The folder " + thumbnail.Folder + " is being used.");
+                            continue;
+                        }
+                    }
+
+                    if (thumbnailList.ElementAt(currentPage - 1).Count == 0)
+                    {
+                        thumbnailList.RemoveAll(th => th.Count == 0);
+                        thumbnailList.TrimExcess();
+                        currentPage = 1;
+                        maxPage = thumbnailList.Count() == 0 ? 1 : thumbnailList.Count();
+                        lblCurrentPage.Content = maxPage == 1 ? "1" : currentPage + ".." + maxPage;
+                        DataContext =  thumbnailList.Count == 0 ? null : thumbnailList.ElementAt(0);
+                        if (listboxGallery.Items.Count > 0)
+                            listboxGallery.ScrollIntoView(listboxGallery.Items[0]);
+                    } else
+                        listboxGallery.Items.Refresh();
+                }
+            }
         }
     }
 }
