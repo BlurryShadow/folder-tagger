@@ -42,6 +42,10 @@ namespace Folder_Tagger
                         db.SaveChanges();
                     }
 
+                    Tag defaultTag = db.Tags.Where(t => t.TagID == 1 && t.Folders.Any(f => f.Location == location)).FirstOrDefault();
+                    if (defaultTag != null)
+                        folder.Tags.Remove(defaultTag);
+
                     folder.Tags.Add(newTag);
                     db.SaveChanges();
                 }
