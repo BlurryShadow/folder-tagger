@@ -20,7 +20,10 @@ namespace Folder_Tagger
         private void AddTag(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(tbInput.Text))
+            {
                 Close();
+                return;
+            }
 
             List<string> tagList = tbInput.Text.Split(new string[] { ", " }, StringSplitOptions.None).ToList();
 
