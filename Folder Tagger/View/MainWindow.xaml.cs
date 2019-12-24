@@ -11,16 +11,18 @@ namespace Folder_Tagger
 {
     public partial class MainWindow : Window
     {
-        private int imagesPerPage = 120;
+        private int[] pageCapacity = { 60, 300, 600 };
+        private int imagesPerPage;
         private int maxPage = 1;
         private int currentPage = 1;
-        private int totalFolders = 0;
+        private int totalFolders;
         List<List<Thumbnail>> thumbnailList = new List<List<Thumbnail>>();
         public MainWindow()
         {
             InitializeComponent();
             DeleteNonexistFolder();
             GenerateAGList();
+            cbBoxImagesPerPage.ItemsSource = pageCapacity;
             Search(null, null, new List<string>() { "Newly Added" });
 
             Loaded += (sender, e) => tbTag.Focus();
@@ -113,7 +115,7 @@ namespace Folder_Tagger
                     DataContext = null;                    
                     maxPage = 1;
                     lblCurrentPage.Content = currentPage;
-                    textbTotalFolder.Text = "Total folders count = " + totalFolders;
+                    textbTotalFolder.Text = "Folders Found: " + totalFolders;
                     return;
                 }
 
@@ -134,7 +136,7 @@ namespace Folder_Tagger
                     );
 
                 DataContext = thumbnailList.ElementAt(0);
-                textbTotalFolder.Text = "Total folders count = " + totalFolders;
+                textbTotalFolder.Text = "Folders Found: " + totalFolders;
                 if (maxPage > 1)
                     lblCurrentPage.Content = currentPage + ".." + maxPage;
                 else
@@ -321,7 +323,7 @@ namespace Folder_Tagger
                     }
 
                     totalFolders -= listboxGallery.SelectedItems.Count;
-                    textbTotalFolder.Text = "Total folders count = " + totalFolders;
+                    textbTotalFolder.Text = "Folders Found: " + totalFolders;
 
                     if (thumbnailList.ElementAt(currentPage - 1).Count == 0)
                     {
@@ -351,6 +353,35 @@ namespace Folder_Tagger
                 }
                 db.SaveChanges();
             }
+        }
+
+        private void SwitchImagesPerPage(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Controls.ComboBox comboBox = (System.Windows.Controls.ComboBox)sender;
+            imagesPerPage = pageCapacity[comboBox.SelectedIndex];
+            if (totalFolders == 0) return;
+            currentPage = 1;            
+            maxPage = (int)Math.Ceiling(((double)totalFolders / imagesPerPage));
+
+            List<Thumbnail> newSubThumbnailList = new List<Thumbnail>();
+            foreach (List<Thumbnail> subThumbnailList in thumbnailList)
+                newSubThumbnailList.AddRange(subThumbnailList);
+
+            thumbnailList.Clear();
+            for (int i = 0; i < maxPage; i++)
+                thumbnailList.Add(
+                    newSubThumbnailList
+                        .Skip(i * imagesPerPage)
+                        .Take(imagesPerPage)
+                        .ToList()
+                );
+
+            DataContext = thumbnailList.ElementAt(0);
+            textbTotalFolder.Text = "Folders Found: " + totalFolders;
+            if (maxPage > 1)
+                lblCurrentPage.Content = currentPage + ".." + maxPage;
+            else
+                lblCurrentPage.Content = currentPage;
         }
     }
 }
