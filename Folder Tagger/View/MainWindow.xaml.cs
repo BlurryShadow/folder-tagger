@@ -11,21 +11,37 @@ namespace Folder_Tagger
 {
     public partial class MainWindow : Window
     {
-        private int[] pageCapacity = { 60, 300, 600 };
+        private int[] pageCapacity = { 60, 300, 600, 6000 };
         private int imagesPerPage;
         private int maxPage = 1;
         private int currentPage = 1;
         private int totalFolders;
         List<List<Thumbnail>> thumbnailList = new List<List<Thumbnail>>();
+        Stopwatch sw = new Stopwatch();
         public MainWindow()
         {
             InitializeComponent();
             DeleteNonexistFolder();
             GenerateAGList();
             cbBoxImagesPerPage.ItemsSource = pageCapacity;
-            Search(null, null, null, new List<string>() { "Newly Added" });
+            Search(null, null, null, new List<string>() { "no tags" });
 
             Loaded += (sender, e) => tbName.Focus();
+        }
+
+        private void StartTimer()
+        {
+            sw.Start();
+        }
+
+        private void StopTimer()
+        {
+            TimeSpan ts = sw.Elapsed;
+            string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+                ts.Hours, ts.Minutes, ts.Seconds,
+                ts.Milliseconds / 10);
+            sw.Reset();
+            System.Windows.Forms.MessageBox.Show(elapsedTime);
         }
 
         private void GenerateAGList()
@@ -75,8 +91,6 @@ namespace Folder_Tagger
                                                      || (FullName.ToLower().Contains(".bmp")));
 
                 var folder = new Folder(location, name, thumbnail);
-                var defaultTag = db.Tags.Where(t => t.TagID == 1).Single();
-                folder.Tags.Add(defaultTag);
                 db.Folders.Add(folder);
                 db.SaveChanges();
             }
@@ -158,7 +172,7 @@ namespace Folder_Tagger
                     string location = fbd.SelectedPath;
                     string name = Path.GetFileName(location);
                     AddFolder(location, name, "single");
-                    Search(null, null, null, new List<string>() { "Newly Added" });
+                    Search(null, null, null, new List<string>() { "no tags" });
                 }
             }
         }
@@ -171,11 +185,13 @@ namespace Folder_Tagger
                 DialogResult result = fbd.ShowDialog();
                 if (result == System.Windows.Forms.DialogResult.OK)
                 {
+                    StartTimer();
                     string location = fbd.SelectedPath;
                     DirectoryInfo parentFolder = new DirectoryInfo(location);
                     foreach (DirectoryInfo subFolder in parentFolder.GetDirectories())
                         AddFolder(subFolder.FullName, subFolder.Name, "multiple");
-                    Search(null, null, null, new List<string>() { "Newly Added" });
+                    Search(null, null, null, new List<string>() { "no tags" });
+                    StopTimer();
                 }
             }
         }
