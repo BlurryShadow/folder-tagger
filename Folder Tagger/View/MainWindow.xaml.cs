@@ -23,9 +23,9 @@ namespace Folder_Tagger
             DeleteNonexistFolder();
             GenerateAGList();
             cbBoxImagesPerPage.ItemsSource = pageCapacity;
-            Search(null, null, new List<string>() { "Newly Added" });
+            Search(null, null, null, new List<string>() { "Newly Added" });
 
-            Loaded += (sender, e) => tbTag.Focus();
+            Loaded += (sender, e) => tbName.Focus();
         }
 
         private void GenerateAGList()
@@ -82,7 +82,7 @@ namespace Folder_Tagger
             }
         }
 
-        private void Search(string artist = null, string group = null, List<string> tagList = null)
+        private void Search(string artist = null, string group = null, string name = null, List<string> tagList = null)
         {
             thumbnailList.Clear();
             currentPage = 1;
@@ -96,6 +96,9 @@ namespace Folder_Tagger
 
                 if (!string.IsNullOrWhiteSpace(group))
                     query = query.Where(f => f.Group == group);
+
+                if (!string.IsNullOrWhiteSpace(name))
+                    query = query.Where(f => f.Name.Contains(name));
 
                 if (tagList.Count() > 0)
                 {
@@ -155,7 +158,7 @@ namespace Folder_Tagger
                     string location = fbd.SelectedPath;
                     string name = Path.GetFileName(location);
                     AddFolder(location, name, "single");
-                    Search(null, null, new List<string>() { "Newly Added" });
+                    Search(null, null, null, new List<string>() { "Newly Added" });
                 }
             }
         }
@@ -172,7 +175,7 @@ namespace Folder_Tagger
                     DirectoryInfo parentFolder = new DirectoryInfo(location);
                     foreach (DirectoryInfo subFolder in parentFolder.GetDirectories())
                         AddFolder(subFolder.FullName, subFolder.Name, "multiple");
-                    Search(null, null, new List<string>() { "Newly Added" });
+                    Search(null, null, null, new List<string>() { "Newly Added" });
                 }
             }
         }
@@ -181,11 +184,12 @@ namespace Folder_Tagger
         {
             string artist = cbBoxArtist.Text;
             string group = cbBoxGroup.Text;
+            string name = tbName.Text;
             List<string> tagList = new List<string>();
             if (!string.IsNullOrWhiteSpace(tbTag.Text)) tagList = 
                     tbTag.Text.Split(new string[] { ", " }, StringSplitOptions.None).ToList();
 
-            Search(artist, group, tagList);            
+            Search(artist, group, name, tagList);            
         }
 
         private void ToFirstPage(object sender, RoutedEventArgs e)

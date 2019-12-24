@@ -55,7 +55,7 @@
             <ComboBox
                 x:Name="cbBoxArtist"
                 Height="30"
-                Width="180"
+                Width="150"
                 Margin="10, 0, 0, 0"
                 SelectedIndex="0"
             />
@@ -69,9 +69,22 @@
             <ComboBox
                 x:Name="cbBoxGroup"
                 Height="30"
-                Width="160"
+                Width="150"
                 Margin="10, 0, 0, 0"
                 SelectedIndex="0"
+            />
+
+            <Label
+                Content="Name"
+                Height="25"
+                Padding="5,2,5,0"
+                Margin="20,0,0,0"
+            />
+            <TextBox
+                x:Name="tbName"
+                Height="30"
+                Width="200"
+                Margin="10, 0, 0, 0"
             />
 
             <Label
@@ -83,14 +96,14 @@
             <TextBox
                 x:Name="tbTag"
                 Height="30"
-                Width="400"
+                Width="300"
                 Margin="10,0,0,0"
             />
 
             <Button
                 x:Name="btnSearch"                
                 Height="25"
-                Margin="50,0,0,0"
+                Margin="25,0,0,0"
                 Padding="0,0,0,5"
                 BorderBrush="Black"
                 Content="Search"
@@ -102,7 +115,7 @@
                 Text="Images Per Page"
                 Height="25"
                 Padding="5,2,5,0"
-                Margin="275,0,0,0"
+                Margin="175,0,0,0"
             />
             <ComboBox
                 x:Name="cbBoxImagesPerPage"
