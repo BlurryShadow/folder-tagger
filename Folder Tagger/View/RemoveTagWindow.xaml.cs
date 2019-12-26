@@ -9,10 +9,12 @@ namespace Folder_Tagger
     public partial class RemoveTagWindow : Window
     {
         private readonly List<string> folderList = new List<string>();
+        private readonly FolderController fc = new FolderController();
         public RemoveTagWindow(List<string> folderList)
         {
             InitializeComponent();
             this.folderList = folderList;
+
             Loaded += (sender, e) => tbInput.Focus();
             PreviewKeyDown += (sender, e) => { if (e.Key == Key.Escape) Close(); };
         }
@@ -37,7 +39,7 @@ namespace Folder_Tagger
 
                         if (deletedTag == null) continue;
 
-                        Folder folder = db.Folders.Where(f => f.Location == location).First();
+                        Folder folder = fc.GetFolderByLocation(location, db);
                         folder.Tags.Remove(deletedTag);
                         db.SaveChanges();
                     }
