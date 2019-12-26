@@ -10,6 +10,7 @@
         Height="900"
         Width="1600"
         WindowStartupLocation="CenterScreen"
+        ResizeMode="CanMinimize"
 >
     <Window.Resources>
         <sys:Double x:Key="ThumbnailHolderHeigth">383</sys:Double>

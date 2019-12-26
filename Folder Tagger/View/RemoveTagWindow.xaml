@@ -5,7 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Folder_Tagger"
         mc:Ignorable="d"
-        Title="RemoveTagWindow" Height="100" Width="600">
+        Title="RemoveTagWindow" 
+        Height="100" 
+        Width="600"
+        ResizeMode="CanMinimize"
+>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="517*"/>
