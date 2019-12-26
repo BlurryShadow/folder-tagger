@@ -158,6 +158,18 @@ namespace Folder_Tagger
             }
         }
 
+        public void UpdateArtist(string location, string input)
+        {
+            using (var db = new Model1())
+            {
+                db.Folders
+                    .Where(f => f.Location == location)
+                    .ToList()
+                    .ForEach(f => f.Artist = input);
+                db.SaveChanges();
+            }
+        }
+
         public List<string> GetGroupList(string location = null)
         {
             using (var db = new Model1())
@@ -178,6 +190,18 @@ namespace Folder_Tagger
                     artistList.Insert(0, "");
                     return artistList;
                 }
+            }
+        }
+
+        public void UpdateGroup(string location, string input)
+        {
+            using (var db = new Model1())
+            {
+                db.Folders
+                    .Where(f => f.Location == location)
+                    .ToList()
+                    .ForEach(f => f.Group = input);
+                db.SaveChanges();
             }
         }
     }

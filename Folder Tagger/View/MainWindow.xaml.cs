@@ -212,7 +212,7 @@ namespace Folder_Tagger
                     currentPage = 1;
                     maxPage = thumbnailList.Count() == 0 ? 1 : thumbnailList.Count();
                     ChangeCurrentPageTextBlock();
-                    DataContext = thumbnailList.Count == 0 ? null : thumbnailList.ElementAt(0);
+                    DataContext = thumbnailList.ElementAtOrDefault(0);
                     ResetScroll();
                 }
                 else
@@ -241,7 +241,7 @@ namespace Folder_Tagger
                         .ToList()
                 );
 
-            DataContext = thumbnailList.ElementAt(0);
+            DataContext = thumbnailList.ElementAtOrDefault(0);
             ChangeCurrentPageTextBlock();
         }
     }

@@ -10,54 +10,45 @@ namespace Folder_Tagger
         private readonly string location = "";
         private string artist = "";
         private string group = "";
+        FolderController fc = new FolderController();
         public SmallEditWindow(string type, string location)
         {
             InitializeComponent();
             this.type = type;
             this.location = location;
-            getFolderData();
+
+            switch (type)
+            {
+                case "Artist":
+                    artist = fc.GetArtistList(location).ElementAtOrDefault(0);
+                    tbInput.Text = artist;
+                    break;
+                case "Group":
+                    group = fc.GetGroupList(location).ElementAtOrDefault(0);
+                    tbInput.Text = group;
+                    break;
+            }
+
             Loaded += (sender, e) => tbInput.Focus();
             PreviewKeyDown += (sender, e) => { if (e.Key == Key.Escape) Close(); };
-        }
-
-        private void getFolderData()
-        {
-            using (var db = new Model1())
-            {
-                var query = db.Folders
-                    .Where(f => f.Location == location)
-                    .Select(f => new { f.Artist, f.Group })
-                    .Single();
-
-                artist = query.Artist;
-                group = query.Group;
-
-                if (type.Equals("Artist")) tbInput.Text = artist;
-                if (type.Equals("Group")) tbInput.Text = group;
-            }
         }
 
         private void UpdateData(object sender, RoutedEventArgs e)
         {
             string input = tbInput.Text.Trim().ToLower();
             if (string.IsNullOrEmpty(input)) input = null;
-
-            using (var db = new Model1())
+            
+            switch (type)
             {
-                var query = db.Folders
-                    .Where(f => f.Location == location)
-                    .Select(f => f)
-                    .ToList();
-
-                query.ForEach(f => 
-                { 
-                    if (type.Equals("Artist")) f.Artist = input;
-                    if (type.Equals("Group")) f.Group = input;
-                });
-
-                db.SaveChanges();
-                Close();
+                case "Artist":
+                    fc.UpdateArtist(location, input);
+                    break;
+                case "Group":
+                    fc.UpdateGroup(location, input);
+                    break;
             }
+
+            Close();
         }
     }
 }
