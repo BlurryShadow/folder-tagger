@@ -9,15 +9,18 @@ namespace Folder_Tagger
     public partial class AddTagWindow : Window
     {
         private readonly List<string> folderList = new List<string>();
+        private readonly FolderController fc = new FolderController();
+        private readonly TagController tc = new TagController();
         public AddTagWindow(List<string> folderList)
         {
             InitializeComponent();
             this.folderList = folderList;
+
             Loaded += (sender, e) => tbInput.Focus();
             PreviewKeyDown += (sender, e) => { if (e.Key == Key.Escape) Close(); };
         }
 
-        private void AddTag(object sender, RoutedEventArgs e)
+        private void ButtonAddTag_Clicked(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(tbInput.Text))
             {
@@ -36,8 +39,8 @@ namespace Folder_Tagger
                         if (db.Folders.Any(f => f.Location == location && f.Tags.Any(t => t.TagName == currentTag)))
                             continue;
 
-                        Folder folder = db.Folders.Where(f => f.Location == location).First();
-                        Tag newTag = db.Tags.Where(t => t.TagName == currentTag).FirstOrDefault();
+                        Folder folder = fc.GetFolderByLocation(location, db);
+                        Tag newTag = tc.GetTagByName(currentTag, db);
                         if (newTag == null)
                         {
                             newTag = new Tag(currentTag);
