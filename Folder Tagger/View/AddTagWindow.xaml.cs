@@ -36,8 +36,8 @@ namespace Folder_Tagger
                         if (db.Folders.Any(f => f.Location == location && f.Tags.Any(t => t.TagName == currentTag)))
                             continue;
 
-                        Folder folder = db.Folders.Where(f => f.Location == location).Select(f => f).First();
-                        Tag newTag = db.Tags.Where(t => t.TagName == currentTag).Select(t => t).FirstOrDefault();
+                        Folder folder = db.Folders.Where(f => f.Location == location).First();
+                        Tag newTag = db.Tags.Where(t => t.TagName == currentTag).FirstOrDefault();
                         if (newTag == null)
                         {
                             newTag = new Tag(currentTag);

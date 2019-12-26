@@ -31,7 +31,7 @@
             FontSize="14"
             Content="Update"
             Grid.Column="1"
-            Click="UpdateData"
+            Click="ButtonUpdate_Clicked"
             IsDefault="True"
         />
     </Grid>

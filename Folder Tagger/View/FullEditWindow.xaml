@@ -29,9 +29,9 @@
                             Margin="-3,0,0,0"
                             Tag="{Binding TagID}"
                             Text="{Binding TagName}"
-                            LostKeyboardFocus="EditTag"
-                            KeyDown="TextBoxPressEnter"
-                            GotKeyboardFocus="GetCurrentTagName"
+                            LostKeyboardFocus="TextBoxInput_LostKeyboardFocus"
+                            KeyDown="TextBoxInput_KeyDown"
+                            GotKeyboardFocus="TextBoxInput_GotKeyboardFocus"
                         />
                     </DataTemplate>
                 </ListBox.ItemTemplate>

@@ -33,7 +33,7 @@ namespace Folder_Tagger
             PreviewKeyDown += (sender, e) => { if (e.Key == Key.Escape) Close(); };
         }
 
-        private void UpdateData(object sender, RoutedEventArgs e)
+        private void ButtonUpdate_Clicked(object sender, RoutedEventArgs e)
         {
             string input = tbInput.Text.Trim().ToLower();
             if (string.IsNullOrEmpty(input)) input = null;

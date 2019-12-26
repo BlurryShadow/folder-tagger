@@ -16,6 +16,11 @@ namespace Folder_Tagger
                 return false;
         }
 
+        public Folder GetFolderByLocation(string location, Model1 db)
+        {
+            return db.Folders.Where(f => f.Location == location).FirstOrDefault();
+        }
+
         public List<List<Thumbnail>> SearchFolder(
             string artist = null, 
             string group = null, 

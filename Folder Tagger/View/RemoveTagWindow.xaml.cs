@@ -37,7 +37,7 @@ namespace Folder_Tagger
 
                         if (deletedTag == null) continue;
 
-                        Folder folder = db.Folders.Where(f => f.Location == location).Select(f => f).First();
+                        Folder folder = db.Folders.Where(f => f.Location == location).First();
                         folder.Tags.Remove(deletedTag);
                         db.SaveChanges();
                     }

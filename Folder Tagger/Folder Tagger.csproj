@@ -82,6 +82,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Controller\FolderController.cs" />
+    <Compile Include="Controller\TagController.cs" />
     <Compile Include="View\AddTagWindow.xaml.cs">
       <DependentUpon>AddTagWindow.xaml</DependentUpon>
     </Compile>
