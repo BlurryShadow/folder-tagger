@@ -17,31 +17,17 @@ namespace Folder_Tagger
         private int currentPage = 1;
         private int totalFolders;
         List<List<Thumbnail>> thumbnailList = new List<List<Thumbnail>>();
-        Stopwatch sw = new Stopwatch();
+
+        private readonly FolderController fc = new FolderController();
         public MainWindow()
         {
             InitializeComponent();
             cbBoxImagesPerPage.ItemsSource = pageCapacity;
-            DeleteNonexistFolder();
+            fc.RemoveNonexistFolder();
             GenerateAGList();            
 
             Loaded += (sender, e) => tbName.Focus();
             ContentRendered += (sender, e) => Search(null, null, null, new List<string>() { "no tag" });
-        }
-
-        private void StartTimer()
-        {
-            sw.Start();
-        }
-
-        private void StopTimer()
-        {
-            TimeSpan ts = sw.Elapsed;
-            string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
-                ts.Hours, ts.Minutes, ts.Seconds,
-                ts.Milliseconds / 10);
-            sw.Reset();
-            System.Windows.Forms.MessageBox.Show(elapsedTime);
         }
 
         private void GenerateAGList()
@@ -66,33 +52,6 @@ namespace Folder_Tagger
 
                 cbBoxArtist.ItemsSource = artistList;
                 cbBoxGroup.ItemsSource = groupList;
-            }
-        }
-
-        private void AddFolder(string location, string name, string type = "multiple")
-        {
-            using (var db = new Model1())
-            {
-                if (db.Folders.Any(f => f.Location == location))
-                {
-                    if (type == "single")
-                        System.Windows.MessageBox.Show("This Folder Has Already Been Added!");
-                    return;
-                }
-
-                string thumbnail = null;
-                DirectoryInfo dr = new DirectoryInfo(location);
-                thumbnail = dr.EnumerateFiles()
-                            .Select(t => t.FullName)
-                            .FirstOrDefault(FullName => (FullName.ToLower() == "folder.jpg")
-                                                     || (FullName.ToLower().Contains(".png"))
-                                                     || (FullName.ToLower().Contains(".jpg"))
-                                                     || (FullName.ToLower().Contains(".jpeg"))
-                                                     || (FullName.ToLower().Contains(".bmp")));
-
-                var folder = new Folder(location, name, thumbnail);
-                db.Folders.Add(folder);
-                db.SaveChanges();
             }
         }
 
@@ -127,16 +86,17 @@ namespace Folder_Tagger
                 }
 
                 totalFolders = query.Count();
-                if (totalFolders == 0)
+                maxPage = (int)Math.Ceiling(((double)totalFolders / imagesPerPage));
+                ChangeCurrentPageTextBlock();
+                ChangeFolderFoundTextBlock();
+
+                if (maxPage < 1)
                 {
                     DataContext = null;                    
                     maxPage = 1;
-                    textblockCurrentPage.Text = currentPage.ToString();
-                    textblockTotalFolder.Text = "Folders Found: " + totalFolders;
                     return;
                 }
 
-                maxPage = (int)Math.Ceiling(((double)totalFolders / imagesPerPage));
                 for (int i = 0; i < maxPage; i++)
                     thumbnailList.Add(
                         query
@@ -154,16 +114,22 @@ namespace Folder_Tagger
 
                 DataContext = thumbnailList.ElementAt(0);
                 listboxGallery.ScrollIntoView(listboxGallery.Items[0]);
-                textblockTotalFolder.Text = "Folders Found: " + totalFolders;
-                if (maxPage > 1)
-                    textblockCurrentPage.Text = currentPage + ".." + maxPage;
-                else
-                    textblockCurrentPage.Text = currentPage.ToString();
             }
         }
 
-        private void AddOneFolder(object sender, RoutedEventArgs e)
+        private void ChangeCurrentPageTextBlock()
         {
+            textblockCurrentPage.Text = maxPage > 1 ? currentPage + ".." + maxPage : "1";
+        }
+
+        private void ChangeFolderFoundTextBlock()
+        {
+            textblockTotalFolder.Text = "Folders Found: " + totalFolders;
+        }
+
+        private void MenuItemAddFolder_Clicked(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Controls.MenuItem menuItem = (System.Windows.Controls.MenuItem)sender;
             using(var fbd = new FolderBrowserDialog())
             {
                 fbd.RootFolder = Environment.SpecialFolder.MyComputer;
@@ -171,31 +137,22 @@ namespace Folder_Tagger
                 if (result == System.Windows.Forms.DialogResult.OK)
                 {
                     string location = fbd.SelectedPath;
-                    string name = Path.GetFileName(location);
-                    AddFolder(location, name, "single");
+                    if (menuItem.Name == "miAddOneFolder")
+                    {
+                        string name = Path.GetFileName(location);
+                        fc.AddFolder(location, name, "single");
+                    } else
+                    {
+                        DirectoryInfo parentFolder = new DirectoryInfo(location);
+                        foreach (DirectoryInfo subFolder in parentFolder.GetDirectories())
+                            fc.AddFolder(subFolder.FullName, subFolder.Name, "multiple");
+                    }                    
                     Search(null, null, null, new List<string>() { "no tag" });
                 }
             }
         }
 
-        private void AddManyFolders(object sender, RoutedEventArgs e)
-        {
-            using (var fbd = new FolderBrowserDialog())
-            {
-                fbd.RootFolder = Environment.SpecialFolder.MyComputer;
-                DialogResult result = fbd.ShowDialog();
-                if (result == System.Windows.Forms.DialogResult.OK)
-                {                    
-                    string location = fbd.SelectedPath;
-                    DirectoryInfo parentFolder = new DirectoryInfo(location);
-                    foreach (DirectoryInfo subFolder in parentFolder.GetDirectories())
-                        AddFolder(subFolder.FullName, subFolder.Name, "multiple");
-                    Search(null, null, null, new List<string>() { "no tag" });
-                }
-            }
-        }
-
-        private void SearchFolders(object sender, RoutedEventArgs e)
+        private void ButtonSearch_Clicked(object sender, RoutedEventArgs e)
         {
             string artist = cbBoxArtist.Text;
             string group = cbBoxGroup.Text;
@@ -207,102 +164,86 @@ namespace Folder_Tagger
             Search(artist, group, name, tagList);            
         }
 
-        private void ToFirstPage(object sender, RoutedEventArgs e)
+        private void ButtonSwitchPage_Clicked(object sender, RoutedEventArgs e)
         {
-            if (currentPage == 1) return;
+            System.Windows.Controls.Button button = (System.Windows.Controls.Button)sender;
 
-            currentPage = 1;
-            textblockCurrentPage.Text = currentPage + ".." + maxPage;
-            DataContext = thumbnailList.ElementAt(1 - 1);
+            if ((button.Name == "btnFirstPage" || button.Name == "btnPreviousPage") && currentPage == 1)
+                return;
+
+            if ((button.Name == "btnLastPage" || button.Name == "btnNextPage") && currentPage == maxPage)
+                return;
+
+            switch (button.Name)
+            {
+                case "btnFirstPage":
+                    currentPage = 1;
+                    DataContext = thumbnailList.ElementAt(0);
+                    break;
+                case "btnPreviousPage":
+                    currentPage--;
+                    DataContext = thumbnailList.ElementAt(currentPage - 1);
+                    break;
+                case "btnNextPage":
+                    currentPage++;
+                    DataContext = thumbnailList.ElementAt(currentPage - 1);
+                    break;
+                case "btnLastPage":
+                    currentPage = maxPage;
+                    DataContext = thumbnailList.ElementAt(maxPage - 1);
+                    break;
+            }
+
+            ChangeCurrentPageTextBlock();
             listboxGallery.ScrollIntoView(listboxGallery.Items[0]);
         }
 
-        private void ToPreviousPage(object sender, RoutedEventArgs e)
+        private void MenuItemOpenWindow_Clicked(object sender, RoutedEventArgs e)
         {
-            if (currentPage == 1) return;
-
-            currentPage--;
-            textblockCurrentPage.Text = currentPage + ".." + maxPage;
-            DataContext = thumbnailList.ElementAt(currentPage - 1);
-            listboxGallery.ScrollIntoView(listboxGallery.Items[0]);
-        }
-
-        private void ToNextPage(object sender, RoutedEventArgs e)
-        {
-            if (currentPage == maxPage) return;
-
-            currentPage++;
-            textblockCurrentPage.Text = currentPage + ".." + maxPage;
-            DataContext = thumbnailList.ElementAt(currentPage - 1);
-            listboxGallery.ScrollIntoView(listboxGallery.Items[0]);
-        }
-
-        private void ToLastPage(object sender, RoutedEventArgs e)
-        {
-            if (currentPage == maxPage) return;
-
-            currentPage = maxPage;
-            textblockCurrentPage.Text = currentPage + ".." + maxPage;
-            DataContext = thumbnailList.ElementAt(maxPage - 1);
-            listboxGallery.ScrollIntoView(listboxGallery.Items[0]);
-        }
-
-        private void OpenSmallEditWindow(object sender, RoutedEventArgs e)
-        {
-            System.Windows.Controls.MenuItem itemClicked = (System.Windows.Controls.MenuItem)sender;
-            string type = itemClicked.Header.ToString().Replace("Edit ", "");
-            string folder = itemClicked.Tag.ToString();
-            Window smallEditWindow = new SmallEditWindow(type, folder);
-            smallEditWindow.Owner = App.Current.MainWindow;
-            smallEditWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            smallEditWindow.ShowInTaskbar = false;
-            smallEditWindow.Closed += (newWindowSender, newWindowEvent) => GenerateAGList();
-            smallEditWindow.ShowDialog();            
-        }
-
-        private void OpenFullEditWindow(object sender, RoutedEventArgs e)
-        {
-            System.Windows.Controls.MenuItem itemClicked = (System.Windows.Controls.MenuItem)sender;
-            string folder = itemClicked.Tag.ToString();
-            Window fullEditWindow = new FullEditWindow(folder);
-            fullEditWindow.Owner = App.Current.MainWindow;
-            fullEditWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            fullEditWindow.ShowInTaskbar = false;
-            fullEditWindow.ShowDialog();
-        }
-
-        private void OpenAddTagWindow(object sender, RoutedEventArgs e)
-        {
+            System.Windows.Controls.MenuItem menuItem = (System.Windows.Controls.MenuItem)sender;
+            string folder;
             List<string> folderList = new List<string>();
-            foreach (Thumbnail t in listboxGallery.SelectedItems)
-                folderList.Add(t.Folder);
-            Window addTagWindow = new AddTagWindow(folderList);
-            addTagWindow.Owner = App.Current.MainWindow;
-            addTagWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            addTagWindow.ShowInTaskbar = false;
-            addTagWindow.ShowDialog();
+            Window newWindow;
+
+            switch (menuItem.Name)
+            {
+                case "miEditArtist":
+                case "miEditGroup":
+                    folder = menuItem.Tag.ToString();
+                    string type = menuItem.Header.ToString().Replace("Edit ", "");
+                    newWindow = new SmallEditWindow(type, folder);
+                    newWindow.Closed += (newWindowSender, newWindowEvent) => GenerateAGList();
+                    break;
+                case "miEditTag":
+                    folder = menuItem.Tag.ToString();
+                    newWindow = new FullEditWindow(folder);
+                    break;
+                default: //Add Tag
+                    foreach (Thumbnail t in listboxGallery.SelectedItems)
+                        folderList.Add(t.Folder);
+                    newWindow = new AddTagWindow(folderList);
+                    break;
+                case "miRemoveTag":
+                    foreach (Thumbnail t in listboxGallery.SelectedItems)
+                        folderList.Add(t.Folder);
+                    newWindow = new RemoveTagWindow(folderList);
+                    break;
+            }
+
+            newWindow.Owner = App.Current.MainWindow;
+            newWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            newWindow.ShowInTaskbar = false;
+            newWindow.ShowDialog();
         }
 
-        private void OpenRemoveTagWindow(object sender, RoutedEventArgs e)
-        {
-            List<string> folderList = new List<string>();
-            foreach (Thumbnail t in listboxGallery.SelectedItems)
-                folderList.Add(t.Folder);
-            Window removeTagWindow = new RemoveTagWindow(folderList);
-            removeTagWindow.Owner = App.Current.MainWindow;
-            removeTagWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            removeTagWindow.ShowInTaskbar = false;
-            removeTagWindow.ShowDialog();
-        }
-
-        private void OpenFolder(object sender, RoutedEventArgs e)
+        private void MenuItemOpenFolder_Clicked(object sender, RoutedEventArgs e)
         {
             System.Windows.Controls.MenuItem itemClicked = (System.Windows.Controls.MenuItem)sender;
             string folder = itemClicked.Tag.ToString();
             Process.Start(folder);
         }
 
-        private void OpenInMangareader(object sender, RoutedEventArgs e)
+        private void MenuItemOpenInMangareader_Clicked(object sender, RoutedEventArgs e)
         {
             string mangaReaderRoot = @"E:\Data\Programs\Basic Programs\Mangareader\mangareader.exe";
             System.Windows.Controls.MenuItem itemClicked = (System.Windows.Controls.MenuItem)sender;
@@ -310,7 +251,7 @@ namespace Folder_Tagger
             Process.Start(mangaReaderRoot, '\"' + folder + '\"');
         }
 
-        private void DeleteSelectedFolders(object sender, RoutedEventArgs e)
+        private void MenuItemDeleteFolder_Clicked(object sender, RoutedEventArgs e)
         {
             DialogResult dialogResult = System.Windows.Forms.MessageBox.Show(
                 "Are you sure you want to delete these folders?",
@@ -318,63 +259,33 @@ namespace Folder_Tagger
                 MessageBoxButtons.OKCancel,
                 MessageBoxIcon.Warning);
             if (dialogResult == System.Windows.Forms.DialogResult.OK)
-                using (var db = new Model1())
-                {
-                    foreach (Thumbnail thumbnail in listboxGallery.SelectedItems)
-                    {
-                        Folder folder = db.Folders.Where(f => f.Location == thumbnail.Folder).First();
-                        db.Folders.Remove(folder);
-                        db.SaveChanges();
-                        thumbnailList.ElementAt(currentPage - 1).RemoveAll(th => th.Folder == thumbnail.Folder);
-                        try
-                        {
-                            FileSystem.DeleteDirectory(
-                                thumbnail.Folder,
-                                UIOption.OnlyErrorDialogs,
-                                RecycleOption.SendToRecycleBin
-                            );
-                        }
-                        catch (Exception)
-                        {
-                            System.Windows.Forms.MessageBox.Show("The folder " + thumbnail.Folder + " is being used.");
-                            continue;
-                        }
-                    }
-
-                    totalFolders -= listboxGallery.SelectedItems.Count;
-                    textblockTotalFolder.Text = "Folders Found: " + totalFolders;
-
-                    if (thumbnailList.ElementAt(currentPage - 1).Count == 0)
-                    {
-                        thumbnailList.RemoveAll(th => th.Count == 0);
-                        thumbnailList.TrimExcess();
-                        currentPage = 1;
-                        maxPage = thumbnailList.Count() == 0 ? 1 : thumbnailList.Count();
-                        textblockCurrentPage.Text = maxPage == 1 ? "1" : currentPage + ".." + maxPage;
-                        DataContext = thumbnailList.Count == 0 ? null : thumbnailList.ElementAt(0);
-                        if (listboxGallery.Items.Count > 0)
-                            listboxGallery.ScrollIntoView(listboxGallery.Items[0]);
-                    }
-                    else
-                        listboxGallery.Items.Refresh();
-                }
-        }
-
-        private void DeleteNonexistFolder()
-        {
-            using (var db = new Model1())
             {
-                List<Folder> folderList = db.Folders.Select(f => f).ToList();
-                foreach (Folder folder in folderList)
+                totalFolders -= listboxGallery.SelectedItems.Count;
+                ChangeFolderFoundTextBlock();
+                List<string> deletedFolderList = 
+                    listboxGallery.SelectedItems.Cast<Thumbnail>().ToList()
+                    .Select(th => th.Folder).ToList();
+
+                fc.DeleteRealFolder(deletedFolderList);
+                thumbnailList.ElementAt(currentPage - 1).RemoveAll(th => deletedFolderList.Contains(th.Folder));
+
+                if (thumbnailList.ElementAt(currentPage - 1).Count == 0)
                 {
-                    if (!Directory.Exists(folder.Location))
-                        db.Folders.Remove(folder);
+                    thumbnailList.RemoveAll(th => th.Count == 0);
+                    thumbnailList.TrimExcess();
+                    currentPage = 1;
+                    maxPage = thumbnailList.Count() == 0 ? 1 : thumbnailList.Count();
+                    ChangeCurrentPageTextBlock();
+                    DataContext = thumbnailList.Count == 0 ? null : thumbnailList.ElementAt(0);
+                    if (listboxGallery.Items.Count > 0)
+                        listboxGallery.ScrollIntoView(listboxGallery.Items[0]);
                 }
-                db.SaveChanges();
+                else
+                    listboxGallery.Items.Refresh();
             }
         }
 
-        private void SwitchImagesPerPage(object sender, RoutedEventArgs e)
+        private void ComboBoxPageCapacity_SelectionChanged(object sender, RoutedEventArgs e)
         {
             System.Windows.Controls.ComboBox comboBox = (System.Windows.Controls.ComboBox)sender;
             imagesPerPage = pageCapacity[comboBox.SelectedIndex];
@@ -396,11 +307,7 @@ namespace Folder_Tagger
                 );
 
             DataContext = thumbnailList.ElementAt(0);
-            textblockTotalFolder.Text = "Folders Found: " + totalFolders;
-            if (maxPage > 1)
-                textblockCurrentPage.Text = currentPage + ".." + maxPage;
-            else
-                textblockCurrentPage.Text = currentPage.ToString();
+            ChangeCurrentPageTextBlock();
         }
     }
 }

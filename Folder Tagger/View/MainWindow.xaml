@@ -33,8 +33,8 @@
             Grid.Row="0"
         >
             <MenuItem Header="Add" FontSize="16">
-                <MenuItem Header="Folder" Click="AddOneFolder"/>
-                <MenuItem Header="Parent Folder" Click="AddManyFolders"/>
+                <MenuItem x:Name="miAddOneFolder" Header="Folder" Click="MenuItemAddFolder_Clicked"/>
+                <MenuItem x:Name="miAddManyFolders" Header="Parent Folder" Click="MenuItemAddFolder_Clicked"/>
             </MenuItem>
         </Menu>
 
@@ -108,7 +108,7 @@
                 BorderBrush="Black"
                 Content="Search"
                 IsDefault="True"
-                Click="SearchFolders"
+                Click="ButtonSearch_Clicked"
             />
 
             <TextBlock
@@ -123,7 +123,7 @@
                 Width="80"
                 Margin="10,0,0,0"
                 SelectedIndex="0"
-                SelectionChanged="SwitchImagesPerPage"
+                SelectionChanged="ComboBoxPageCapacity_SelectionChanged"
             />
 
         </ToolBar>
@@ -172,45 +172,50 @@
                                 <MenuItem
                                     Tag="{Binding Folder}"
                                     Header="Open Folder"
-                                    Click="OpenFolder"
+                                    Click="MenuItemOpenFolder_Clicked"
                                 />
                                 <MenuItem
                                     Tag="{Binding Folder}"
                                     Header="Open In Mangareader"
-                                    Click="OpenInMangareader"
+                                    Click="MenuItemOpenInMangareader_Clicked"
                                 />
                                 <MenuItem
+                                    x:Name="miAddTag"
                                     Header="Add Tag"
-                                    Click="OpenAddTagWindow"
+                                    Click="MenuItemOpenWindow_Clicked"
                                 />
                                 
                                 <Separator />
                                 
                                 <MenuItem 
+                                    x:Name="miEditArtist"
                                     Tag="{Binding Folder}" 
                                     Header="Edit Artist" 
-                                    Click="OpenSmallEditWindow" 
+                                    Click="MenuItemOpenWindow_Clicked" 
                                 />
                                 <MenuItem 
+                                    x:Name="miEditGroup"
                                     Tag="{Binding Folder}" 
                                     Header="Edit Group" 
-                                    Click="OpenSmallEditWindow" 
+                                    Click="MenuItemOpenWindow_Clicked" 
                                 />
                                 <MenuItem
+                                    x:Name="miEditTag"
                                     Tag="{Binding Folder}"
                                     Header="Edit Tag"
-                                    Click="OpenFullEditWindow"
+                                    Click="MenuItemOpenWindow_Clicked"
                                 />
                                 
                                 <Separator />
                                 
                                 <MenuItem
+                                    x:Name="miRemoveTag"
                                     Header="Remove Tag"
-                                    Click="OpenRemoveTagWindow"
+                                    Click="MenuItemOpenWindow_Clicked"
                                 />
                                 <MenuItem
                                     Header="Delete Folder"
-                                    Click="DeleteSelectedFolders"
+                                    Click="MenuItemDeleteFolder_Clicked"
                                 />
                             </ContextMenu>
                         </StackPanel.ContextMenu>
@@ -227,7 +232,7 @@
             Width="20"
             Margin="-140,0,0,0"
             Grid.Row="3"
-            Click="ToFirstPage"
+            Click="ButtonSwitchPage_Clicked"
         />
 
         <Button            
@@ -238,7 +243,7 @@
             Width="20"
             Margin="-80,0,0,0"
             Grid.Row="3"
-            Click="ToPreviousPage"
+            Click="ButtonSwitchPage_Clicked"
         />
 
         <TextBlock
@@ -261,7 +266,7 @@
             Width="20"
             Margin="80,0,0,0"
             Grid.Row="3"
-            Click="ToNextPage"
+            Click="ButtonSwitchPage_Clicked"
         />
 
         <Button
@@ -272,7 +277,7 @@
             Width="20"
             Margin="140,0,0,0"
             Grid.Row="3"
-            Click="ToLastPage"
+            Click="ButtonSwitchPage_Clicked"
         />
 
         <TextBlock
