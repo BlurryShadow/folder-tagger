@@ -3,8 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Folder_Tagger
 {
@@ -16,6 +14,61 @@ namespace Folder_Tagger
                 if (db.Folders.Any(f => f.Location == location))
                     return true;
                 return false;
+        }
+
+        public List<List<Thumbnail>> SearchFolder(
+            string artist = null, 
+            string group = null, 
+            string name = null, 
+            List<string> tagList = null, 
+            int imagesPerPage = 60)
+        {
+            using (var db = new Model1())
+            {
+                var query = (System.Linq.IQueryable<Folder>)db.Folders;
+
+                if (!string.IsNullOrWhiteSpace(artist))
+                    query = query.Where(f => f.Artist == artist);
+
+                if (!string.IsNullOrWhiteSpace(group))
+                    query = query.Where(f => f.Group == group);
+
+                if (!string.IsNullOrWhiteSpace(name))
+                    query = query.Where(f => f.Name.Contains(name));
+
+                if (tagList.Count() > 0)
+                {
+                    if (tagList.ElementAt(0).Trim().ToLower().Equals("no tag"))
+                        query = query.Where(f => f.Tags.Count() == 0);
+                    else
+                        foreach (string tag in tagList)
+                        {
+                            string currentTag = tag.Trim().ToLower();
+                            query = query.Where(f => f.Tags.Any(t => t.TagName == currentTag));
+                        }
+                }
+
+                int maxPage = (int)Math.Ceiling(((double)query.Count() / imagesPerPage));
+                if (maxPage < 1)
+                    return null;
+
+                List<List<Thumbnail>> thumbnailList = new List<List<Thumbnail>>();
+                for (int i = 0; i < maxPage; i++)
+                    thumbnailList.Add(
+                        query
+                            .OrderBy(f => f.Name)
+                            .Skip(i * imagesPerPage)
+                            .Take(imagesPerPage)
+                            .Select(f => new Thumbnail
+                            {
+                                Folder = f.Location,
+                                Root = f.Thumbnail,
+                                Name = f.Name
+                            })
+                            .ToList()
+                    );
+                return thumbnailList;
+            }
         }
         public void AddFolder(string location, string name, string type = "multiple")
         {
@@ -79,6 +132,52 @@ namespace Folder_Tagger
                         db.Folders.Remove(folder);
                 }
                 db.SaveChanges();
+            }
+        }
+
+        public List<string> GetArtistList(string location = null)
+        {
+            using (var db =  new Model1())
+            {
+                if (location != null)
+                    return db.Folders
+                        .Where(f => f.Location == location)
+                        .Select(f => f.Artist)
+                        .ToList();
+                else
+                {
+                    var artistList = db.Folders
+                        .OrderBy(f => f.Artist)
+                        .Where(f => f.Artist != null)
+                        .Select(f => f.Artist)
+                        .Distinct()
+                        .ToList();
+                    artistList.Insert(0, "");
+                    return artistList;
+                }
+            }
+        }
+
+        public List<string> GetGroupList(string location = null)
+        {
+            using (var db = new Model1())
+            {
+                if (location != null)
+                    return db.Folders
+                        .Where(f => f.Location == location)
+                        .Select(f => f.Group)
+                        .ToList();
+                else
+                {
+                    var artistList = db.Folders
+                        .OrderBy(f => f.Group)
+                        .Where(f => f.Group != null)
+                        .Select(f => f.Group)
+                        .Distinct()
+                        .ToList();
+                    artistList.Insert(0, "");
+                    return artistList;
+                }
             }
         }
     }

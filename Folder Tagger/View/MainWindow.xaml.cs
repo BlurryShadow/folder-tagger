@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic.FileIO;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -24,97 +23,23 @@ namespace Folder_Tagger
             InitializeComponent();
             cbBoxImagesPerPage.ItemsSource = pageCapacity;
             fc.RemoveNonexistFolder();
-            GenerateAGList();            
+            cbBoxArtist.ItemsSource = fc.GetArtistList();
+            cbBoxGroup.ItemsSource = fc.GetGroupList();
 
             Loaded += (sender, e) => tbName.Focus();
             ContentRendered += (sender, e) => Search(null, null, null, new List<string>() { "no tag" });
         }
 
-        private void GenerateAGList()
-        {
-            using (var db = new Model1())
-            {
-                var artistList = db.Folders
-                    .OrderBy(f => f.Artist)
-                    .Where(f => f.Artist != null)
-                    .Select(f => f.Artist)
-                    .Distinct()
-                    .ToList();
-                var groupList = db.Folders
-                    .OrderBy(f => f.Group)
-                    .Where(f => f.Group != null)
-                    .Select(f => f.Group)
-                    .Distinct()
-                    .ToList();
-
-                artistList.Insert(0, "");
-                groupList.Insert(0, "");
-
-                cbBoxArtist.ItemsSource = artistList;
-                cbBoxGroup.ItemsSource = groupList;
-            }
-        }
-
         private void Search(string artist = null, string group = null, string name = null, List<string> tagList = null)
         {
-            thumbnailList.Clear();
             currentPage = 1;
-
-            using (var db = new Model1())
-            {
-                var query = (System.Linq.IQueryable<Folder>)db.Folders;
-
-                if (!string.IsNullOrWhiteSpace(artist))
-                    query = query.Where(f => f.Artist == artist);
-
-                if (!string.IsNullOrWhiteSpace(group))
-                    query = query.Where(f => f.Group == group);
-
-                if (!string.IsNullOrWhiteSpace(name))
-                    query = query.Where(f => f.Name.Contains(name));
-
-                if (tagList.Count() > 0)
-                {
-                    if (tagList.ElementAt(0).Trim().ToLower().Equals("no tag"))
-                        query = query.Where(f => f.Tags.Count() == 0);
-                    else
-                        foreach (string tag in tagList)
-                        {
-                            string currentTag = tag.Trim().ToLower();
-                            query = query.Where(f => f.Tags.Any(t => t.TagName == currentTag));
-                        }                            
-                }
-
-                totalFolders = query.Count();
-                maxPage = (int)Math.Ceiling(((double)totalFolders / imagesPerPage));
-                ChangeCurrentPageTextBlock();
-                ChangeFolderFoundTextBlock();
-
-                if (maxPage < 1)
-                {
-                    DataContext = null;                    
-                    maxPage = 1;
-                    return;
-                }
-
-                for (int i = 0; i < maxPage; i++)
-                    thumbnailList.Add(
-                        query
-                            .OrderBy(f => f.Name)
-                            .Skip(i * imagesPerPage)
-                            .Take(imagesPerPage)
-                            .Select(f => new Thumbnail
-                            {
-                                Folder = f.Location,
-                                Root = f.Thumbnail,
-                                Name = f.Name
-                            })
-                            .ToList()
-                    );
-
-                DataContext = thumbnailList.ElementAt(0);
-                listboxGallery.ScrollIntoView(listboxGallery.Items[0]);
-            }
+            thumbnailList = fc.SearchFolder(artist, group, name, tagList, imagesPerPage);
+            maxPage = thumbnailList != null ? thumbnailList.Count() : 1;
+            totalFolders = thumbnailList != null ? thumbnailList.Sum(th => th.Count) : 0;
+            ChangeCurrentPageTextBlock();
+            ChangeFolderFoundTextBlock();
+            DataContext = thumbnailList?.ElementAt(0);
+            ResetScroll();
         }
 
         private void ChangeCurrentPageTextBlock()
@@ -125,6 +50,12 @@ namespace Folder_Tagger
         private void ChangeFolderFoundTextBlock()
         {
             textblockTotalFolder.Text = "Folders Found: " + totalFolders;
+        }
+
+        private void ResetScroll()
+        {
+            if (listboxGallery.Items.Count > 0)
+                listboxGallery.ScrollIntoView(listboxGallery.Items[0]);
         }
 
         private void MenuItemAddFolder_Clicked(object sender, RoutedEventArgs e)
@@ -160,8 +91,7 @@ namespace Folder_Tagger
             List<string> tagList = new List<string>();
             if (!string.IsNullOrWhiteSpace(tbTag.Text)) tagList = 
                     tbTag.Text.Split(new string[] { ", " }, StringSplitOptions.None).ToList();
-
-            Search(artist, group, name, tagList);            
+            Search(artist, group, name, tagList);
         }
 
         private void ButtonSwitchPage_Clicked(object sender, RoutedEventArgs e)
@@ -195,7 +125,7 @@ namespace Folder_Tagger
             }
 
             ChangeCurrentPageTextBlock();
-            listboxGallery.ScrollIntoView(listboxGallery.Items[0]);
+            ResetScroll();
         }
 
         private void MenuItemOpenWindow_Clicked(object sender, RoutedEventArgs e)
@@ -212,7 +142,13 @@ namespace Folder_Tagger
                     folder = menuItem.Tag.ToString();
                     string type = menuItem.Header.ToString().Replace("Edit ", "");
                     newWindow = new SmallEditWindow(type, folder);
-                    newWindow.Closed += (newWindowSender, newWindowEvent) => GenerateAGList();
+                    newWindow.Closed += (newWindowSender, newWindowEvent) =>
+                    {
+                        if (type == "Artist")
+                            cbBoxArtist.ItemsSource = fc.GetArtistList();
+                        else
+                            cbBoxGroup.ItemsSource = fc.GetGroupList();
+                    };
                     break;
                 case "miEditTag":
                     folder = menuItem.Tag.ToString();
@@ -277,8 +213,7 @@ namespace Folder_Tagger
                     maxPage = thumbnailList.Count() == 0 ? 1 : thumbnailList.Count();
                     ChangeCurrentPageTextBlock();
                     DataContext = thumbnailList.Count == 0 ? null : thumbnailList.ElementAt(0);
-                    if (listboxGallery.Items.Count > 0)
-                        listboxGallery.ScrollIntoView(listboxGallery.Items[0]);
+                    ResetScroll();
                 }
                 else
                     listboxGallery.Items.Refresh();
