@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Forms;
+using System.Windows.Input;
 
 namespace Folder_Tagger
 {
@@ -25,6 +26,15 @@ namespace Folder_Tagger
             fc.RemoveNonexistFolder();
             cbBoxArtist.ItemsSource = fc.GetArtistList();
             cbBoxGroup.ItemsSource = fc.GetGroupList();
+            commandbindingAddOneFolder.Executed += (sender, e) => MenuItemAddFolder_Clicked(miAddOneFolder, new RoutedEventArgs());
+            commandbindingAddManyFolders.Executed += (sender, e) => MenuItemAddFolder_Clicked(miAddManyFolders, new RoutedEventArgs());
+            commandbindingOpenFolder.Executed += (sender, e) => MenuItemOpenFolder_Clicked(null, new RoutedEventArgs());
+            commandbindingOpenInMangareader.Executed += (sender, e) => MenuItemOpenInMangareader_Clicked(null, new RoutedEventArgs());
+            commandbindingAddTag.Executed += (sender, e) => MenuItemOpenWindow_Clicked("miAddTag", new RoutedEventArgs());
+            commandbindingEditArtist.Executed += (sender, e) => MenuItemOpenWindow_Clicked("miEditArtist", new RoutedEventArgs());
+            commandbindingEditGroup.Executed += (sender, e) => MenuItemOpenWindow_Clicked("miEditGroup", new RoutedEventArgs());
+            commandbindingEditTag.Executed += (sender, e) => MenuItemOpenWindow_Clicked("miEditTag", new RoutedEventArgs());
+            commandbindingRemoveTag.Executed += (sender, e) => MenuItemOpenWindow_Clicked("miRemoveTag", new RoutedEventArgs());
 
             Loaded += (sender, e) => tbName.Focus();
             ContentRendered += (sender, e) => Search(null, null, null, new List<string>() { "no tag" });
@@ -130,17 +140,26 @@ namespace Folder_Tagger
 
         private void MenuItemOpenWindow_Clicked(object sender, RoutedEventArgs e)
         {
-            System.Windows.Controls.MenuItem menuItem = (System.Windows.Controls.MenuItem)sender;
-            string folder;
-            List<string> folderList = new List<string>();
+            List<string> folderList = listboxGallery.SelectedItems.Cast<Thumbnail>().Select(th => th.Folder).ToList();
+            if (folderList.Count == 0) return;
+
+            string target = sender.ToString();
+            string folder = folderList.Last();
             Window newWindow;
 
-            switch (menuItem.Name)
+            if (sender.GetType().Equals(typeof(System.Windows.Controls.MenuItem)))
+            {
+                System.Windows.Controls.MenuItem menuItem = (System.Windows.Controls.MenuItem)sender;
+                target = menuItem.Name;
+                folder = menuItem.Tag?.ToString();
+            }
+
+            string type = target.Replace("miEdit", "");
+
+            switch (target)
             {
                 case "miEditArtist":
                 case "miEditGroup":
-                    folder = menuItem.Tag.ToString();
-                    string type = menuItem.Header.ToString().Replace("Edit ", "");
                     newWindow = new SmallEditWindow(type, folder);
                     newWindow.Closed += (newWindowSender, newWindowEvent) =>
                     {
@@ -151,17 +170,12 @@ namespace Folder_Tagger
                     };
                     break;
                 case "miEditTag":
-                    folder = menuItem.Tag.ToString();
                     newWindow = new FullEditWindow(folder);
                     break;
                 default: //Add Tag
-                    foreach (Thumbnail t in listboxGallery.SelectedItems)
-                        folderList.Add(t.Folder);
                     newWindow = new AddTagWindow(folderList);
                     break;
                 case "miRemoveTag":
-                    foreach (Thumbnail t in listboxGallery.SelectedItems)
-                        folderList.Add(t.Folder);
                     newWindow = new RemoveTagWindow(folderList);
                     break;
             }
@@ -174,16 +188,36 @@ namespace Folder_Tagger
 
         private void MenuItemOpenFolder_Clicked(object sender, RoutedEventArgs e)
         {
-            System.Windows.Controls.MenuItem itemClicked = (System.Windows.Controls.MenuItem)sender;
-            string folder = itemClicked.Tag.ToString();
+            string folder;
+            if (sender != null)
+            {
+                System.Windows.Controls.MenuItem itemClicked = (System.Windows.Controls.MenuItem)sender;
+                folder = itemClicked.Tag.ToString();
+            } else
+            {
+                int selectedItemsCount = listboxGallery.SelectedItems.Count;
+                if (selectedItemsCount == 0) return;
+                Thumbnail selectedThumbnail = listboxGallery.SelectedItems[selectedItemsCount - 1] as Thumbnail;
+                folder = selectedThumbnail.Folder;
+            }
             Process.Start(folder);
         }
 
         private void MenuItemOpenInMangareader_Clicked(object sender, RoutedEventArgs e)
         {
+            string folder;
             string mangaReaderRoot = @"E:\Data\Programs\Basic Programs\Mangareader\mangareader.exe";
-            System.Windows.Controls.MenuItem itemClicked = (System.Windows.Controls.MenuItem)sender;
-            string folder = itemClicked.Tag.ToString();
+            if (sender != null)
+            {
+                System.Windows.Controls.MenuItem itemClicked = (System.Windows.Controls.MenuItem)sender;
+                folder = itemClicked.Tag.ToString();
+            } else
+            {
+                int selectedItemsCount = listboxGallery.SelectedItems.Count;
+                if (selectedItemsCount == 0) return;
+                Thumbnail selectedThumbnail = listboxGallery.SelectedItems[selectedItemsCount - 1] as Thumbnail;
+                folder = selectedThumbnail.Folder;
+            }            
             Process.Start(mangaReaderRoot, '\"' + folder + '\"');
         }
 

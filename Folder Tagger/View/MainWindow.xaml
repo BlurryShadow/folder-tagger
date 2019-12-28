@@ -18,6 +18,19 @@
         <sys:Double x:Key="ThumbnailWidth">250</sys:Double>
         <local:UriToBitmapConverter x:Key="UriToBitmapConverter" />
     </Window.Resources>
+
+    <Window.CommandBindings>
+        <CommandBinding x:Name="commandbindingAddOneFolder" Command="{x:Static local:ShortcutCommands.AddOneFolder}" />
+        <CommandBinding x:Name="commandbindingAddManyFolders" Command="{x:Static local:ShortcutCommands.AddManyFolders}" />
+        <CommandBinding x:Name="commandbindingOpenFolder" Command="{x:Static local:ShortcutCommands.OpenFolder}" />
+        <CommandBinding x:Name="commandbindingOpenInMangareader" Command="{x:Static local:ShortcutCommands.OpenInMangareader}" />
+        <CommandBinding x:Name="commandbindingAddTag" Command="{x:Static local:ShortcutCommands.AddTag}" />
+        <CommandBinding x:Name="commandbindingEditArtist" Command="{x:Static local:ShortcutCommands.EditArtist}" />
+        <CommandBinding x:Name="commandbindingEditGroup" Command="{x:Static local:ShortcutCommands.EditGroup}" />
+        <CommandBinding x:Name="commandbindingEditTag" Command="{x:Static local:ShortcutCommands.EditTag}" />
+        <CommandBinding x:Name="commandbindingRemoveTag" Command="{x:Static local:ShortcutCommands.RemoveTag}" />
+    </Window.CommandBindings>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="25*"/>
@@ -34,8 +47,8 @@
             Grid.Row="0"
         >
             <MenuItem Header="Add" FontSize="16">
-                <MenuItem x:Name="miAddOneFolder" Header="Folder" Click="MenuItemAddFolder_Clicked"/>
-                <MenuItem x:Name="miAddManyFolders" Header="Parent Folder" Click="MenuItemAddFolder_Clicked"/>
+                <MenuItem x:Name="miAddOneFolder" Header="Folder" Click="MenuItemAddFolder_Clicked" InputGestureText="Ctrl+O" />
+                <MenuItem x:Name="miAddManyFolders" Header="Parent Folder" Click="MenuItemAddFolder_Clicked" InputGestureText="Ctrl+P" />
             </MenuItem>
         </Menu>
 
@@ -174,16 +187,19 @@
                                     Tag="{Binding Folder}"
                                     Header="Open Folder"
                                     Click="MenuItemOpenFolder_Clicked"
+                                    InputGestureText="Ctrl+W"
                                 />
                                 <MenuItem
                                     Tag="{Binding Folder}"
                                     Header="Open In Mangareader"
                                     Click="MenuItemOpenInMangareader_Clicked"
+                                    InputGestureText="Ctrl+Q"
                                 />
                                 <MenuItem
                                     x:Name="miAddTag"
                                     Header="Add Tag"
                                     Click="MenuItemOpenWindow_Clicked"
+                                    InputGestureText="Ctrl+E"
                                 />
                                 
                                 <Separator />
@@ -192,27 +208,30 @@
                                     x:Name="miEditArtist"
                                     Tag="{Binding Folder}" 
                                     Header="Edit Artist" 
-                                    Click="MenuItemOpenWindow_Clicked" 
+                                    Click="MenuItemOpenWindow_Clicked"
+                                    InputGestureText="Ctrl+D"
                                 />
                                 <MenuItem 
                                     x:Name="miEditGroup"
                                     Tag="{Binding Folder}" 
                                     Header="Edit Group" 
-                                    Click="MenuItemOpenWindow_Clicked" 
+                                    Click="MenuItemOpenWindow_Clicked"
+                                    InputGestureText="Ctrl+F"
                                 />
                                 <MenuItem
                                     x:Name="miEditTag"
                                     Tag="{Binding Folder}"
                                     Header="Edit Tag"
                                     Click="MenuItemOpenWindow_Clicked"
+                                    InputGestureText="Ctrl+S"
                                 />
                                 
                                 <Separator />
                                 
                                 <MenuItem
-                                    x:Name="miRemoveTag"
                                     Header="Remove Tag"
                                     Click="MenuItemOpenWindow_Clicked"
+                                    InputGestureText="Ctrl+R"
                                 />
                                 <MenuItem
                                     Header="Delete Folder"
