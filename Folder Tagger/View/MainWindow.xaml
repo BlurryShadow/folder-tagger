@@ -44,11 +44,35 @@
             VerticalAlignment="Top"
             Height="25"            
             Width="1590"
+            FontSize="16"
             Grid.Row="0"
         >
-            <MenuItem Header="Add" FontSize="16">
-                <MenuItem x:Name="miAddOneFolder" Header="Folder" Click="MenuItemAddFolder_Clicked" InputGestureText="Ctrl+O" />
-                <MenuItem x:Name="miAddManyFolders" Header="Parent Folder" Click="MenuItemAddFolder_Clicked" InputGestureText="Ctrl+P" />
+            <MenuItem Header="Add">
+                <MenuItem
+                    x:Name="miAddOneFolder"
+                    Header="Folder"
+                    InputGestureText="Ctrl+O"
+                    Click="MenuItemAddFolder_Clicked"
+                />
+                <MenuItem
+                    x:Name="miAddManyFolders"
+                    Header="Parent Folder"
+                    InputGestureText="Ctrl+P"
+                    Click="MenuItemAddFolder_Clicked"
+                />
+            </MenuItem>
+
+            <MenuItem Header="Data">
+                <MenuItem
+                    x:Name="miImportDatabase"
+                    Header="Import Database"
+                    Click="MenuItemImportDatabase_Clicked"
+                />
+                <MenuItem
+                    x:Name="miExportDatabase"
+                    Header="Export Database"
+                    Click="MenuItemExportDatabase_Clicked"
+                />
             </MenuItem>
         </Menu>
 

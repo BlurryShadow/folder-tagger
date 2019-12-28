@@ -93,6 +93,25 @@ namespace Folder_Tagger
             }
         }
 
+        private void MenuItemImportDatabase_Clicked(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog fd = new OpenFileDialog
+            {
+                DefaultExt = ".json",
+                Filter = "JSON Files (*.json)|*json",
+                InitialDirectory = System.AppDomain.CurrentDomain.BaseDirectory
+            };
+            if (fd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                System.Windows.Forms.MessageBox.Show(fd.FileName);
+            }
+        }
+
+        private void MenuItemExportDatabase_Clicked(object sender, RoutedEventArgs e)
+        {
+
+        }
+
         private void ButtonSearch_Clicked(object sender, RoutedEventArgs e)
         {
             string artist = cbBoxArtist.Text;
