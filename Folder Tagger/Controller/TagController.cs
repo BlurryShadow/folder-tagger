@@ -5,16 +5,6 @@ namespace Folder_Tagger
 {
     class TagController
     {
-        public bool TagExist(string tagName)
-        {
-            using (var db = new Model1())
-            {
-                if (db.Tags.Any(t => t.TagName == tagName))
-                    return true;
-                return false;
-            }
-        }
-
         public List<Tag> GetTagList(string location)
         {
             using (var db = new Model1())

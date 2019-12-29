@@ -93,7 +93,7 @@ namespace Folder_Tagger
             }
         }
 
-        private void MenuItemImportDatabase_Clicked(object sender, RoutedEventArgs e)
+        private void MenuItemImportMetadata_Clicked(object sender, RoutedEventArgs e)
         {
             OpenFileDialog fd = new OpenFileDialog
             {
@@ -103,21 +103,32 @@ namespace Folder_Tagger
             };
             if (fd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                System.Windows.Forms.MessageBox.Show(fd.FileName);
+                DialogResult dialogResult = System.Windows.Forms.MessageBox.Show(
+                    "The process might take a long time, are you sure?",
+                    "Import Folders Metadata",
+                    MessageBoxButtons.OKCancel,
+                    MessageBoxIcon.Question);
+                if (dialogResult == System.Windows.Forms.DialogResult.OK)
+                {
+                    using (StreamReader sr = new StreamReader(fd.FileName))
+                    {
+                        string json = sr.ReadToEnd();
+                        fc.ImportMetadata(json);
+                    }
+                }
             }
         }
 
-        private void MenuItemExportDatabase_Clicked(object sender, RoutedEventArgs e)
+        private void MenuItemExportMetadata_Clicked(object sender, RoutedEventArgs e)
         {
             using (var db = new Model1())
             {
-                var json = JsonConvert.SerializeObject(fc.ExportFolder(db));
-                if (File.Exists("db.json"))
-                    File.Delete("db.json");
-                using (var sw = new StreamWriter("db.json"))
+                var json = JsonConvert.SerializeObject(fc.ExportMetadata(db), Formatting.Indented);
+                string newJSON = "Metadata " + DateTime.Now.ToString("dd-MM-yyyy HHmmss") + ".json";
+                using (var sw = File.AppendText(newJSON))
                     sw.Write(json);
             }
-            System.Windows.Forms.MessageBox.Show("Export Database Successfully!");
+            System.Windows.Forms.MessageBox.Show("Metadata Exported Successfully!");
         }
 
         private void ButtonSearch_Clicked(object sender, RoutedEventArgs e)

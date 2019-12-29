@@ -64,14 +64,14 @@
 
             <MenuItem Header="Data">
                 <MenuItem
-                    x:Name="miImportDatabase"
-                    Header="Import Database"
-                    Click="MenuItemImportDatabase_Clicked"
+                    x:Name="miImportMetadata"
+                    Header="Import Metadata"
+                    Click="MenuItemImportMetadata_Clicked"
                 />
                 <MenuItem
-                    x:Name="miExportDatabase"
-                    Header="Export Database"
-                    Click="MenuItemExportDatabase_Clicked"
+                    x:Name="miExportMetadata"
+                    Header="Export Metadata"
+                    Click="MenuItemExportMetadata_Clicked"
                 />
             </MenuItem>
         </Menu>

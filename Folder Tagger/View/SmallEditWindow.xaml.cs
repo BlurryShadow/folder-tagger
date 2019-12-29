@@ -36,7 +36,7 @@ namespace Folder_Tagger
         private void ButtonUpdate_Clicked(object sender, RoutedEventArgs e)
         {
             string input = tbInput.Text.Trim().ToLower();
-            if (string.IsNullOrEmpty(input)) input = null;
+            if (string.IsNullOrWhiteSpace(input)) input = null;
             
             switch (type)
             {

@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualBasic.FileIO;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,14 +9,6 @@ namespace Folder_Tagger
 {
     class FolderController
     {
-        public bool FolderExist(string location)
-        {
-            using (var db = new Model1())
-                if (db.Folders.Any(f => f.Location == location))
-                    return true;
-                return false;
-        }
-
         public Folder GetFolderByLocation(string location, Model1 db)
         {
             return db.Folders.Where(f => f.Location == location).FirstOrDefault();
@@ -79,7 +72,8 @@ namespace Folder_Tagger
         {
             using (var db = new Model1())
             {
-                if (FolderExist(location))
+                var folder = GetFolderByLocation(location, db);
+                if (folder != null)
                 {
                     if (type == "single")
                         System.Windows.MessageBox.Show("This Folder Has Already Been Added!");
@@ -96,7 +90,7 @@ namespace Folder_Tagger
                                                      || (FullName.ToLower().Contains(".jpeg"))
                                                      || (FullName.ToLower().Contains(".bmp")));
 
-                var folder = new Folder(location, name, thumbnail);
+                folder = new Folder(location, name, thumbnail);
                 db.Folders.Add(folder);
                 db.SaveChanges();
             }
@@ -210,7 +204,7 @@ namespace Folder_Tagger
             }
         }
 
-        public IQueryable ExportFolder(Model1 db)
+        public IQueryable ExportMetadata(Model1 db)
         {
             return db.Folders
                 .OrderBy(f => f.Name)
@@ -220,6 +214,46 @@ namespace Folder_Tagger
                     f.Group,
                     Tags = f.Tags.Select(t => t.TagName)
                 });
+        }
+
+        public void ImportMetadata(string json)
+        {
+            using (var db = new Model1())
+            {
+                List<Metadata> metadataList = JsonConvert.DeserializeObject<List<Metadata>>(json);
+                foreach (Metadata metadata in metadataList)
+                {
+                    var folder = db.Folders.Where(f => f.Name.ToLower().Trim() == metadata.Name.ToLower().Trim()).FirstOrDefault();
+                    if (folder == null) continue;
+
+                    if (!string.IsNullOrWhiteSpace(metadata.Artist))
+                        folder.Artist = metadata.Artist.ToLower().Trim();
+                    if (!string.IsNullOrWhiteSpace(metadata.Group))
+                        folder.Group = metadata.Group.ToLower().Trim();
+                    db.SaveChanges();
+
+                    foreach (string tag in metadata.Tags)
+                    {
+                        Tag newTag = db.Tags.Where(t => t.TagName == tag).FirstOrDefault();
+                        if (newTag == null)
+                        {
+                            newTag = new Tag(tag.ToLower().Trim());
+                            db.Tags.Add(newTag);
+                            folder.Tags.Add(newTag);
+                            db.SaveChanges();
+                        } else
+                        {
+                            if (db.Folders
+                                .Where(f => f.Name.ToLower().Trim() == metadata.Name.ToLower().Trim()
+                                    && f.Tags.Any(t => t.TagName == tag)).FirstOrDefault() == null)
+                            {
+                                folder.Tags.Add(newTag);
+                                db.SaveChanges();
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

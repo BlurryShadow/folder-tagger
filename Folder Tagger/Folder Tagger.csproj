@@ -131,6 +131,7 @@
     <Compile Include="Controller\FolderController.cs" />
     <Compile Include="Controller\TagController.cs" />
     <Compile Include="Helper\ShortcutCommands.cs" />
+    <Compile Include="Model\Metadata.cs" />
     <Compile Include="View\AddTagWindow.xaml.cs">
       <DependentUpon>AddTagWindow.xaml</DependentUpon>
     </Compile>

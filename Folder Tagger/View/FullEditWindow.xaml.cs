@@ -58,7 +58,7 @@ namespace Folder_Tagger
                 Tag oldTag = tc.GetTagByID(oldTagID, db);
                 folder.Tags.Remove(oldTag);
 
-                if (string.IsNullOrEmpty(newTagName))
+                if (string.IsNullOrWhiteSpace(newTagName))
                 {
                     db.SaveChanges();
                     DataContext = tc.GetTagList(location);
