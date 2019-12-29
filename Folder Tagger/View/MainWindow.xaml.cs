@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -22,6 +23,7 @@ namespace Folder_Tagger
         public MainWindow()
         {
             InitializeComponent();
+            SetConnectionString();
             cbBoxImagesPerPage.ItemsSource = pageCapacity;
             fc.RemoveNonexistFolder();
             cbBoxArtist.ItemsSource = fc.GetArtistList();
@@ -38,6 +40,19 @@ namespace Folder_Tagger
 
             Loaded += (sender, e) => tbName.Focus();
             ContentRendered += (sender, e) => Search(null, null, null, new List<string>() { "no tag" });
+        }
+
+        private void SetConnectionString()
+        {
+            string currentPath = AppDomain.CurrentDomain.BaseDirectory;
+            string newConnectionString = @"data source=(LocalDB)\MSSQLLocalDB;AttachDbFilename="
+                + currentPath
+                + @"Database\Database1.mdf;Integrated Security=True;MultipleActiveResultSets=True;App=EntityFramework";
+            var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            var connectionStringsSection = config.ConnectionStrings;
+            connectionStringsSection.ConnectionStrings["Model1"].ConnectionString = newConnectionString;
+            config.Save();
+            ConfigurationManager.RefreshSection("connectionStrings");
         }
 
         private void Search(string artist = null, string group = null, string name = null, List<string> tagList = null)
@@ -95,12 +110,13 @@ namespace Folder_Tagger
 
         private void MenuItemImportMetadata_Clicked(object sender, RoutedEventArgs e)
         {
+            Directory.CreateDirectory("Metadata");
             OpenFileDialog fd = new OpenFileDialog
             {
                 DefaultExt = ".json",
                 Filter = "JSON Files (*.json)|*json",
-                InitialDirectory = AppDomain.CurrentDomain.BaseDirectory
-            };
+                InitialDirectory = AppDomain.CurrentDomain.BaseDirectory + "Metadata"
+        };
             if (fd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 DialogResult dialogResult = System.Windows.Forms.MessageBox.Show(
@@ -121,11 +137,12 @@ namespace Folder_Tagger
 
         private void MenuItemExportMetadata_Clicked(object sender, RoutedEventArgs e)
         {
+            Directory.CreateDirectory("Metadata");
             using (var db = new Model1())
             {
                 var json = JsonConvert.SerializeObject(fc.ExportMetadata(db), Formatting.Indented);
                 string newJSON = "Metadata " + DateTime.Now.ToString("dd-MM-yyyy HHmmss") + ".json";
-                using (var sw = File.AppendText(newJSON))
+                using (var sw = File.AppendText(@"Metadata\" + newJSON))
                     sw.Write(json);
             }
             System.Windows.Forms.MessageBox.Show("Metadata Exported Successfully!");
