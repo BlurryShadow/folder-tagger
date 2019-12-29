@@ -203,6 +203,7 @@
                             TextWrapping="WrapWithOverflow"
                             TextAlignment="Center"
                             Text="{Binding Name}"
+                            PreviewMouseDown="TextBlockFolderName_Clicked"
                         />
 
                         <StackPanel.ContextMenu>
@@ -328,11 +329,21 @@
             x:Name="textblockTotalFolder"
             HorizontalAlignment="Right"
             Height="25"
-            Padding="5,2,5,0"
+            Padding="5,5,5,0"
             Margin="20,0,0,0"
             FontSize="16"
             Grid.Row="3"
             Text="Folders Found: 0"
+        />
+
+        <TextBlock
+            x:Name="textblockClipboard"
+            HorizontalAlignment="Left"
+            Height="25"
+            Padding="5,10,5,0"
+            FontSize="12"
+            Grid.Row="3"
+            Text="Copied To Clipboard: "
         />
     </Grid>
 </Window>

@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Forms;
 
 namespace Folder_Tagger
@@ -148,51 +149,6 @@ namespace Folder_Tagger
             System.Windows.Forms.MessageBox.Show("Metadata Exported Successfully!");
         }
 
-        private void ButtonSearch_Clicked(object sender, RoutedEventArgs e)
-        {
-            string artist = cbBoxArtist.Text;
-            string group = cbBoxGroup.Text;
-            string name = tbName.Text;
-            List<string> tagList = new List<string>();
-            if (!string.IsNullOrWhiteSpace(tbTag.Text)) tagList = 
-                    tbTag.Text.Split(new string[] { ", " }, StringSplitOptions.None).ToList();
-            Search(artist, group, name, tagList);
-        }
-
-        private void ButtonSwitchPage_Clicked(object sender, RoutedEventArgs e)
-        {
-            System.Windows.Controls.Button button = (System.Windows.Controls.Button)sender;
-
-            if ((button.Name == "btnFirstPage" || button.Name == "btnPreviousPage") && currentPage == 1)
-                return;
-
-            if ((button.Name == "btnLastPage" || button.Name == "btnNextPage") && currentPage == maxPage)
-                return;
-
-            switch (button.Name)
-            {
-                case "btnFirstPage":
-                    currentPage = 1;
-                    DataContext = thumbnailList.ElementAt(0);
-                    break;
-                case "btnPreviousPage":
-                    currentPage--;
-                    DataContext = thumbnailList.ElementAt(currentPage - 1);
-                    break;
-                case "btnNextPage":
-                    currentPage++;
-                    DataContext = thumbnailList.ElementAt(currentPage - 1);
-                    break;
-                case "btnLastPage":
-                    currentPage = maxPage;
-                    DataContext = thumbnailList.ElementAt(maxPage - 1);
-                    break;
-            }
-
-            ChangeCurrentPageTextBlock();
-            ResetScroll();
-        }
-
         private void MenuItemOpenWindow_Clicked(object sender, RoutedEventArgs e)
         {
             List<string> folderList = listboxGallery.SelectedItems.Cast<Thumbnail>().Select(th => th.Folder).ToList();
@@ -307,6 +263,58 @@ namespace Folder_Tagger
                 else
                     listboxGallery.Items.Refresh();
             }
+        }
+
+        private void TextBlockFolderName_Clicked(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            TextBlock textBlock = (TextBlock)sender;
+            System.Windows.Clipboard.SetText(textBlock.Text);
+            textblockClipboard.Text = "Copied To Clipboard: " + textBlock.Text;
+        }
+
+        private void ButtonSearch_Clicked(object sender, RoutedEventArgs e)
+        {
+            string artist = cbBoxArtist.Text;
+            string group = cbBoxGroup.Text;
+            string name = tbName.Text;
+            List<string> tagList = new List<string>();
+            if (!string.IsNullOrWhiteSpace(tbTag.Text)) tagList =
+                    tbTag.Text.Split(new string[] { ", " }, StringSplitOptions.None).ToList();
+            Search(artist, group, name, tagList);
+        }
+
+        private void ButtonSwitchPage_Clicked(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Controls.Button button = (System.Windows.Controls.Button)sender;
+
+            if ((button.Name == "btnFirstPage" || button.Name == "btnPreviousPage") && currentPage == 1)
+                return;
+
+            if ((button.Name == "btnLastPage" || button.Name == "btnNextPage") && currentPage == maxPage)
+                return;
+
+            switch (button.Name)
+            {
+                case "btnFirstPage":
+                    currentPage = 1;
+                    DataContext = thumbnailList.ElementAt(0);
+                    break;
+                case "btnPreviousPage":
+                    currentPage--;
+                    DataContext = thumbnailList.ElementAt(currentPage - 1);
+                    break;
+                case "btnNextPage":
+                    currentPage++;
+                    DataContext = thumbnailList.ElementAt(currentPage - 1);
+                    break;
+                case "btnLastPage":
+                    currentPage = maxPage;
+                    DataContext = thumbnailList.ElementAt(maxPage - 1);
+                    break;
+            }
+
+            ChangeCurrentPageTextBlock();
+            ResetScroll();
         }
 
         private void ComboBoxPageCapacity_SelectionChanged(object sender, RoutedEventArgs e)
