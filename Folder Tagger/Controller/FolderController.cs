@@ -209,5 +209,17 @@ namespace Folder_Tagger
                 db.SaveChanges();
             }
         }
+
+        public IQueryable ExportFolder(Model1 db)
+        {
+            return db.Folders
+                .OrderBy(f => f.Name)
+                .Select(f => new {
+                    f.Name,
+                    f.Artist,
+                    f.Group,
+                    Tags = f.Tags.Select(t => t.TagName)
+                });
+        }
     }
 }

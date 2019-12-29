@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Forms;
-using System.Windows.Input;
 
 namespace Folder_Tagger
 {
@@ -99,7 +99,7 @@ namespace Folder_Tagger
             {
                 DefaultExt = ".json",
                 Filter = "JSON Files (*.json)|*json",
-                InitialDirectory = System.AppDomain.CurrentDomain.BaseDirectory
+                InitialDirectory = AppDomain.CurrentDomain.BaseDirectory
             };
             if (fd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
@@ -109,7 +109,15 @@ namespace Folder_Tagger
 
         private void MenuItemExportDatabase_Clicked(object sender, RoutedEventArgs e)
         {
-
+            using (var db = new Model1())
+            {
+                var json = JsonConvert.SerializeObject(fc.ExportFolder(db));
+                if (File.Exists("db.json"))
+                    File.Delete("db.json");
+                using (var sw = new StreamWriter("db.json"))
+                    sw.Write(json);
+            }
+            System.Windows.Forms.MessageBox.Show("Export Database Successfully!");
         }
 
         private void ButtonSearch_Clicked(object sender, RoutedEventArgs e)
