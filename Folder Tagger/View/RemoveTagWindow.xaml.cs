@@ -26,23 +26,33 @@ namespace Folder_Tagger
                 Close();
                 return;
             }
-                
-
-            List<string> tagList = tbInput.Text.Split(new string[] { ", " }, StringSplitOptions.None).ToList();
 
             using (var db = new Model1())
                 foreach (string location in folderList)
-                    foreach (string tag in tagList)
+                {
+                    if (tbInput.Text.ToLower().Trim().Equals("everything"))
                     {
-                        string currentTag = tag.Trim().ToLower();
-                        Tag deletedTag = db.Tags.Where(t => t.TagName == currentTag && t.Folders.Any(f => f.Location == location)).FirstOrDefault();
-
-                        if (deletedTag == null) continue;
-
                         Folder folder = fc.GetFolderByLocation(location, db);
-                        folder.Tags.Remove(deletedTag);
+                        List<Tag> tagList = folder.Tags.ToList();
+                        foreach (Tag t in tagList)
+                            folder.Tags.Remove(t);
                         db.SaveChanges();
+                    } else
+                    {
+                        List<string> tagList = tbInput.Text.Split(new string[] { ", " }, StringSplitOptions.None).ToList();
+                        foreach (string tag in tagList)
+                        {
+                            string currentTag = tag.Trim().ToLower();
+                            Tag deletedTag = db.Tags.Where(t => t.TagName == currentTag && t.Folders.Any(f => f.Location == location)).FirstOrDefault();
+
+                            if (deletedTag == null) continue;
+
+                            Folder folder = fc.GetFolderByLocation(location, db);
+                            folder.Tags.Remove(deletedTag);
+                            db.SaveChanges();
+                        }
                     }
+                }                    
             Close();
         }
     }
