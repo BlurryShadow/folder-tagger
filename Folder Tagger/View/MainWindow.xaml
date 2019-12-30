@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Folder_Tagger"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
-        Title="MainWindow"
+        Title="Main Window"
         Height="900"
         Width="1600"
         WindowStartupLocation="CenterScreen"
@@ -254,6 +254,7 @@
                                 <Separator />
                                 
                                 <MenuItem
+                                    x:Name="miRemoveTag"
                                     Header="Remove Tag"
                                     Click="MenuItemOpenWindow_Clicked"
                                     InputGestureText="Ctrl+R"

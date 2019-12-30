@@ -17,6 +17,7 @@ namespace Folder_Tagger
             InitializeComponent();
             this.type = type;
             this.locationList = locationList;
+            Title = "Edit " + type;
 
             if (locationList.Count > 1)
                 tbInput.Text = "";
