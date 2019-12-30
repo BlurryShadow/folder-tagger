@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 
@@ -7,26 +8,31 @@ namespace Folder_Tagger
     public partial class SmallEditWindow : Window
     {
         private readonly string type = "";
-        private readonly string location = "";
+        private readonly List<string> locationList;
         private string artist = "";
         private string group = "";
         FolderController fc = new FolderController();
-        public SmallEditWindow(string type, string location)
+        public SmallEditWindow(string type, List<string> locationList)
         {
             InitializeComponent();
             this.type = type;
-            this.location = location;
+            this.locationList = locationList;
 
-            switch (type)
+            if (locationList.Count > 1)
+                tbInput.Text = "";
+            else
             {
-                case "Artist":
-                    artist = fc.GetArtistList(location).ElementAtOrDefault(0);
-                    tbInput.Text = artist;
-                    break;
-                case "Group":
-                    group = fc.GetGroupList(location).ElementAtOrDefault(0);
-                    tbInput.Text = group;
-                    break;
+                switch (type)
+                {
+                    case "Artist":
+                        artist = fc.GetArtistList(locationList[0]).ElementAtOrDefault(0);
+                        tbInput.Text = artist;
+                        break;
+                    case "Group":
+                        group = fc.GetGroupList(locationList[0]).ElementAtOrDefault(0);
+                        tbInput.Text = group;
+                        break;
+                }
             }
 
             Loaded += (sender, e) => tbInput.Focus();
@@ -38,15 +44,16 @@ namespace Folder_Tagger
             string input = tbInput.Text.Trim().ToLower();
             if (string.IsNullOrWhiteSpace(input)) input = null;
             
-            switch (type)
-            {
-                case "Artist":
-                    fc.UpdateArtist(location, input);
-                    break;
-                case "Group":
-                    fc.UpdateGroup(location, input);
-                    break;
-            }
+            foreach (string location in locationList)
+                switch (type)
+                {
+                    case "Artist":
+                        fc.UpdateArtist(location, input);
+                        break;
+                    case "Group":
+                        fc.UpdateGroup(location, input);
+                        break;
+                }
 
             Close();
         }

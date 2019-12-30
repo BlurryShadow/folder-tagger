@@ -171,7 +171,7 @@ namespace Folder_Tagger
             {
                 case "miEditArtist":
                 case "miEditGroup":
-                    newWindow = new SmallEditWindow(type, folder);
+                    newWindow = new SmallEditWindow(type, folderList);
                     newWindow.Closed += (newWindowSender, newWindowEvent) =>
                     {
                         if (type == "Artist")
