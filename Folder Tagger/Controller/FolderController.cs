@@ -23,7 +23,7 @@ namespace Folder_Tagger
         {
             using (var db = new Model1())
             {
-                var query = (System.Linq.IQueryable<Folder>)db.Folders;
+                var query = (IQueryable<Folder>)db.Folders;
 
                 if (!string.IsNullOrWhiteSpace(artist))
                     query = query.Where(f => f.Artist == artist);
@@ -38,6 +38,10 @@ namespace Folder_Tagger
                 {
                     if (tagList.ElementAt(0).Trim().ToLower().Equals("no tag"))
                         query = query.Where(f => f.Tags.Count() == 0);
+                    else if (tagList.ElementAt(0).Trim().ToLower().Equals("no artist"))
+                        query = query.Where(f => f.Artist == null);
+                    else if (tagList.ElementAt(0).Trim().ToLower().Equals("no group"))
+                        query = query.Where(f => f.Group == null);
                     else
                         foreach (string tag in tagList)
                         {
