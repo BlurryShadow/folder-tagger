@@ -36,18 +36,32 @@ namespace Folder_Tagger
 
                 if (tagList.Count() > 0)
                 {
-                    if (tagList.ElementAt(0).Trim().ToLower().Equals("no tag"))
-                        query = query.Where(f => f.Tags.Count() == 0);
-                    else if (tagList.ElementAt(0).Trim().ToLower().Equals("no artist"))
-                        query = query.Where(f => f.Artist == null);
-                    else if (tagList.ElementAt(0).Trim().ToLower().Equals("no group"))
-                        query = query.Where(f => f.Group == null);
-                    else
-                        foreach (string tag in tagList)
-                        {
-                            string currentTag = tag.Trim().ToLower();
-                            query = query.Where(f => f.Tags.Any(t => t.TagName == currentTag));
-                        }
+                    string firstTag = tagList.ElementAt(0).ToLower().Trim();
+                    switch (firstTag)
+                    {
+                        case "no tag":
+                            query = query.Where(f => f.Tags.Count() == 0);
+                            break;
+                        case "no artist":
+                            query = query.Where(f => f.Artist == null);
+                            break;
+                        case "no group":
+                            query = query.Where(f => f.Group == null);
+                            break;
+                        case "no artist no group":
+                        case "no group no artist":
+                        case "no artist group":
+                        case "no group artist":
+                            query = query.Where(f => f.Artist == null && f.Group == null);
+                            break;
+                        default:
+                            foreach (string tag in tagList)
+                            {
+                                string currentTag = tag.Trim().ToLower();
+                                query = query.Where(f => f.Tags.Any(t => t.TagName == currentTag));
+                            }
+                            break;
+                    }
                 }
 
                 int maxPage = (int)Math.Ceiling(((double)query.Count() / imagesPerPage));
