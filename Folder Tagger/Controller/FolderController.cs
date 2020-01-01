@@ -57,8 +57,11 @@ namespace Folder_Tagger
                         default:
                             foreach (string tag in tagList)
                             {
-                                string currentTag = tag.Trim().ToLower();
-                                query = query.Where(f => f.Tags.Any(t => t.TagName == currentTag));
+                                string currentTag = tag.ToLower().Trim();
+                                if (currentTag[0].Equals('-') && currentTag.Length > 1)
+                                    query = query.Where(f => f.Tags.All(t => t.TagName != currentTag.Substring(1)));
+                                else
+                                    query = query.Where(f => f.Tags.Any(t => t.TagName == currentTag));
                             }
                             break;
                     }
