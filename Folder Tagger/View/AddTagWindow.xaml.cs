@@ -35,6 +35,7 @@ namespace Folder_Tagger
                     foreach (string tag in tagList)
                     {
                         string currentTag = tag.Trim().ToLower();
+                        if (string.IsNullOrEmpty(currentTag)) continue;
 
                         if (db.Folders.Any(f => f.Location == location && f.Tags.Any(t => t.TagName == currentTag)))
                             continue;

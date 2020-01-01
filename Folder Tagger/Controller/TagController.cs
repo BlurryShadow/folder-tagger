@@ -9,6 +9,7 @@ namespace Folder_Tagger
         {
             using (var db = new Model1())
                 return db.Tags
+                    .OrderBy(t => t.TagName)
                     .Where(t => t.Folders.Any(f => f.Location == location))
                     .Select(t => t)
                     .ToList();
