@@ -8,11 +8,16 @@ namespace Folder_Tagger
         public List<Tag> GetTagList(string location)
         {
             using (var db = new Model1())
-                return db.Tags
-                    .OrderBy(t => t.TagName)
-                    .Where(t => t.Folders.Any(f => f.Location == location))
-                    .Select(t => t)
-                    .ToList();
+                if (location == "all")
+                    return db.Tags
+                        .Select(t => t)
+                        .ToList();
+                else
+                    return db.Tags
+                        .OrderBy(t => t.TagName)
+                        .Where(t => t.Folders.Any(f => f.Location == location))
+                        .Select(t => t)
+                        .ToList();
         }
 
         public Tag GetTagByID(int tagID, Model1 db)
