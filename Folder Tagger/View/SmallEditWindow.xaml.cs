@@ -36,7 +36,7 @@ namespace Folder_Tagger
                 }
             }
 
-            Loaded += (sender, e) => tbInput.Focus();
+            Loaded += (sender, e) => { tbInput.Focus(); tbInput.SelectAll(); };
             PreviewKeyDown += (sender, e) => { if (e.Key == Key.Escape) Close(); };
         }
 
