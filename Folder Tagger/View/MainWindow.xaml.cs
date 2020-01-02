@@ -142,7 +142,7 @@ namespace Folder_Tagger
             using (var db = new Model1())
             {
                 var json = JsonConvert.SerializeObject(fc.ExportMetadata(db), Formatting.Indented);
-                string newJSON = "Metadata " + DateTime.Now.ToString("dd-MM-yyyy HHmmss") + ".json";
+                string newJSON = "Metadata " + DateTime.Now.ToString("yyyy-MM-dd HHmmss") + ".json";
                 using (var sw = File.AppendText(@"Metadata\" + newJSON))
                     sw.Write(json);
             }
