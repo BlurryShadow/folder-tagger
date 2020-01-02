@@ -37,7 +37,6 @@ namespace Folder_Tagger
         private void TextBoxInput_LostKeyboardFocus(object sender, RoutedEventArgs e)
         {
             TextBox tb = (TextBox)sender;
-            int oldTagID = Int32.Parse(tb.Tag.ToString());
             string newTagName = tb.Text.Trim().ToLower();
 
             if (newTagName == oldTagName.Trim().ToLower())
@@ -55,7 +54,7 @@ namespace Folder_Tagger
                 }
 
                 Folder folder = fc.GetFolderByLocation(location, db);
-                Tag oldTag = tc.GetTagByID(oldTagID, db);
+                Tag oldTag = tc.GetTagByName(oldTagName, db);
                 folder.Tags.Remove(oldTag);
 
                 if (string.IsNullOrWhiteSpace(newTagName))
