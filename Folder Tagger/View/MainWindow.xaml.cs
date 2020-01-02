@@ -27,12 +27,8 @@ namespace Folder_Tagger
             SetConnectionString();
             cbBoxImagesPerPage.ItemsSource = pageCapacity;
             fc.RemoveNonexistFolder();
-            var artistList = fc.GetArtistList("all");
-            artistList.Insert(0, "");
-            cbBoxArtist.ItemsSource = artistList;
-            var groupList = fc.GetGroupList("all");
-            groupList.Insert(0, "");
-            cbBoxGroup.ItemsSource = groupList;
+            cbBoxArtist.ItemsSource = fc.GetArtistList("all");
+            cbBoxGroup.ItemsSource = fc.GetGroupList("all");
             commandbindingAddOneFolder.Executed += (sender, e) => MenuItemAddFolder_Clicked(miAddOneFolder, new RoutedEventArgs());
             commandbindingAddManyFolders.Executed += (sender, e) => MenuItemAddFolder_Clicked(miAddManyFolders, new RoutedEventArgs());
             commandbindingOpenFolder.Executed += (sender, e) => MenuItemOpenFolder_Clicked(null, new RoutedEventArgs());
@@ -179,16 +175,9 @@ namespace Folder_Tagger
                     newWindow.Closed += (newWindowSender, newWindowEvent) =>
                     {
                         if (type == "Artist")
-                        {
-                            var artistList = fc.GetArtistList("all");
-                            artistList.Insert(0, "");
-                            cbBoxArtist.ItemsSource = artistList;                            
-                        } else
-                        {
-                            var groupList = fc.GetGroupList("all");
-                            groupList.Insert(0, "");
-                            cbBoxGroup.ItemsSource = groupList;
-                        }
+                            cbBoxArtist.ItemsSource = fc.GetArtistList("all");
+                        else
+                            cbBoxGroup.ItemsSource = fc.GetGroupList("all");
                     };
                     break;
                 case "miEditTag":
