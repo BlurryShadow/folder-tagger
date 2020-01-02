@@ -156,7 +156,7 @@ namespace Folder_Tagger
             switch (menuItem.Name)
             {
                 default: //Tag Info
-                    newWindow = new TagInfoWindow();
+                    newWindow = new InfoWindow();
                     break;
             }
 

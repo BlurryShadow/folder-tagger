@@ -149,8 +149,8 @@
     <Compile Include="View\SmallEditWindow.xaml.cs">
       <DependentUpon>SmallEditWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\TagInfoWindow.xaml.cs">
-      <DependentUpon>TagInfoWindow.xaml</DependentUpon>
+    <Compile Include="View\InfoWindow.xaml.cs">
+      <DependentUpon>InfoWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="View\AddTagWindow.xaml">
       <SubType>Designer</SubType>
@@ -180,7 +180,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\TagInfoWindow.xaml">
+    <Page Include="View\InfoWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

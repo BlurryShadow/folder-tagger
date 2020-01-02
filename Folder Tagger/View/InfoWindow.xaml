@@ -1,0 +1,46 @@
+﻿<Window x:Class="Folder_Tagger.InfoWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Folder_Tagger"
+        mc:Ignorable="d"
+        Title="Info"
+        Height="450"
+        Width="350"
+        ResizeMode="CanMinimize"
+>
+    <Grid>
+        <StackPanel
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            Height="400"
+            Width="325"
+        >
+            <ListBox
+                x:Name="listboxTag"
+                Height="400"
+                Width="325"
+                BorderThickness="0"
+                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                ItemsSource="{Binding}"
+            >
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBox
+                            Width="315"
+                            FontSize="16"
+                            BorderThickness="0"
+                            Margin="-3,0,0,0"
+                            Tag="{Binding TagID}"
+                            Text="{Binding TagName}"
+                            LostKeyboardFocus="TextBoxInput_LostKeyboardFocus"
+                            KeyDown="TextBoxInput_KeyDown"
+                            GotKeyboardFocus="TextBoxInput_GotKeyboardFocus"
+                        />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </StackPanel>
+    </Grid>
+</Window>
