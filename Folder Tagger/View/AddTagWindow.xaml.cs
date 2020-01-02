@@ -17,7 +17,7 @@ namespace Folder_Tagger
         {
             InitializeComponent();
             this.folderList = folderList;
-            allTag = tc.GetTagList("all");
+            allTag = tc.GetTagList("all", "mostUsed");
 
             Loaded += (sender, e) => tbInput.Focus();
             PreviewKeyDown += (sender, e) => { if (e.Key == Key.Escape) Close(); };

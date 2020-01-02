@@ -5,13 +5,20 @@ namespace Folder_Tagger
 {
     class TagController
     {
-        public List<Tag> GetTagList(string location)
+        public List<Tag> GetTagList(string location, string orderBy = "alphabet")
         {
             using (var db = new Model1())
                 if (location == "all")
-                    return db.Tags
-                        .Select(t => t)
-                        .ToList();
+                {
+                    var query = db.Tags.Select(t => t);
+
+                    if (orderBy == "alphabet")
+                        query = query.OrderBy(t => t.TagName);
+                    if (orderBy == "mostUsed")
+                        query = query.OrderByDescending(t => t.Folders.Count);
+
+                    return query.ToList();
+                }
                 else
                     return db.Tags
                         .OrderBy(t => t.TagName)
