@@ -41,7 +41,7 @@ namespace Folder_Tagger
                     return;
                 }
 
-                var suggestedTag = allTag.Where(t => t.TagName.Contains(currentTag)).Select(t => t).ToList();
+                var suggestedTag = allTag.Where(t => t.TagName.Contains(currentTag)).ToList();
                 int suggestedTagCount = suggestedTag.Count;
                 if (suggestedTagCount == 0)
                 {

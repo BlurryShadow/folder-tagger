@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -9,6 +10,8 @@ namespace Folder_Tagger
     {
         private readonly string infoType = "";
         private string oldInput = "";
+        private List<string> infoList;
+
         private readonly TagController tc = new TagController();
         public InfoWindow(string infoType)
         {
@@ -17,9 +20,22 @@ namespace Folder_Tagger
             switch (infoType)
             {
                 case "TagInfo":
-                    listboxInfo.ItemsSource = tc.GetTagList("all");
+                    infoList = tc.GetTagList("all").Select(t => t.TagName).ToList();
+                    Title = "Tag Info";
                     break;
             }
+            listboxInfo.ItemsSource = infoList;
+
+            Loaded += (sender, e) => tbSuggest.Focus();
+        }
+
+        private void TextBoxSort_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            string currentSort = tbSuggest.Text.ToLower().Trim();
+            if (string.IsNullOrEmpty(currentSort))
+                listboxInfo.ItemsSource = infoList;
+            else
+                listboxInfo.ItemsSource = infoList.Where(i => i.Contains(currentSort));
         }
         private void TextBoxInput_GotKeyboardFocus(object sender, RoutedEventArgs e)
         {
@@ -72,7 +88,8 @@ namespace Folder_Tagger
                 switch (infoType)
                 {
                     case "TagInfo":
-                        listboxInfo.ItemsSource = tc.GetTagList("all");
+                        infoList = tc.GetTagList("all").Select(t => t.TagName).ToList();
+                        listboxInfo.ItemsSource = infoList;
                         break;
                 }
             }

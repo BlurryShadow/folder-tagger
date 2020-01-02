@@ -6,32 +6,47 @@
         xmlns:local="clr-namespace:Folder_Tagger"
         mc:Ignorable="d"
         Title="Info"
-        Height="450"
-        Width="350"
+        Height="650"
+        Width="450"
         ResizeMode="CanMinimize"
 >
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25" />
+            <RowDefinition Height="590*" />
+        </Grid.RowDefinitions>
+
+        <TextBox
+            x:Name="tbSuggest"
+            Height="25"
+            Width="430"
+            FontSize="16"
+            Grid.Row="0"
+            TextChanged="TextBoxSort_TextChanged"
+        />
+        
         <StackPanel
             VerticalAlignment="Center"
             HorizontalAlignment="Center"
-            Height="400"
-            Width="325"
+            Height="590"
+            Width="440"
+            Grid.Row="1"
         >
             <ListBox
                 x:Name="listboxInfo"
-                Height="400"
-                Width="325"
+                Height="590"
+                Width="440"
                 BorderThickness="0"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
             >
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <TextBox
-                            Width="315"
+                            Width="430"
                             FontSize="16"
                             BorderThickness="0"
                             Margin="-3,0,0,0"
-                            Text="{Binding TagName}"
+                            Text="{Binding Mode=OneWay}"
                             LostKeyboardFocus="TextBoxInput_LostKeyboardFocus"
                             KeyDown="TextBoxInput_KeyDown"
                             GotKeyboardFocus="TextBoxInput_GotKeyboardFocus"
