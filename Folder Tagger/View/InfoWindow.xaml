@@ -18,12 +18,11 @@
             Width="325"
         >
             <ListBox
-                x:Name="listboxTag"
+                x:Name="listboxInfo"
                 Height="400"
                 Width="325"
                 BorderThickness="0"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                ItemsSource="{Binding}"
             >
                 <ListBox.ItemTemplate>
                     <DataTemplate>
@@ -32,7 +31,6 @@
                             FontSize="16"
                             BorderThickness="0"
                             Margin="-3,0,0,0"
-                            Tag="{Binding TagID}"
                             Text="{Binding TagName}"
                             LostKeyboardFocus="TextBoxInput_LostKeyboardFocus"
                             KeyDown="TextBoxInput_KeyDown"

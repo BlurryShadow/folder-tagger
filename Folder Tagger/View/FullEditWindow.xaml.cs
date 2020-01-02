@@ -71,7 +71,6 @@ namespace Folder_Tagger
                 folder.Tags.Add(newTag);
                 db.SaveChanges();
                 tb.Text = newTagName;
-                tb.Tag = newTag.TagID;
             }
         }
     }

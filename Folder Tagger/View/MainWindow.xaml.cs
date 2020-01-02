@@ -151,15 +151,8 @@ namespace Folder_Tagger
 
         private void MenuItemInfo_Clicked(object sender, RoutedEventArgs e)
         {
-            Window newWindow;
             System.Windows.Controls.MenuItem menuItem = (System.Windows.Controls.MenuItem)sender;
-            switch (menuItem.Name)
-            {
-                default: //Tag Info
-                    newWindow = new InfoWindow();
-                    break;
-            }
-
+            Window newWindow = new InfoWindow(menuItem.Name.Replace("mi", ""));
             newWindow.Owner = App.Current.MainWindow;
             newWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             newWindow.ShowInTaskbar = false;
