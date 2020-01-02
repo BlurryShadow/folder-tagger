@@ -155,26 +155,23 @@ namespace Folder_Tagger
             }
         }
 
-        public List<string> GetArtistList(string location = null)
+        public List<string> GetArtistList(string location)
         {
             using (var db =  new Model1())
             {
-                if (location != null)
-                    return db.Folders
-                        .Where(f => f.Location == location)
-                        .Select(f => f.Artist)
-                        .ToList();
-                else
+                if (location == "all")
                 {
-                    var artistList = db.Folders
+                    return db.Folders
                         .OrderBy(f => f.Artist)
                         .Where(f => f.Artist != null)
                         .Select(f => f.Artist)
                         .Distinct()
                         .ToList();
-                    artistList.Insert(0, "");
-                    return artistList;
-                }
+                } else
+                    return db.Folders
+                        .Where(f => f.Location == location)
+                        .Select(f => f.Artist)
+                        .ToList();
             }
         }
 
@@ -182,34 +179,30 @@ namespace Folder_Tagger
         {
             using (var db = new Model1())
             {
-                db.Folders
-                    .Where(f => f.Location == location)
-                    .ToList()
-                    .ForEach(f => f.Artist = input);
+                var folder = db.Folders.Where(f => f.Location == location).FirstOrDefault();
+                folder.Artist = input;
                 db.SaveChanges();
             }
         }
 
-        public List<string> GetGroupList(string location = null)
+        public List<string> GetGroupList(string location)
         {
             using (var db = new Model1())
             {
-                if (location != null)
-                    return db.Folders
-                        .Where(f => f.Location == location)
-                        .Select(f => f.Group)
-                        .ToList();
-                else
+                if (location == "all")
                 {
-                    var artistList = db.Folders
+                    return db.Folders
                         .OrderBy(f => f.Group)
                         .Where(f => f.Group != null)
                         .Select(f => f.Group)
                         .Distinct()
                         .ToList();
-                    artistList.Insert(0, "");
-                    return artistList;
                 }
+                else
+                    return db.Folders
+                        .Where(f => f.Location == location)
+                        .Select(f => f.Group)
+                        .ToList();
             }
         }
 
@@ -217,10 +210,8 @@ namespace Folder_Tagger
         {
             using (var db = new Model1())
             {
-                db.Folders
-                    .Where(f => f.Location == location)
-                    .ToList()
-                    .ForEach(f => f.Group = input);
+                var folder = db.Folders.Where(f => f.Location == location).FirstOrDefault();
+                folder.Group = input;
                 db.SaveChanges();
             }
         }

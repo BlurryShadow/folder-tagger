@@ -24,7 +24,33 @@
             Width="500"
             FontSize="16"
             Grid.Column="0"
+            TextChanged="TextBoxInput_TextChanged"
+            PreviewKeyDown="TextBoxInput_KeyDown"
         />
+
+        <Popup
+            x:Name="popupAutoComplete"
+            Width="500"
+            Placement="Bottom"
+            PlacementTarget="{Binding ElementName=tbInput}"
+            StaysOpen="False"
+        >
+            <ListBox
+                x:Name="listboxAutoComplete"
+                VerticalContentAlignment="Center"
+                HorizontalContentAlignment="Left"
+                PreviewKeyDown="ListBox_KeyDown"
+            >
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock
+                            FontSize="16"
+                            Text="{Binding}"
+                        />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Popup>
 
         <Button
             x:Name="btnUpdate"

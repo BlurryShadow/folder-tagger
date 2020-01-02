@@ -27,8 +27,12 @@ namespace Folder_Tagger
             SetConnectionString();
             cbBoxImagesPerPage.ItemsSource = pageCapacity;
             fc.RemoveNonexistFolder();
-            cbBoxArtist.ItemsSource = fc.GetArtistList();
-            cbBoxGroup.ItemsSource = fc.GetGroupList();
+            var artistList = fc.GetArtistList("all");
+            artistList.Insert(0, "");
+            cbBoxArtist.ItemsSource = artistList;
+            var groupList = fc.GetGroupList("all");
+            groupList.Insert(0, "");
+            cbBoxGroup.ItemsSource = groupList;
             commandbindingAddOneFolder.Executed += (sender, e) => MenuItemAddFolder_Clicked(miAddOneFolder, new RoutedEventArgs());
             commandbindingAddManyFolders.Executed += (sender, e) => MenuItemAddFolder_Clicked(miAddManyFolders, new RoutedEventArgs());
             commandbindingOpenFolder.Executed += (sender, e) => MenuItemOpenFolder_Clicked(null, new RoutedEventArgs());
@@ -175,9 +179,16 @@ namespace Folder_Tagger
                     newWindow.Closed += (newWindowSender, newWindowEvent) =>
                     {
                         if (type == "Artist")
-                            cbBoxArtist.ItemsSource = fc.GetArtistList();
-                        else
-                            cbBoxGroup.ItemsSource = fc.GetGroupList();
+                        {
+                            var artistList = fc.GetArtistList("all");
+                            artistList.Insert(0, "");
+                            cbBoxArtist.ItemsSource = artistList;                            
+                        } else
+                        {
+                            var groupList = fc.GetGroupList("all");
+                            groupList.Insert(0, "");
+                            cbBoxGroup.ItemsSource = groupList;
+                        }
                     };
                     break;
                 case "miEditTag":
