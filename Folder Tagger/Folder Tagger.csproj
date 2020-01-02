@@ -149,6 +149,9 @@
     <Compile Include="View\SmallEditWindow.xaml.cs">
       <DependentUpon>SmallEditWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\TagInfoWindow.xaml.cs">
+      <DependentUpon>TagInfoWindow.xaml</DependentUpon>
+    </Compile>
     <Page Include="View\AddTagWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -174,6 +177,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\SmallEditWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\TagInfoWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

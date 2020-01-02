@@ -33,11 +33,11 @@ namespace Folder_Tagger
             commandbindingAddManyFolders.Executed += (sender, e) => MenuItemAddFolder_Clicked(miAddManyFolders, new RoutedEventArgs());
             commandbindingOpenFolder.Executed += (sender, e) => MenuItemOpenFolder_Clicked(null, new RoutedEventArgs());
             commandbindingOpenInMangareader.Executed += (sender, e) => MenuItemOpenInMangareader_Clicked(null, new RoutedEventArgs());
-            commandbindingAddTag.Executed += (sender, e) => MenuItemOpenWindow_Clicked("miAddTag", new RoutedEventArgs());
-            commandbindingEditArtist.Executed += (sender, e) => MenuItemOpenWindow_Clicked("miEditArtist", new RoutedEventArgs());
-            commandbindingEditGroup.Executed += (sender, e) => MenuItemOpenWindow_Clicked("miEditGroup", new RoutedEventArgs());
-            commandbindingEditTag.Executed += (sender, e) => MenuItemOpenWindow_Clicked("miEditTag", new RoutedEventArgs());
-            commandbindingRemoveTag.Executed += (sender, e) => MenuItemOpenWindow_Clicked("miRemoveTag", new RoutedEventArgs());
+            commandbindingAddTag.Executed += (sender, e) => MenuItemContextMenu_Clicked("miAddTag", new RoutedEventArgs());
+            commandbindingEditArtist.Executed += (sender, e) => MenuItemContextMenu_Clicked("miEditArtist", new RoutedEventArgs());
+            commandbindingEditGroup.Executed += (sender, e) => MenuItemContextMenu_Clicked("miEditGroup", new RoutedEventArgs());
+            commandbindingEditTag.Executed += (sender, e) => MenuItemContextMenu_Clicked("miEditTag", new RoutedEventArgs());
+            commandbindingRemoveTag.Executed += (sender, e) => MenuItemContextMenu_Clicked("miRemoveTag", new RoutedEventArgs());
 
             Loaded += (sender, e) => tbName.Focus();
             ContentRendered += (sender, e) => Search(null, null, null, new List<string>() { "no tag" });
@@ -149,7 +149,24 @@ namespace Folder_Tagger
             System.Windows.Forms.MessageBox.Show("Metadata Exported Successfully!");
         }
 
-        private void MenuItemOpenWindow_Clicked(object sender, RoutedEventArgs e)
+        private void MenuItemInfo_Clicked(object sender, RoutedEventArgs e)
+        {
+            Window newWindow;
+            System.Windows.Controls.MenuItem menuItem = (System.Windows.Controls.MenuItem)sender;
+            switch (menuItem.Name)
+            {
+                default: //Tag Info
+                    newWindow = new TagInfoWindow();
+                    break;
+            }
+
+            newWindow.Owner = App.Current.MainWindow;
+            newWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            newWindow.ShowInTaskbar = false;
+            newWindow.ShowDialog();
+        }
+
+        private void MenuItemContextMenu_Clicked(object sender, RoutedEventArgs e)
         {
             List<string> folderList = listboxGallery.SelectedItems.Cast<Thumbnail>().Select(th => th.Folder).ToList();
             if (folderList.Count == 0) return;

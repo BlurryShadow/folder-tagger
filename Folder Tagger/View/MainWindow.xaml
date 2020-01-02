@@ -68,10 +68,18 @@
                     Header="Import Metadata"
                     Click="MenuItemImportMetadata_Clicked"
                 />
-                <MenuItem
+                <MenuItem                    
                     x:Name="miExportMetadata"
                     Header="Export Metadata"
                     Click="MenuItemExportMetadata_Clicked"
+                />
+            </MenuItem>
+
+            <MenuItem Header="Info">
+                <MenuItem
+                    x:Name="miTagInfo"
+                    Header="Tag Info"
+                    Click="MenuItemInfo_Clicked"
                 />
             </MenuItem>
         </Menu>
@@ -223,7 +231,7 @@
                                 <MenuItem
                                     x:Name="miAddTag"
                                     Header="Add Tag"
-                                    Click="MenuItemOpenWindow_Clicked"
+                                    Click="MenuItemContextMenu_Clicked"
                                     InputGestureText="Ctrl+E"
                                 />
                                 
@@ -233,21 +241,21 @@
                                     x:Name="miEditArtist"
                                     Tag="{Binding Folder}" 
                                     Header="Edit Artist" 
-                                    Click="MenuItemOpenWindow_Clicked"
+                                    Click="MenuItemContextMenu_Clicked"
                                     InputGestureText="Ctrl+D"
                                 />
                                 <MenuItem 
                                     x:Name="miEditGroup"
                                     Tag="{Binding Folder}" 
                                     Header="Edit Group" 
-                                    Click="MenuItemOpenWindow_Clicked"
+                                    Click="MenuItemContextMenu_Clicked"
                                     InputGestureText="Ctrl+F"
                                 />
                                 <MenuItem
                                     x:Name="miEditTag"
                                     Tag="{Binding Folder}"
                                     Header="Edit Tag"
-                                    Click="MenuItemOpenWindow_Clicked"
+                                    Click="MenuItemContextMenu_Clicked"
                                     InputGestureText="Ctrl+S"
                                 />
                                 
@@ -256,7 +264,7 @@
                                 <MenuItem
                                     x:Name="miRemoveTag"
                                     Header="Remove Tag"
-                                    Click="MenuItemOpenWindow_Clicked"
+                                    Click="MenuItemContextMenu_Clicked"
                                     InputGestureText="Ctrl+R"
                                 />
                                 <MenuItem
