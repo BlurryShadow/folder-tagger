@@ -22,7 +22,7 @@ namespace Folder_Tagger
             switch (infoType)
             {
                 case "Tag":
-                    infoList = tc.GetTagList("all").Select(t => t.TagName).ToList();                    
+                    infoList = tc.GetTags().Select(t => t.TagName).ToList();                    
                     break;
                 case "Artist":
                     infoList = fc.GetArtists();
@@ -103,7 +103,7 @@ namespace Folder_Tagger
                 switch (infoType)
                 {
                     case "Tag":
-                        infoList = tc.GetTagList("all").Select(t => t.TagName).ToList();
+                        infoList = tc.GetTags().Select(t => t.TagName).ToList();
                         break;
                     case "Artist":
                         infoList = fc.GetArtists();

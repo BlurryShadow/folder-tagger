@@ -17,7 +17,7 @@ namespace Folder_Tagger
         {
             InitializeComponent();
             this.location = location;
-            DataContext = tc.GetTagList(location);
+            DataContext = tc.GetTags(location);
 
             PreviewKeyDown += (sender, e) => { if (e.Key == Key.Escape) Close(); };
         }
@@ -60,7 +60,7 @@ namespace Folder_Tagger
                 if (string.IsNullOrWhiteSpace(newTagName))
                 {
                     db.SaveChanges();
-                    DataContext = tc.GetTagList(location);
+                    DataContext = tc.GetTags(location);
                     return;
                 }
 
