@@ -25,10 +25,10 @@ namespace Folder_Tagger
                     infoList = tc.GetTagList("all").Select(t => t.TagName).ToList();                    
                     break;
                 case "Artist":
-                    infoList = fc.GetArtistList("all");
+                    infoList = fc.GetArtists();
                     break;
                 case "Group":
-                    infoList = fc.GetGroupList("all");
+                    infoList = fc.GetGroups();
                     break;
             }            
             listboxInfo.ItemsSource = infoList;
@@ -90,11 +90,11 @@ namespace Folder_Tagger
                         }
                         break;
                     case "Artist":
-                        folderList = fc.GetFolderListByArtist(oldInput, db);
+                        folderList = fc.GetFoldersByArtist(oldInput, db);
                         folderList.ForEach(f => fc.UpdateArtist(f.Location, newInput));
                         break;
                     case "Group":
-                        folderList = fc.GetFolderListByGroup(oldInput, db);
+                        folderList = fc.GetFoldersByGroup(oldInput, db);
                         folderList.ForEach(f => fc.UpdateGroup(f.Location, newInput));
                         break;
                 }
@@ -106,10 +106,10 @@ namespace Folder_Tagger
                         infoList = tc.GetTagList("all").Select(t => t.TagName).ToList();
                         break;
                     case "Artist":
-                        infoList = fc.GetArtistList("all");
+                        infoList = fc.GetArtists();
                         break;
                     case "Group":
-                        infoList = fc.GetGroupList("all");
+                        infoList = fc.GetGroups();
                         break;
                 }
                 listboxInfo.ItemsSource = infoList;

@@ -14,39 +14,42 @@ namespace Folder_Tagger
             return db.Folders.Where(f => f.Location == location).FirstOrDefault();
         }
 
-        public List<Folder> GetFolderListByArtist(string artist, Model1 db)
+        public List<Folder> GetFoldersByArtist(string artist, Model1 db)
         {
             return db.Folders.Where(f => f.Artist == artist).ToList();
         }
 
-        public List<Folder> GetFolderListByGroup(string group, Model1 db)
+        public List<Folder> GetFoldersByGroup(string group, Model1 db)
         {
             return db.Folders.Where(f => f.Group == group).ToList();
         }
 
-        public List<List<Thumbnail>> SearchFolder(
-            string artist = null, 
-            string group = null, 
-            string name = null, 
-            List<string> tagList = null, 
+        public List<List<Thumbnail>> SearchFolders(
+            string paramArtist = null, 
+            string paramGroup = null, 
+            string paramName = null, 
+            List<string> tags = null, 
             int imagesPerPage = 60)
         {
             using (var db = new Model1())
             {
+                string artist = paramArtist?.ToLower().Trim();
+                string group = paramGroup?.ToLower().Trim();
+                string name = paramName?.ToLower().Trim();
                 var query = (IQueryable<Folder>)db.Folders;
 
-                if (!string.IsNullOrWhiteSpace(artist))
+                if (!string.IsNullOrEmpty(artist))
                     query = query.Where(f => f.Artist == artist);
 
-                if (!string.IsNullOrWhiteSpace(group))
+                if (!string.IsNullOrEmpty(group))
                     query = query.Where(f => f.Group == group);
 
-                if (!string.IsNullOrWhiteSpace(name))
+                if (!string.IsNullOrEmpty(name))
                     query = query.Where(f => f.Name.Contains(name));
 
-                if (tagList.Count() > 0)
+                if (tags.Count() > 0)
                 {
-                    string firstTag = tagList.ElementAt(0).ToLower().Trim();
+                    string firstTag = tags[0].ToLower().Trim();
                     switch (firstTag)
                     {
                         case "no tag":
@@ -65,11 +68,13 @@ namespace Folder_Tagger
                             query = query.Where(f => f.Artist == null && f.Group == null);
                             break;
                         default:
-                            foreach (string tag in tagList)
+                            foreach (string tag in tags)
                             {
                                 string currentTag = tag.ToLower().Trim();
+                                //Excluding tags
                                 if (currentTag[0].Equals('-') && currentTag.Length > 1)
                                     query = query.Where(f => f.Tags.All(t => t.TagName != currentTag.Substring(1)));
+                                //Including tags
                                 else
                                     query = query.Where(f => f.Tags.Any(t => t.TagName == currentTag));
                             }
@@ -77,13 +82,14 @@ namespace Folder_Tagger
                     }
                 }
 
-                int maxPage = (int)Math.Ceiling(((double)query.Count() / imagesPerPage));
-                if (maxPage < 1)
+                //Pagination
+                int totalPages = (int)Math.Ceiling(((double)query.Count() / imagesPerPage));
+                if (totalPages < 1)
                     return null;
 
-                List<List<Thumbnail>> thumbnailList = new List<List<Thumbnail>>();
-                for (int i = 0; i < maxPage; i++)
-                    thumbnailList.Add(
+                List<List<Thumbnail>> thumbnailsList = new List<List<Thumbnail>>();
+                for (int i = 0; i < totalPages; i++)
+                    thumbnailsList.Add(
                         query
                             .OrderBy(f => f.Name)
                             .Skip(i * imagesPerPage)
@@ -96,17 +102,18 @@ namespace Folder_Tagger
                             })
                             .ToList()
                     );
-                return thumbnailList;
+                return thumbnailsList;
             }
         }
-        public void AddFolder(string location, string name, string type = "multiple")
+
+        public void AddFolder(string location, string name, bool showWarning)
         {
             using (var db = new Model1())
             {
                 var folder = GetFolderByLocation(location, db);
                 if (folder != null)
                 {
-                    if (type == "single")
+                    if (showWarning)
                         System.Windows.MessageBox.Show("This Folder Has Already Been Added!");
                     return;
                 }
@@ -127,106 +134,97 @@ namespace Folder_Tagger
             }
         }
 
-        public void DeleteRealFolder(List<string> folderList)
+        public void DeleteRealFolders(List<string> locations)
         {
             using (var db = new Model1())
-                foreach (string folder in folderList)
+                foreach (string location in locations)
                 {
-                    Folder deletedFolder = db.Folders.Where(f => f.Location == folder).First();
-                    db.Folders.Remove(deletedFolder);
+                    Folder folder = db.Folders.Where(f => f.Location == location).FirstOrDefault();
+                    db.Folders.Remove(folder);
                     db.SaveChanges();
                     try
                     {
                         FileSystem.DeleteDirectory(
-                            folder,
+                            location,
                             UIOption.OnlyErrorDialogs,
                             RecycleOption.SendToRecycleBin
                         );
                     }
                     catch (Exception)
                     {
-                        System.Windows.Forms.MessageBox.Show("The folder " + folder + " is being used.");
+                        System.Windows.Forms.MessageBox.Show("The folder " + location + " is being used.");
                         continue;
                     }
                 }
         }
 
-        public void RemoveNonexistFolder()
+        public void RemoveNonexistentFolders()
         {
             using (var db = new Model1())
             {
-                List<Folder> folderList = db.Folders.Select(f => f).ToList();
-                foreach (Folder folder in folderList)
-                {
+                List<Folder> folders = db.Folders.ToList();
+                foreach (Folder folder in folders)
                     if (!Directory.Exists(folder.Location))
                         db.Folders.Remove(folder);
-                }
                 db.SaveChanges();
             }
         }
 
-        public List<string> GetArtistList(string location)
+        public List<string> GetArtists(string location = "all")
         {
             using (var db =  new Model1())
-            {
                 if (location == "all")
-                {
                     return db.Folders
                         .OrderBy(f => f.Artist)
                         .Where(f => f.Artist != null)
                         .Select(f => f.Artist)
                         .Distinct()
                         .ToList();
-                } else
+                else
                     return db.Folders
                         .Where(f => f.Location == location)
                         .Select(f => f.Artist)
                         .ToList();
-            }
         }
 
-        public void UpdateArtist(string location, string input)
+        public void UpdateArtist(string location, string newArtist)
         {
             using (var db = new Model1())
             {
                 var folder = db.Folders.Where(f => f.Location == location).FirstOrDefault();
-                folder.Artist = input;
+                folder.Artist = newArtist;
                 db.SaveChanges();
             }
         }
 
-        public List<string> GetGroupList(string location)
+        public List<string> GetGroups(string location = "all")
         {
             using (var db = new Model1())
-            {
                 if (location == "all")
-                {
                     return db.Folders
                         .OrderBy(f => f.Group)
                         .Where(f => f.Group != null)
                         .Select(f => f.Group)
                         .Distinct()
                         .ToList();
-                }
                 else
                     return db.Folders
                         .Where(f => f.Location == location)
                         .Select(f => f.Group)
                         .ToList();
-            }
         }
 
-        public void UpdateGroup(string location, string input)
+        public void UpdateGroup(string location, string newGroup)
         {
             using (var db = new Model1())
             {
                 var folder = db.Folders.Where(f => f.Location == location).FirstOrDefault();
-                folder.Group = input;
+                folder.Group = newGroup;
                 db.SaveChanges();
             }
         }
 
-        public IQueryable ExportMetadata(Model1 db)
+        public IQueryable GetMetadataToExport(Model1 db)
         {
             return db.Folders
                 .OrderBy(f => f.Name)
@@ -242,32 +240,41 @@ namespace Folder_Tagger
         {
             using (var db = new Model1())
             {
-                List<Metadata> metadataList = JsonConvert.DeserializeObject<List<Metadata>>(json);
-                foreach (Metadata metadata in metadataList)
+                List<Metadata> metadatas = JsonConvert.DeserializeObject<List<Metadata>>(json);
+                foreach (Metadata metadata in metadatas)
                 {
-                    var folder = db.Folders.Where(f => f.Name.ToLower().Trim() == metadata.Name.ToLower().Trim()).FirstOrDefault();
+                    string name = metadata.Name.ToLower().Trim();
+                    var folder = db.Folders.Where(f => f.Name.ToLower().Trim() == name).FirstOrDefault();
                     if (folder == null) continue;
 
-                    if (!string.IsNullOrWhiteSpace(metadata.Artist))
-                        folder.Artist = metadata.Artist.ToLower().Trim();
-                    if (!string.IsNullOrWhiteSpace(metadata.Group))
-                        folder.Group = metadata.Group.ToLower().Trim();
+                    string artist = metadata.Artist?.ToLower().Trim();
+                    string group = metadata.Group?.ToLower().Trim();
+                    var tags = metadata.Tags;
+
+                    if (!string.IsNullOrEmpty(artist))
+                        folder.Artist = artist;
+                    if (!string.IsNullOrEmpty(group))
+                        folder.Group = group;
                     db.SaveChanges();
 
-                    foreach (string tag in metadata.Tags)
+                    foreach (string tag in tags)
                     {
-                        Tag newTag = db.Tags.Where(t => t.TagName == tag).FirstOrDefault();
+                        string currentTag = tag.ToLower().Trim();
+                        Tag newTag = db.Tags.Where(t => t.TagName == currentTag).FirstOrDefault();
                         if (newTag == null)
                         {
-                            newTag = new Tag(tag.ToLower().Trim());
+                            newTag = new Tag(currentTag);
                             db.Tags.Add(newTag);
                             folder.Tags.Add(newTag);
                             db.SaveChanges();
                         } else
                         {
-                            if (db.Folders
-                                .Where(f => f.Name.ToLower().Trim() == metadata.Name.ToLower().Trim()
-                                    && f.Tags.Any(t => t.TagName == tag)).FirstOrDefault() == null)
+                            //Imported tag exists but does the folder already have it?
+                            //If not then add it to the folder, otherwise move on
+                            var tempFolder = db.Folders
+                                .Where(f => f.Name.ToLower().Trim() == name && f.Tags.Any(t => t.TagName == currentTag))
+                                .FirstOrDefault();
+                            if (tempFolder == null)
                             {
                                 folder.Tags.Add(newTag);
                                 db.SaveChanges();

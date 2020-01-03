@@ -18,7 +18,7 @@ namespace Folder_Tagger
             InitializeComponent();
             this.type = type;
             this.locationList = locationList;
-            agList = type == "Artist" ? fc.GetArtistList("all") : fc.GetGroupList("all");
+            agList = type == "Artist" ? fc.GetArtists() : fc.GetGroups();
             Title = "Edit " + type;
 
             if (locationList.Count > 1)
@@ -28,10 +28,10 @@ namespace Folder_Tagger
                 switch (type)
                 {
                     case "Artist":
-                        tbInput.Text = fc.GetArtistList(locationList[0]).ElementAtOrDefault(0);
+                        tbInput.Text = fc.GetArtists(locationList[0]).ElementAtOrDefault(0);
                         break;
                     case "Group":
-                        tbInput.Text = fc.GetGroupList(locationList[0]).ElementAtOrDefault(0);
+                        tbInput.Text = fc.GetGroups(locationList[0]).ElementAtOrDefault(0);
                         break;
                 }
             }

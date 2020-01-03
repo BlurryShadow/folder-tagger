@@ -26,9 +26,9 @@ namespace Folder_Tagger
             InitializeComponent();
             SetConnectionString();
             cbBoxImagesPerPage.ItemsSource = pageCapacity;
-            fc.RemoveNonexistFolder();
-            cbBoxArtist.ItemsSource = fc.GetArtistList("all");
-            cbBoxGroup.ItemsSource = fc.GetGroupList("all");
+            fc.RemoveNonexistentFolders();
+            cbBoxArtist.ItemsSource = fc.GetArtists();
+            cbBoxGroup.ItemsSource = fc.GetGroups();
             commandbindingAddOneFolder.Executed += (sender, e) => MenuItemAddFolder_Clicked(miAddOneFolder, new RoutedEventArgs());
             commandbindingAddManyFolders.Executed += (sender, e) => MenuItemAddFolder_Clicked(miAddManyFolders, new RoutedEventArgs());
             commandbindingOpenFolder.Executed += (sender, e) => MenuItemOpenFolder_Clicked(null, new RoutedEventArgs());
@@ -59,7 +59,7 @@ namespace Folder_Tagger
         private void Search(string artist = null, string group = null, string name = null, List<string> tagList = null)
         {
             currentPage = 1;
-            thumbnailList = fc.SearchFolder(artist, group, name, tagList, imagesPerPage);
+            thumbnailList = fc.SearchFolders(artist, group, name, tagList, imagesPerPage);
             maxPage = thumbnailList != null ? thumbnailList.Count() : 1;
             totalFolders = thumbnailList != null ? thumbnailList.Sum(th => th.Count) : 0;
             ChangeCurrentPageTextBlock();
@@ -97,12 +97,12 @@ namespace Folder_Tagger
                     if (menuItem.Name == "miAddOneFolder")
                     {
                         string name = Path.GetFileName(location);
-                        fc.AddFolder(location, name, "single");
+                        fc.AddFolder(location, name, true);
                     } else
                     {
                         DirectoryInfo parentFolder = new DirectoryInfo(location);
                         foreach (DirectoryInfo subFolder in parentFolder.GetDirectories())
-                            fc.AddFolder(subFolder.FullName, subFolder.Name, "multiple");
+                            fc.AddFolder(subFolder.FullName, subFolder.Name, false);
                     }                    
                     Search(null, null, null, new List<string>() { "no tag" });
                 }
@@ -131,6 +131,7 @@ namespace Folder_Tagger
                     {
                         string json = sr.ReadToEnd();
                         fc.ImportMetadata(json);
+                        System.Windows.Forms.MessageBox.Show("Done");
                     }
                 }
             }
@@ -141,7 +142,7 @@ namespace Folder_Tagger
             Directory.CreateDirectory("Metadata");
             using (var db = new Model1())
             {
-                var json = JsonConvert.SerializeObject(fc.ExportMetadata(db), Formatting.Indented);
+                var json = JsonConvert.SerializeObject(fc.GetMetadataToExport(db), Formatting.Indented);
                 string newJSON = "Metadata " + DateTime.Now.ToString("yyyy-MM-dd HHmmss") + ".json";
                 using (var sw = File.AppendText(@"Metadata\" + newJSON))
                     sw.Write(json);
@@ -156,9 +157,9 @@ namespace Folder_Tagger
             newWindow.Closed += (newWindowSender, newWindowEvent) =>
             {
                 if (menuItem.Name.Replace("miInfo", "") == "Artist")
-                    cbBoxArtist.ItemsSource = fc.GetArtistList("all");
+                    cbBoxArtist.ItemsSource = fc.GetArtists();
                 else
-                    cbBoxGroup.ItemsSource = fc.GetGroupList("all");
+                    cbBoxGroup.ItemsSource = fc.GetGroups();
             };
             newWindow.Owner = App.Current.MainWindow;
             newWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
@@ -192,9 +193,9 @@ namespace Folder_Tagger
                     newWindow.Closed += (newWindowSender, newWindowEvent) =>
                     {
                         if (type == "Artist")
-                            cbBoxArtist.ItemsSource = fc.GetArtistList("all");
+                            cbBoxArtist.ItemsSource = fc.GetArtists();
                         else
-                            cbBoxGroup.ItemsSource = fc.GetGroupList("all");
+                            cbBoxGroup.ItemsSource = fc.GetGroups();
                     };
                     break;
                 case "miEditTag":
@@ -264,7 +265,7 @@ namespace Folder_Tagger
                     listboxGallery.SelectedItems.Cast<Thumbnail>().ToList()
                     .Select(th => th.Folder).ToList();
 
-                fc.DeleteRealFolder(deletedFolderList);
+                fc.DeleteRealFolders(deletedFolderList);
                 thumbnailList.ElementAt(currentPage - 1).RemoveAll(th => deletedFolderList.Contains(th.Folder));
 
                 if (thumbnailList.ElementAt(currentPage - 1).Count == 0)
