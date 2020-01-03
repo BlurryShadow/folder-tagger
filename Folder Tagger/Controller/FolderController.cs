@@ -224,7 +224,7 @@ namespace Folder_Tagger
                     f.Name,
                     f.Artist,
                     f.Group,
-                    Tags = f.Tags.Select(t => t.TagName)
+                    Tags = f.Tags.OrderBy(t => t.TagName).Select(t => t.TagName)
                 });
         }
 
