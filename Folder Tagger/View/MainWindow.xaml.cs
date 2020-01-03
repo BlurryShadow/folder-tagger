@@ -152,7 +152,14 @@ namespace Folder_Tagger
         private void MenuItemInfo_Clicked(object sender, RoutedEventArgs e)
         {
             System.Windows.Controls.MenuItem menuItem = (System.Windows.Controls.MenuItem)sender;
-            Window newWindow = new InfoWindow(menuItem.Name.Replace("mi", ""));
+            Window newWindow = new InfoWindow(menuItem.Name.Replace("miInfo", ""));
+            newWindow.Closed += (newWindowSender, newWindowEvent) =>
+            {
+                if (menuItem.Name.Replace("miInfo", "") == "Artist")
+                    cbBoxArtist.ItemsSource = fc.GetArtistList("all");
+                else
+                    cbBoxGroup.ItemsSource = fc.GetGroupList("all");
+            };
             newWindow.Owner = App.Current.MainWindow;
             newWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             newWindow.ShowInTaskbar = false;

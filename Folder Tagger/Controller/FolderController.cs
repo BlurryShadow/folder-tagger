@@ -14,6 +14,16 @@ namespace Folder_Tagger
             return db.Folders.Where(f => f.Location == location).FirstOrDefault();
         }
 
+        public List<Folder> GetFolderListByArtist(string artist, Model1 db)
+        {
+            return db.Folders.Where(f => f.Artist == artist).ToList();
+        }
+
+        public List<Folder> GetFolderListByGroup(string group, Model1 db)
+        {
+            return db.Folders.Where(f => f.Group == group).ToList();
+        }
+
         public List<List<Thumbnail>> SearchFolder(
             string artist = null, 
             string group = null, 

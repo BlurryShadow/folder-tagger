@@ -13,17 +13,24 @@ namespace Folder_Tagger
         private List<string> infoList;
 
         private readonly TagController tc = new TagController();
+        private readonly FolderController fc = new FolderController();
         public InfoWindow(string infoType)
         {
             InitializeComponent();
             this.infoType = infoType;
+            Title = infoType + " Info";
             switch (infoType)
             {
-                case "TagInfo":
-                    infoList = tc.GetTagList("all").Select(t => t.TagName).ToList();
-                    Title = "Tag Info";
+                case "Tag":
+                    infoList = tc.GetTagList("all").Select(t => t.TagName).ToList();                    
                     break;
-            }
+                case "Artist":
+                    infoList = fc.GetArtistList("all");
+                    break;
+                case "Group":
+                    infoList = fc.GetGroupList("all");
+                    break;
+            }            
             listboxInfo.ItemsSource = infoList;
 
             Loaded += (sender, e) => tbSuggest.Focus();
@@ -52,7 +59,7 @@ namespace Folder_Tagger
         private void TextBoxInput_LostKeyboardFocus(object sender, RoutedEventArgs e)
         {
             TextBox tb = (TextBox)sender;
-            string newInput = tb.Text.Trim().ToLower();
+            string newInput = string.IsNullOrWhiteSpace(tb.Text) ? null : tb.Text.Trim().ToLower();
 
             if (newInput == oldInput.Trim().ToLower())
             {
@@ -62,36 +69,50 @@ namespace Folder_Tagger
 
             using (var db = new Model1())
             {
+                List<Folder> folderList;
                 switch (infoType)
-                {
-                    case "TagInfo":
+                {                    
+                    case "Tag":
                         Tag oldTag = tc.GetTagByName(oldInput, db);
-                        if (string.IsNullOrEmpty(newInput))
+                        if (newInput == null)
                             db.Tags.Remove(oldTag);
                         else
                         {
                             Tag newTag = tc.GetTagByName(newInput, db);
                             if (newTag == null)
                                 oldTag.TagName = newInput;
-
                             if (newTag != null)
                             {
-                                var folderList = db.Folders.Where(f => f.Tags.Any(t => t.TagName == oldInput)).ToList();
+                                folderList = db.Folders.Where(f => f.Tags.Any(t => t.TagName == oldInput)).ToList();
                                 db.Tags.Remove(oldTag);
                                 folderList.ForEach(f => f.Tags.Add(newTag));
                             }
                         }
+                        break;
+                    case "Artist":
+                        folderList = fc.GetFolderListByArtist(oldInput, db);
+                        folderList.ForEach(f => fc.UpdateArtist(f.Location, newInput));
+                        break;
+                    case "Group":
+                        folderList = fc.GetFolderListByGroup(oldInput, db);
+                        folderList.ForEach(f => fc.UpdateGroup(f.Location, newInput));
                         break;
                 }
 
                 db.SaveChanges();
                 switch (infoType)
                 {
-                    case "TagInfo":
+                    case "Tag":
                         infoList = tc.GetTagList("all").Select(t => t.TagName).ToList();
-                        listboxInfo.ItemsSource = infoList;
+                        break;
+                    case "Artist":
+                        infoList = fc.GetArtistList("all");
+                        break;
+                    case "Group":
+                        infoList = fc.GetGroupList("all");
                         break;
                 }
+                listboxInfo.ItemsSource = infoList;
             }
         }
     }

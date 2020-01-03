@@ -77,8 +77,18 @@
 
             <MenuItem Header="Info">
                 <MenuItem
-                    x:Name="miTagInfo"
+                    x:Name="miInfoTag"
                     Header="Tag Info"
+                    Click="MenuItemInfo_Clicked"
+                />
+                <MenuItem
+                    x:Name="miInfoArtist"
+                    Header="Artist Info"
+                    Click="MenuItemInfo_Clicked"
+                />
+                <MenuItem
+                    x:Name="miInfoGroup"
+                    Header="Group Info"
                     Click="MenuItemInfo_Clicked"
                 />
             </MenuItem>
