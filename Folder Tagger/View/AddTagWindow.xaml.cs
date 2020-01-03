@@ -55,7 +55,7 @@ namespace Folder_Tagger
                     return;
                 }
 
-                popupAutoComplete.Height = suggestedTagCount > 10 ? 250 : suggestedTagCount * 25 + 10;
+                popupAutoComplete.Height = (suggestedTagCount > 10) ? 250 : suggestedTagCount * 25 + 10;
                 listboxAutoComplete.ItemsSource = suggestedTags;
                 popupAutoComplete.IsOpen = true;
             }
@@ -100,7 +100,7 @@ namespace Folder_Tagger
                 try
                 {
                     //indexPosition == -1 means TextBox does not have any tag yet
-                    tbInput.Text = indexPosition == -1 ? t.TagName : tbInput.Text.Substring(0, indexPosition + 2) + t.TagName;
+                    tbInput.Text = (indexPosition == -1) ? t.TagName : tbInput.Text.Substring(0, indexPosition + 2) + t.TagName;
                     tbInput.Text += ", ";
                     tbInput.CaretIndex = tbInput.Text.Length;
                 } catch(Exception exception)
