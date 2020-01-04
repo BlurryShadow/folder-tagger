@@ -8,8 +8,8 @@ namespace Folder_Tagger
 {
     public partial class FullEditWindow : Window
     {
-        private readonly string location = "";
-        private string oldTagName = "";
+        private readonly string location;
+
         private readonly TagController tc = new TagController();
         private readonly FolderController fc = new FolderController();
 
@@ -17,29 +17,55 @@ namespace Folder_Tagger
         {
             InitializeComponent();
             this.location = location;
-            DataContext = tc.GetTags(location);
+            listboxTag.ItemsSource = tc.GetTags(location);
 
             PreviewKeyDown += (sender, e) => { if (e.Key == Key.Escape) Close(); };
         }
 
-        private void TextBoxInput_GotKeyboardFocus(object sender, RoutedEventArgs e)
+        private void TextBoxInputInsideListBox_PreviewMouseUp(object sender, MouseButtonEventArgs e) //For editing with mouse
         {
             TextBox tb = (TextBox)sender;
-            oldTagName = tb.Text;
+            tb.SelectAll();
         }
 
-        private void TextBoxInput_KeyDown(object sender, KeyEventArgs e)
+        private void TextBoxInputInsideListBox_GotFocus(object sender, RoutedEventArgs e) //For editing with keyboard
         {
+            TextBox tb = (TextBox)sender;
+            tb.SelectAll();
+        }
+
+        private void TextBoxInputInsideListBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            //To the parent ListBoxItem if it was selected
+            //To the first ListBoxItem if none were selected
             if (e.Key == Key.Enter)
-                Keyboard.ClearFocus();
+                MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
         }
 
-        private void TextBoxInput_LostKeyboardFocus(object sender, RoutedEventArgs e)
+        /* If there is a light blue / dotted line box around tag that means a ListBoxItem is being seleteced for light blue, focused for dotted line, or both if there are both
+         * Pay no mind to it since it does not affect event handler below
+         * When TextBoxes receive keyboard focus (by clicking them or pressing tab), they will also have logical focus
+         * LostFocus only triggers when IsFocused changes from true to false, which means logical focus is gone
+         * There are 2 ways to make this happens:
+         *   + Click another TextBox, shifting both keyboard and logical focus to it
+         *   + Move logical focus to another object by pressing Enter (Thanks to event handler TextBoxInputInsideListBox_PreviewKeyDown above)
+         *     This will make keyboard focus disappears but there will be one ListBoxItem with both selection and logical focus, it will be:
+         *       + Parent ListBoxItem if it was selected before pressing Enter
+         *       + The first ListBoxItem in ListBox if none were selected before
+         *       + The ListBox itself if it is empty now
+         *     Its logical focus is permanent and cannot be removed
+         *     However we can still edit normally because although there must be only one keyboard focus but there can be multiple logical ones
+         *     So we can set new logical focus to other TextBoxes, then remove them to trigger LostFocus event handler
+         * Reference: https://docs.microsoft.com/en-us/dotnet/api/system.windows.uielement.lostfocus?view=netframework-4.8
+         *            https://docs.microsoft.com/en-us/dotnet/api/system.windows.uielement.isfocused?view=netframework-4.8
+        */
+        private void TextBoxInputInsideListBox_LostFocus(object sender, RoutedEventArgs e)
         {
             TextBox tb = (TextBox)sender;
-            string newTagName = tb.Text.Trim().ToLower();
+            string oldTagName = tb.Tag.ToString().ToLower().Trim();
+            string newTagName = tb.Text.ToLower().Trim();
 
-            if (newTagName == oldTagName.Trim().ToLower())
+            if (newTagName == oldTagName)
             {
                 tb.Text = oldTagName;
                 return;
@@ -47,30 +73,36 @@ namespace Folder_Tagger
 
             using (var db = new Model1())
             {
-                if (db.Folders.Any(f => f.Location == location && f.Tags.Any(t => t.TagName == newTagName)))
+                Folder folder = fc.GetFolderByLocation(location, db);
+                Tag newTag = tc.GetTagByName(newTagName, db);
+                if (folder.Tags.Any(t => t == newTag))
                 {
                     tb.Text = oldTagName;
                     return;
                 }
 
-                Folder folder = fc.GetFolderByLocation(location, db);
+                //Updating tag by removing old tag, then add new tag
                 Tag oldTag = tc.GetTagByName(oldTagName, db);
                 folder.Tags.Remove(oldTag);
-
-                if (string.IsNullOrWhiteSpace(newTagName))
+                //Only remove old tag if users input empty string
+                if (string.IsNullOrEmpty(newTagName))
                 {
                     db.SaveChanges();
-                    DataContext = tc.GetTags(location);
+                    listboxTag.ItemsSource = tc.GetTags(location);
                     return;
                 }
-
-                Tag newTag = tc.GetTagByName(newTagName, db);
+                //If new tag does not exists, create it
                 if (newTag == null)
+                {
                     newTag = new Tag(newTagName);
-
+                    db.Tags.Add(newTag);
+                }
+                //Otherwise add already existing tag
                 folder.Tags.Add(newTag);
                 db.SaveChanges();
                 tb.Text = newTagName;
+                //The newTagName will be the next oldTagName
+                tb.Tag = newTagName;
             }
         }
     }

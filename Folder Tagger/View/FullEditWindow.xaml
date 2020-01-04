@@ -23,19 +23,20 @@
                 Width="325"
                 BorderThickness="0"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                ItemsSource="{Binding}"
             >
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <TextBox
-                            Width="315"
+                            Width="325"
                             FontSize="16"
                             BorderThickness="0"
-                            Margin="-3,0,0,0"
-                            Text="{Binding TagName}"
-                            LostKeyboardFocus="TextBoxInput_LostKeyboardFocus"
-                            KeyDown="TextBoxInput_KeyDown"
-                            GotKeyboardFocus="TextBoxInput_GotKeyboardFocus"
+                            Margin="-4,0,-4,0"
+                            Tag="{Binding TagName, Mode=OneWay}"
+                            Text="{Binding TagName, Mode=OneWay}"
+                            PreviewMouseUp="TextBoxInputInsideListBox_PreviewMouseUp"
+                            GotFocus="TextBoxInputInsideListBox_GotFocus"
+                            PreviewKeyDown="TextBoxInputInsideListBox_PreviewKeyDown"
+                            LostFocus="TextBoxInputInsideListBox_LostFocus"
                         />
                     </DataTemplate>
                 </ListBox.ItemTemplate>
