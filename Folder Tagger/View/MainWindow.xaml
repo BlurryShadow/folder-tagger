@@ -191,7 +191,6 @@
             Height="780"
             Width="1590"
             Grid.Row="2"
-            ItemsSource="{Binding}"
             SelectionMode="Extended"
         >
             <ListBox.ItemsPanel>
@@ -227,15 +226,15 @@
                         <StackPanel.ContextMenu>
                             <ContextMenu>
                                 <MenuItem
-                                    Tag="{Binding Folder}"
-                                    Header="Open Folder"
+                                    x:Name="miOpenFolderInExplorer"
+                                    Header="Open In Explorer"
                                     Click="MenuItemOpenFolder_Clicked"
                                     InputGestureText="Ctrl+W"
                                 />
                                 <MenuItem
-                                    Tag="{Binding Folder}"
+                                    x:Name="miOpenFolderInMangareader"
                                     Header="Open In Mangareader"
-                                    Click="MenuItemOpenInMangareader_Clicked"
+                                    Click="MenuItemOpenFolder_Clicked"
                                     InputGestureText="Ctrl+Q"
                                 />
                                 <MenuItem
