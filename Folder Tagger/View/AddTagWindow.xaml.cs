@@ -139,9 +139,7 @@ namespace Folder_Tagger
                         {
                             newTag = new Tag(currentTag);
                             db.Tags.Add(newTag);
-                            db.SaveChanges();
                         }
-
                         folder.Tags.Add(newTag);
                         db.SaveChanges();
                     }

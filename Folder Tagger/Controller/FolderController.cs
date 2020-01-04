@@ -289,21 +289,9 @@ namespace Folder_Tagger
                         {
                             newTag = new Tag(currentTag);
                             db.Tags.Add(newTag);
-                            folder.Tags.Add(newTag);
-                            db.SaveChanges();
-                        } else
-                        {
-                            //Imported tag exists but does the folder already have it?
-                            //If not then add it to the folder, otherwise move on
-                            var tempFolder = db.Folders
-                                .Where(f => f.Name.ToLower().Trim() == name && f.Tags.Any(t => t.TagName == currentTag))
-                                .FirstOrDefault();
-                            if (tempFolder == null)
-                            {
-                                folder.Tags.Add(newTag);
-                                db.SaveChanges();
-                            }
                         }
+                        folder.Tags.Add(newTag);
+                        db.SaveChanges();
                     }
                 }
             }
