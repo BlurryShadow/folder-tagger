@@ -39,7 +39,8 @@
                 x:Name="listboxAutoComplete"
                 VerticalContentAlignment="Center"
                 HorizontalContentAlignment="Left"
-                PreviewKeyDown="ListBox_PreviewKeyDown"
+                PreviewKeyDown="ListBoxAutoComplete_PreviewKeyDown"
+                PreviewMouseUp="ListBoxAutoComplete_PreviewMouseUp"
             >
                 <ListBox.ItemTemplate>
                     <DataTemplate>
