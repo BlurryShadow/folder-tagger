@@ -32,6 +32,23 @@ namespace Folder_Tagger
             base.OnLocationChanged(e);
         }
 
+        private void ApplySuggestion(Tag t)
+        {
+            int indexPosition = tbInput.Text.LastIndexOf(", ");
+            try
+            {
+                //indexPosition == -1 means TextBox does not have any tag yet
+                tbInput.Text = (indexPosition == -1) ? t.TagName : tbInput.Text.Substring(0, indexPosition + 2) + t.TagName;
+                tbInput.Text += ", ";
+                tbInput.CaretIndex = tbInput.Text.Length;
+            }
+            catch (Exception exception)
+            {
+                System.Windows.Forms.MessageBox.Show(exception.Message);
+            }
+            tbInput.Focus();
+        }
+
         private void TextBoxInput_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(tbInput.Text))
@@ -63,13 +80,16 @@ namespace Folder_Tagger
 
         private void TextBoxInput_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            //Jump to suggestion box when press Down Key
-            if (e.Key == Key.Down && popupAutoComplete.IsOpen)
+            //Jump to suggestion box when press Down or Up Key
+            if (popupAutoComplete.IsOpen)
             {
-                listboxAutoComplete.SelectedIndex = 0;
+                if (e.Key == Key.Down)
+                    listboxAutoComplete.SelectedIndex = 0;
+                if (e.Key == Key.Up)
+                    listboxAutoComplete.SelectedIndex = listboxAutoComplete.Items.Count - 1;
                 var item = (ListBoxItem)listboxAutoComplete.ItemContainerGenerator.ContainerFromItem(listboxAutoComplete.SelectedItem);
                 item.Focus();
-                //Prevent focus from jumping to 2nd element
+                //Prevent focus from jumping to next element
                 e.Handled = true;
             }
 
@@ -81,11 +101,20 @@ namespace Folder_Tagger
             }
         }
 
-        private void ListBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        private void ListBoxAutoComplete_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             //Jump back to TextBox when press Up Key at first element
             if (e.Key == Key.Up && listboxAutoComplete.SelectedIndex == 0)
                 tbInput.Focus();
+
+            //Return to first element when pressed at last one
+            //Trying to mimic S Key default behavior
+            if (e.Key == Key.Down && listboxAutoComplete.SelectedIndex == listboxAutoComplete.Items.Count - 1)
+            {
+                var item = (ListBoxItem)listboxAutoComplete.ItemContainerGenerator.ContainerFromItem(listboxAutoComplete.Items[0]);
+                item.Focus();
+                e.Handled = true;
+            }
 
             //Disable 'S' key default event
             //Which is the same as Down key
@@ -96,22 +125,17 @@ namespace Folder_Tagger
             if (e.Key == Key.Enter)
             {
                 Tag t = listboxAutoComplete.SelectedItem as Tag;
-                int indexPosition = tbInput.Text.LastIndexOf(", ");
-                try
-                {
-                    //indexPosition == -1 means TextBox does not have any tag yet
-                    tbInput.Text = (indexPosition == -1) ? t.TagName : tbInput.Text.Substring(0, indexPosition + 2) + t.TagName;
-                    tbInput.Text += ", ";
-                    tbInput.CaretIndex = tbInput.Text.Length;
-                } catch(Exception exception)
-                {
-                    System.Windows.Forms.MessageBox.Show(exception.Message);
-                }
-                tbInput.Focus();
+                ApplySuggestion(t);
                 //Add Button is default
                 //Cancel Enter Key Down event to prevent premature trigger
                 e.Handled = true;
             }
+        }
+
+        private void ListBoxAutoComplete_PreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            Tag t = listboxAutoComplete.SelectedItem as Tag;
+            ApplySuggestion(t);
         }
 
         private void ButtonAddTag_Clicked(object sender, RoutedEventArgs e)
