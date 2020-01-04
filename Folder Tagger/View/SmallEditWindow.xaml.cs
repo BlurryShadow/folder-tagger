@@ -28,9 +28,11 @@ namespace Folder_Tagger
                     fc.GetArtists(locations[0]).ElementAtOrDefault(0) :
                     fc.GetGroups(locations[0]).ElementAtOrDefault(0);
 
+            //If not popup will open everytime a new edit artist / group starts
             popupAutoComplete.IsOpen = false;
             Loaded += (sender, e) => { tbInput.Focus(); tbInput.SelectAll(); };
             PreviewKeyDown += (sender, e) => { if (e.Key == Key.Escape) Close(); };
+            listboxAutoComplete.PreviewMouseUp += (sender, e) => ApplySuggestion();
         }
 
         protected override void OnLocationChanged(EventArgs e) //Make popup stick with textbox
@@ -38,6 +40,14 @@ namespace Folder_Tagger
             popupAutoComplete.HorizontalOffset += 1;
             popupAutoComplete.HorizontalOffset -= 1;
             base.OnLocationChanged(e);
+        }
+
+        private void ApplySuggestion()
+        {
+            tbInput.Text = listboxAutoComplete.SelectedItem as string;
+            tbInput.Focus();
+            tbInput.CaretIndex = tbInput.Text.Length;
+            popupAutoComplete.IsOpen = false;
         }
 
         private void TextBoxInput_TextChanged(object sender, TextChangedEventArgs e)
@@ -67,22 +77,37 @@ namespace Folder_Tagger
 
         private void TextBoxInput_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            //Jump to suggestion box when press Down Key
-            if (e.Key == Key.Down && popupAutoComplete.IsOpen)
+            //Jump to suggestion box when press Down or Up Key
+            if (popupAutoComplete.IsOpen)
             {
-                listboxAutoComplete.SelectedIndex = 0;
-                var item = (ListBoxItem)listboxAutoComplete.ItemContainerGenerator.ContainerFromItem(listboxAutoComplete.SelectedItem);
-                item.Focus();
-                //Prevent focus from jumping to 2nd element
-                e.Handled = true;
+                if (e.Key == Key.Down)
+                    listboxAutoComplete.SelectedIndex = 0;
+                if (e.Key == Key.Up)
+                    listboxAutoComplete.SelectedIndex = listboxAutoComplete.Items.Count - 1;
+                if (e.Key == Key.Down || e.Key == Key.Up)
+                {
+                    var item = (ListBoxItem)listboxAutoComplete.ItemContainerGenerator.ContainerFromItem(listboxAutoComplete.SelectedItem);
+                    item.Focus();
+                    //Prevent focus from jumping to next element
+                    e.Handled = true;
+                }
             }
         }
 
-        private void ListBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        private void ListBoxAutoComplete_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             //Jump back to TextBox when press Up Key at first element
             if (e.Key == Key.Up && listboxAutoComplete.SelectedIndex == 0)
                 tbInput.Focus();
+
+            //Return to first element when pressed at last one
+            //Trying to mimic S Key default behavior
+            if (e.Key == Key.Down && listboxAutoComplete.SelectedIndex == listboxAutoComplete.Items.Count - 1)
+            {
+                var item = (ListBoxItem)listboxAutoComplete.ItemContainerGenerator.ContainerFromItem(listboxAutoComplete.Items[0]);
+                item.Focus();
+                e.Handled = true;
+            }
 
             //Disable 'S' key default event
             //Which is the same as Down key
@@ -92,10 +117,7 @@ namespace Folder_Tagger
 
             if (e.Key == Key.Enter)
             {
-                tbInput.Text = listboxAutoComplete.SelectedItem as string;
-                tbInput.Focus();
-                tbInput.CaretIndex = tbInput.Text.Length;
-                popupAutoComplete.IsOpen = false;
+                ApplySuggestion();
                 //Update Button is default
                 //Cancel Enter Key Down event to prevent premature trigger
                 e.Handled = true;

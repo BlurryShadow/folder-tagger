@@ -40,7 +40,6 @@
                 VerticalContentAlignment="Center"
                 HorizontalContentAlignment="Left"
                 PreviewKeyDown="ListBoxAutoComplete_PreviewKeyDown"
-                PreviewMouseUp="ListBoxAutoComplete_PreviewMouseUp"
             >
                 <ListBox.ItemTemplate>
                     <DataTemplate>

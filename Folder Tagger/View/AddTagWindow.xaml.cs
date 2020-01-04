@@ -23,6 +23,7 @@ namespace Folder_Tagger
 
             Loaded += (sender, e) => tbInput.Focus();
             PreviewKeyDown += (sender, e) => { if (e.Key == Key.Escape) Close(); };
+            listboxAutoComplete.PreviewMouseUp += (sender, e) => ApplySuggestion();
         }
 
         protected override void OnLocationChanged(EventArgs e) //Make popup stick with textbox
@@ -32,11 +33,12 @@ namespace Folder_Tagger
             base.OnLocationChanged(e);
         }
 
-        private void ApplySuggestion(Tag t)
+        private void ApplySuggestion()
         {
             int indexPosition = tbInput.Text.LastIndexOf(", ");
             try
             {
+                Tag t = listboxAutoComplete.SelectedItem as Tag;
                 //indexPosition == -1 means TextBox does not have any tag yet
                 tbInput.Text = (indexPosition == -1) ? t.TagName : tbInput.Text.Substring(0, indexPosition + 2) + t.TagName;
                 tbInput.Text += ", ";
@@ -87,10 +89,13 @@ namespace Folder_Tagger
                     listboxAutoComplete.SelectedIndex = 0;
                 if (e.Key == Key.Up)
                     listboxAutoComplete.SelectedIndex = listboxAutoComplete.Items.Count - 1;
-                var item = (ListBoxItem)listboxAutoComplete.ItemContainerGenerator.ContainerFromItem(listboxAutoComplete.SelectedItem);
-                item.Focus();
-                //Prevent focus from jumping to next element
-                e.Handled = true;
+                if (e.Key == Key.Down || e.Key == Key.Up)
+                {
+                    var item = (ListBoxItem)listboxAutoComplete.ItemContainerGenerator.ContainerFromItem(listboxAutoComplete.SelectedItem);
+                    item.Focus();
+                    //Prevent focus from jumping to next element
+                    e.Handled = true;
+                }
             }
 
             if (e.Key == Key.OemComma)
@@ -124,18 +129,11 @@ namespace Folder_Tagger
 
             if (e.Key == Key.Enter)
             {
-                Tag t = listboxAutoComplete.SelectedItem as Tag;
-                ApplySuggestion(t);
+                ApplySuggestion();
                 //Add Button is default
                 //Cancel Enter Key Down event to prevent premature trigger
                 e.Handled = true;
             }
-        }
-
-        private void ListBoxAutoComplete_PreviewMouseUp(object sender, MouseButtonEventArgs e)
-        {
-            Tag t = listboxAutoComplete.SelectedItem as Tag;
-            ApplySuggestion(t);
         }
 
         private void ButtonAddTag_Clicked(object sender, RoutedEventArgs e)
