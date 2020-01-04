@@ -224,6 +224,30 @@ namespace Folder_Tagger
             }
         }
 
+        public void RemoveTagFromFolders(Tag t, string location = "all")
+        {
+            using (var db = new Model1())
+            {
+                if (location == "all")
+                    db.Folders.ToList().ForEach(f => f.Tags.Remove(t));
+                else
+                    db.Folders.Where(f => f.Location == location).FirstOrDefault().Tags.Remove(t);
+                db.SaveChanges();
+            }
+        }
+
+        public void RemoveAllTagsFromFolders(string location = "all")
+        {
+            using (var db = new Model1())
+            {
+                if (location == "all")
+                    db.Folders.ToList().ForEach(f => f.Tags.Clear());
+                else
+                    db.Folders.Where(f => f.Location == location).FirstOrDefault().Tags.Clear();
+                db.SaveChanges();
+            }
+        }
+
         public IQueryable GetMetadataToExport(Model1 db)
         {
             return db.Folders

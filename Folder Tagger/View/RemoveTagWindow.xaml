@@ -35,7 +35,7 @@
             FontSize="14"
             Content="Remove"
             Grid.Column="1"
-            Click="RemoveTag"
+            Click="ButtonRemoveTag_Clicked"
             IsDefault="True"
         />
     </Grid>

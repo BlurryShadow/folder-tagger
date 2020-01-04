@@ -8,18 +8,20 @@ namespace Folder_Tagger
 {
     public partial class RemoveTagWindow : Window
     {
-        private readonly List<string> folderList = new List<string>();
+        private readonly List<string> locations;
+        private readonly string deleteEveryTagKeyword = "everything";
+
         private readonly FolderController fc = new FolderController();
-        public RemoveTagWindow(List<string> folderList)
+        public RemoveTagWindow(List<string> locations)
         {
             InitializeComponent();
-            this.folderList = folderList;
+            this.locations = locations;
 
             Loaded += (sender, e) => tbInput.Focus();
             PreviewKeyDown += (sender, e) => { if (e.Key == Key.Escape) Close(); };
         }
 
-        private void RemoveTag(object sender, RoutedEventArgs e)
+        private void ButtonRemoveTag_Clicked(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(tbInput.Text))
             {
@@ -27,32 +29,22 @@ namespace Folder_Tagger
                 return;
             }
 
+            string str = tbInput.Text.ToLower().Trim();
             using (var db = new Model1())
-                foreach (string location in folderList)
-                {
-                    if (tbInput.Text.ToLower().Trim().Equals("everything"))
+                foreach (string location in locations)
+                    if (str == deleteEveryTagKeyword)
+                        fc.RemoveAllTagsFromFolders(location);
+                    else
                     {
-                        Folder folder = fc.GetFolderByLocation(location, db);
-                        List<Tag> tagList = folder.Tags.ToList();
-                        foreach (Tag t in tagList)
-                            folder.Tags.Remove(t);
-                        db.SaveChanges();
-                    } else
-                    {
-                        List<string> tagList = tbInput.Text.Split(new string[] { ", " }, StringSplitOptions.None).ToList();
-                        foreach (string tag in tagList)
+                        List<string> tags = tbInput.Text.Split(new string[] { ", " }, StringSplitOptions.None).ToList();
+                        foreach (string tag in tags)
                         {
-                            string currentTag = tag.Trim().ToLower();
-                            Tag deletedTag = db.Tags.Where(t => t.TagName == currentTag && t.Folders.Any(f => f.Location == location)).FirstOrDefault();
-
+                            string currentTag = tag.ToLower().Trim();
+                            Tag deletedTag = db.Tags.Where(t => t.TagName == currentTag).FirstOrDefault();
                             if (deletedTag == null) continue;
-
-                            Folder folder = fc.GetFolderByLocation(location, db);
-                            folder.Tags.Remove(deletedTag);
-                            db.SaveChanges();
+                            fc.RemoveTagFromFolders(deletedTag);
                         }
                     }
-                }                    
             Close();
         }
     }
