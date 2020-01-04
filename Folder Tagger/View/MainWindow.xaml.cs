@@ -68,7 +68,7 @@ namespace Folder_Tagger
             totalFolders = thumbnailsList != null ? thumbnailsList.Sum(th => th.Count) : 0;
             UpdateCurrentPageTextBlock();
             UpdateFoldersFoundTextBlock();
-            listboxGallery.ItemsSource = thumbnailsList.ElementAtOrDefault(0);
+            listboxGallery.ItemsSource = thumbnailsList?.ElementAtOrDefault(0);
             ResetScroll();
         }
 
