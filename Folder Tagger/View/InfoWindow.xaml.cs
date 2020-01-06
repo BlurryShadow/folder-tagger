@@ -45,18 +45,6 @@ namespace Folder_Tagger
                 listboxInfo.ItemsSource = infos.Where(i => i.Contains(currentSuggestion));
         }
 
-        private void TextBoxInputInsideListBox_PreviewMouseUp(object sender, MouseButtonEventArgs e) //For editing with mouse
-        {
-            TextBox tb = (TextBox)sender;
-            tb.SelectAll();
-        }
-
-        private void TextBoxInputInsideListBox_GotFocus(object sender, RoutedEventArgs e) //For editing with keyboard
-        {
-            TextBox tb = (TextBox)sender;
-            tb.SelectAll();
-        }
-
         private void TextBoxInputInsideListBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
@@ -135,6 +123,7 @@ namespace Folder_Tagger
                 }
                 //ItemsSource will be re-generated anyway so updating TextBox Tag for new oldInput is unnecessary
                 listboxInfo.ItemsSource = infos;
+                tbSuggestion.Text = "";
             }
         }
     }

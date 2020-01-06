@@ -29,8 +29,6 @@ namespace Folder_Tagger
             SetConnectionString();
             cbBoxImagesPerPage.ItemsSource = pageCapacity;
             fc.RemoveNonexistentFolders();
-            cbBoxArtist.ItemsSource = fc.GetArtists();
-            cbBoxGroup.ItemsSource = fc.GetGroups();
 
             //For shortcut binding
             commandbindingAddOneFolder.Executed += (sender, e) => MenuItemAddFolder_Clicked(miAddOneFolder, new RoutedEventArgs());
@@ -44,7 +42,12 @@ namespace Folder_Tagger
             commandbindingRemoveTag.Executed += (sender, e) => MenuItemContextMenu_Clicked("miRemoveTag", new RoutedEventArgs());
 
             Loaded += (sender, e) => tbName.Focus();
-            ContentRendered += (sender, e) => Search(null, null, null, new List<string>() { "no tag" });
+            ContentRendered += (sender, e) =>
+            {
+                Search(null, null, null, new List<string>() { "no tag" });
+                cbBoxArtist.ItemsSource = fc.GetArtists();
+                cbBoxGroup.ItemsSource = fc.GetGroups();
+            };
         }
 
         private void SetConnectionString()

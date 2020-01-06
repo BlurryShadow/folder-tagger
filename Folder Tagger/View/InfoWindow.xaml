@@ -49,8 +49,6 @@
                             Margin="-4,0,-4,0"
                             Tag="{Binding Mode=OneWay}"
                             Text="{Binding Mode=OneWay}"
-                            PreviewMouseUp="TextBoxInputInsideListBox_PreviewMouseUp"
-                            GotFocus="TextBoxInputInsideListBox_GotFocus"
                             PreviewKeyDown="TextBoxInputInsideListBox_PreviewKeyDown"
                             LostFocus="TextBoxInputInsideListBox_LostFocus"
                         />
