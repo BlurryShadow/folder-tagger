@@ -154,7 +154,33 @@
                 Height="30"
                 Width="300"
                 Margin="10,0,0,0"
+                TextChanged="TextBoxTag_TextChanged"
+                PreviewKeyDown="TextBoxTag_PreviewKeyDown"
             />
+
+            <Popup
+            x:Name="popupAutoComplete"
+            Width="300"
+            Placement="Bottom"
+            PlacementTarget="{Binding ElementName=tbTag}"
+            StaysOpen="False"
+        >
+                <ListBox
+                x:Name="listboxAutoComplete"
+                VerticalContentAlignment="Center"
+                HorizontalContentAlignment="Left"
+                PreviewKeyDown="ListBoxAutoComplete_PreviewKeyDown"
+            >
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock
+                            FontSize="16"
+                            Text="{Binding TagName}"
+                        />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Popup>
 
             <Button
                 x:Name="btnSearch"                

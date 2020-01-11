@@ -71,6 +71,8 @@ namespace Folder_Tagger
                             foreach (string tag in tags)
                             {
                                 string currentTag = tag.ToLower().Trim();
+                                if (string.IsNullOrEmpty(currentTag))
+                                    continue;
                                 //Excluding tags
                                 if (currentTag[0].Equals('-') && currentTag.Length > 1)
                                     query = query.Where(f => f.Tags.All(t => t.TagName != currentTag.Substring(1)));

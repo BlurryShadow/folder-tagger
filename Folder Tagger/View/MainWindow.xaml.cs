@@ -7,7 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Forms;
+using System.Windows.Input;
 
 namespace Folder_Tagger
 {
@@ -15,18 +15,22 @@ namespace Folder_Tagger
     {
         private readonly string mangaReaderRoot = @"E:\Data\Programs\Basic Programs\Mangareader\mangareader.exe";
         private readonly int[] pageCapacity = { 60, 300, 600 };
+        private readonly int numberCharactersToActiveSuggestion = 3;
         private int imagesPerPage;
         private int totalPages = 1;
         private int currentPage = 1;
         private int totalFolders;
 
         List<List<Thumbnail>> thumbnailsList = new List<List<Thumbnail>>();
+        List<Tag> allTags;
 
         private readonly FolderController fc = new FolderController();
+        private readonly TagController tc = new TagController();
         public MainWindow()
         {
             InitializeComponent();
             SetConnectionString();
+            listboxAutoComplete.PreviewMouseUp += (sender, e) => ApplySuggestion();
             cbBoxImagesPerPage.ItemsSource = pageCapacity;
             fc.RemoveNonexistentFolders();
 
@@ -47,6 +51,7 @@ namespace Folder_Tagger
                 Search(null, null, null, new List<string>() { "no tag" });
                 cbBoxArtist.ItemsSource = fc.GetArtists();
                 cbBoxGroup.ItemsSource = fc.GetGroups();
+                allTags = tc.GetTags("all", "mostUsed");
             };
         }
 
@@ -75,6 +80,34 @@ namespace Folder_Tagger
             ResetScroll();
         }
 
+        private void ApplySuggestion()
+        {
+            int indexPosition = tbTag.Text.LastIndexOf(", ");
+            bool hasExcludeMark;
+            //We don't need to check string null nor empty because to trigger this method
+            //Suggestion Box must be visible, which is only when the string in Tag Text Box has more than 2 characters
+            //indexPosition == -1 means TextBox does not have any tag yet
+            if (indexPosition == -1)
+                hasExcludeMark = (tbTag.Text[0] == '-') ? true : false;
+            else
+                hasExcludeMark = (tbTag.Text[indexPosition + 2] == '-') ? true : false;
+            try
+            {
+                Tag t = listboxAutoComplete.SelectedItem as Tag;
+                if (hasExcludeMark)
+                    tbTag.Text = (indexPosition == -1) ? '-' + t.TagName : tbTag.Text.Substring(0, indexPosition) + ", -" + t.TagName;
+                else
+                    tbTag.Text = (indexPosition == -1) ? t.TagName : tbTag.Text.Substring(0, indexPosition) + ", " + t.TagName;
+                tbTag.Text += ", ";
+                tbTag.CaretIndex = tbTag.Text.Length;
+            }
+            catch (Exception exception)
+            {
+                System.Windows.Forms.MessageBox.Show(exception.Message);
+            }
+            tbTag.Focus();
+        }
+
         private void UpdateCurrentPageTextBlock()
         {
             textblockCurrentPage.Text = totalPages > 1 ? currentPage + ".." + totalPages : "1";
@@ -93,11 +126,11 @@ namespace Folder_Tagger
 
         private void MenuItemAddFolder_Clicked(object sender, RoutedEventArgs e)
         {
-            System.Windows.Controls.MenuItem menuItem = (System.Windows.Controls.MenuItem)sender;
-            using(var fbd = new FolderBrowserDialog())
+            MenuItem menuItem = (MenuItem)sender;
+            using(var fbd = new System.Windows.Forms.FolderBrowserDialog())
             {
                 fbd.RootFolder = Environment.SpecialFolder.MyComputer;
-                DialogResult result = fbd.ShowDialog();
+                System.Windows.Forms.DialogResult result = fbd.ShowDialog();
                 if (result == System.Windows.Forms.DialogResult.OK)
                 {
                     string location = fbd.SelectedPath;
@@ -118,7 +151,7 @@ namespace Folder_Tagger
 
         private void MenuItemImportMetadata_Clicked(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog fd = new OpenFileDialog
+            System.Windows.Forms.OpenFileDialog fd = new System.Windows.Forms.OpenFileDialog
             {
                 DefaultExt = ".json",
                 Filter = "JSON Files (*.json)|*json",
@@ -126,11 +159,11 @@ namespace Folder_Tagger
             };
             if (fd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                DialogResult dialogResult = System.Windows.Forms.MessageBox.Show(
+                System.Windows.Forms.DialogResult dialogResult = System.Windows.Forms.MessageBox.Show(
                     "The process might take a long time, are you sure?",
                     "Import Folders Metadata",
-                    MessageBoxButtons.OKCancel,
-                    MessageBoxIcon.Question
+                    System.Windows.Forms.MessageBoxButtons.OKCancel,
+                    System.Windows.Forms.MessageBoxIcon.Question
                 );
                 if (dialogResult == System.Windows.Forms.DialogResult.OK)
                     using (StreamReader sr = new StreamReader(fd.FileName))
@@ -157,7 +190,7 @@ namespace Folder_Tagger
 
         private void MenuItemInfo_Clicked(object sender, RoutedEventArgs e)
         {
-            System.Windows.Controls.MenuItem menuItem = (System.Windows.Controls.MenuItem)sender;
+            MenuItem menuItem = (MenuItem)sender;
             string type = menuItem.Name.Replace("miInfo", "");
             Window newWindow = new InfoWindow(type);
             newWindow.Closed += (newWindowSender, newWindowEvent) =>
@@ -173,6 +206,150 @@ namespace Folder_Tagger
             newWindow.ShowDialog();
         }
 
+        private void TextBoxTag_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(tbTag.Text))
+            {
+                //The last part of TextBox Text, behind ', '
+                //Not the whole TextBox string
+                //Nor where the cursor is located at
+                //Example: "a1, a2, a3|, a4, a5"    | = cursor   currentTag = a5
+                string currentTag = tbTag.Text.Split(new string[] { ", " }, StringSplitOptions.None).Last().Replace("-", "").ToLower().Trim();
+                if (string.IsNullOrEmpty(currentTag) || currentTag.Length < numberCharactersToActiveSuggestion)
+                {
+                    popupAutoComplete.IsOpen = false;
+                    return;
+                }
+
+                var suggestedTags = allTags.Where(t => t.TagName.Contains(currentTag)).ToList();
+                int suggestedTagCount = suggestedTags.Count;
+                if (suggestedTagCount == 0)
+                {
+                    popupAutoComplete.IsOpen = false;
+                    return;
+                }
+
+                popupAutoComplete.Height = (suggestedTagCount > 10) ? 250 : suggestedTagCount * 25 + 10;
+                listboxAutoComplete.ItemsSource = suggestedTags;
+                popupAutoComplete.IsOpen = true;
+            }
+        }
+
+        private void TextBoxTag_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            //Jump to suggestion box when press Down or Up Key
+            if (popupAutoComplete.IsOpen)
+            {
+                if (e.Key == Key.Down)
+                    listboxAutoComplete.SelectedIndex = 0;
+                if (e.Key == Key.Up)
+                    listboxAutoComplete.SelectedIndex = listboxAutoComplete.Items.Count - 1;
+                if (e.Key == Key.Down || e.Key == Key.Up)
+                {
+                    var item = (ListBoxItem)listboxAutoComplete.ItemContainerGenerator.ContainerFromItem(listboxAutoComplete.SelectedItem);
+                    item.Focus();
+                    //Prevent focus from jumping to next element
+                    e.Handled = true;
+                }
+            }
+
+            if (e.Key == Key.OemComma)
+            {
+                tbTag.Text += ", ";
+                e.Handled = true;
+                tbTag.CaretIndex = tbTag.Text.Length;
+            }
+        }
+
+        private void ListBoxAutoComplete_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            //Jump back to TextBox when press Up Key at first element
+            if (e.Key == Key.Up && listboxAutoComplete.SelectedIndex == 0)
+                tbTag.Focus();
+
+            //Return to first element when pressed at last one
+            //Trying to mimic S Key default behavior
+            if (e.Key == Key.Down && listboxAutoComplete.SelectedIndex == listboxAutoComplete.Items.Count - 1)
+            {
+                var item = (ListBoxItem)listboxAutoComplete.ItemContainerGenerator.ContainerFromItem(listboxAutoComplete.Items[0]);
+                item.Focus();
+                e.Handled = true;
+            }
+
+            //Disable 'S' key default event
+            //Which is the same as Down key
+            //But return to first element when pressed at last one
+            if (e.Key == Key.S)
+                e.Handled = true;
+
+            if (e.Key == Key.Enter)
+            {
+                ApplySuggestion();
+                //Add Button is default
+                //Cancel Enter Key Down event to prevent premature trigger
+                e.Handled = true;
+            }
+        }
+
+        private void ButtonSearch_Clicked(object sender, RoutedEventArgs e)
+        {
+            string artist = cbBoxArtist.Text;
+            string group = cbBoxGroup.Text;
+            string name = tbName.Text;
+            List<string> tagList = new List<string>();
+            if (!string.IsNullOrWhiteSpace(tbTag.Text)) tagList =
+                    tbTag.Text.Split(new string[] { ", " }, StringSplitOptions.None).ToList();
+            Search(artist, group, name, tagList);
+        }
+
+        private void ComboBoxPageCapacity_SelectionChanged(object sender, RoutedEventArgs e)
+        {
+            ComboBox comboBox = (ComboBox)sender;
+            imagesPerPage = pageCapacity[comboBox.SelectedIndex];
+            if (totalFolders == 0)
+                return;
+            currentPage = 1;
+            totalPages = (int)Math.Ceiling(((double)totalFolders / imagesPerPage));
+
+            List<Thumbnail> newThumbnails = new List<Thumbnail>();
+            foreach (List<Thumbnail> thumbnails in thumbnailsList)
+                newThumbnails.AddRange(thumbnails);
+
+            thumbnailsList.Clear();
+            for (int i = 0; i < totalPages; i++)
+                thumbnailsList.Add(
+                    newThumbnails
+                        .Skip(i * imagesPerPage)
+                        .Take(imagesPerPage)
+                        .ToList()
+                );
+            listboxGallery.ItemsSource = thumbnailsList.ElementAtOrDefault(0);
+            UpdateCurrentPageTextBlock();
+        }
+
+        private void MenuItemOpenFolder_Clicked(object sender, RoutedEventArgs e)
+        {
+            //From keyboard shortcut
+            string openIn = sender.ToString().Replace("miOpenFolderIn", "");
+            //From mouse click
+            if (sender.GetType().Equals(typeof(MenuItem)))
+            {
+                MenuItem menuItem = (MenuItem)sender;
+                openIn = menuItem.Name.Replace("miOpenFolderIn", "");
+            }
+
+            int selectedThumbnailsCount = listboxGallery.SelectedItems.Count;
+            if (selectedThumbnailsCount == 0)
+                return;
+            Thumbnail selectedThumbnail = listboxGallery.SelectedItems[selectedThumbnailsCount - 1] as Thumbnail;
+            string location = selectedThumbnail.Folder;
+
+            if (openIn == "Explorer")
+                Process.Start(location);
+            if (openIn == "Mangareader")
+                Process.Start(mangaReaderRoot, '\"' + location + '\"');
+        }
+
         private void MenuItemContextMenu_Clicked(object sender, RoutedEventArgs e)
         {
             List<string> locations = listboxGallery.SelectedItems.Cast<Thumbnail>().Select(th => th.Folder).ToList();
@@ -183,9 +360,9 @@ namespace Folder_Tagger
             Window newWindow;
 
             //From mouse click
-            if (sender.GetType().Equals(typeof(System.Windows.Controls.MenuItem)))
+            if (sender.GetType().Equals(typeof(MenuItem)))
             {
-                System.Windows.Controls.MenuItem menuItem = (System.Windows.Controls.MenuItem)sender;
+                MenuItem menuItem = (MenuItem)sender;
                 menuItemType = menuItem.Name;
             }
 
@@ -220,36 +397,13 @@ namespace Folder_Tagger
             newWindow.ShowDialog();
         }
 
-        private void MenuItemOpenFolder_Clicked(object sender, RoutedEventArgs e)
-        {
-            //From keyboard shortcut
-            string openIn = sender.ToString().Replace("miOpenFolderIn", "");
-            //From mouse click
-            if (sender.GetType().Equals(typeof(System.Windows.Controls.MenuItem)))
-            {
-                System.Windows.Controls.MenuItem menuItem = (System.Windows.Controls.MenuItem)sender;
-                openIn = menuItem.Name.Replace("miOpenFolderIn", "");
-            }
-
-            int selectedThumbnailsCount = listboxGallery.SelectedItems.Count;
-            if (selectedThumbnailsCount == 0)
-                return;
-            Thumbnail selectedThumbnail = listboxGallery.SelectedItems[selectedThumbnailsCount - 1] as Thumbnail;
-            string location = selectedThumbnail.Folder;
-
-            if (openIn == "Explorer")
-                Process.Start(location);
-            if (openIn == "Mangareader")
-                Process.Start(mangaReaderRoot, '\"' + location + '\"');
-        }
-
         private void MenuItemDeleteFolder_Clicked(object sender, RoutedEventArgs e)
         {
-            DialogResult dialogResult = System.Windows.Forms.MessageBox.Show(
+            System.Windows.Forms.DialogResult dialogResult = System.Windows.Forms.MessageBox.Show(
                 "Are you sure you want to delete these folders?",
                 "Confirm",
-                MessageBoxButtons.OKCancel,
-                MessageBoxIcon.Warning);
+                System.Windows.Forms.MessageBoxButtons.OKCancel,
+                System.Windows.Forms.MessageBoxIcon.Warning);
             if (dialogResult == System.Windows.Forms.DialogResult.OK)
             {
                 totalFolders -= listboxGallery.SelectedItems.Count;
@@ -277,27 +431,16 @@ namespace Folder_Tagger
             }
         }
 
-        private void TextBlockFolderName_Clicked(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void TextBlockFolderName_Clicked(object sender, MouseButtonEventArgs e)
         {
             TextBlock textBlock = (TextBlock)sender;
-            System.Windows.Clipboard.SetText(textBlock.Text);
+            Clipboard.SetText(textBlock.Text);
             textblockClipboard.Text = "Copied To Clipboard: " + textBlock.Text;
-        }
-
-        private void ButtonSearch_Clicked(object sender, RoutedEventArgs e)
-        {
-            string artist = cbBoxArtist.Text;
-            string group = cbBoxGroup.Text;
-            string name = tbName.Text;
-            List<string> tagList = new List<string>();
-            if (!string.IsNullOrWhiteSpace(tbTag.Text)) tagList =
-                    tbTag.Text.Split(new string[] { ", " }, StringSplitOptions.None).ToList();
-            Search(artist, group, name, tagList);
         }
 
         private void ButtonSwitchPage_Clicked(object sender, RoutedEventArgs e)
         {
-            System.Windows.Controls.Button button = (System.Windows.Controls.Button)sender;
+            Button button = (Button)sender;
             if ((button.Name == "btnFirstPage" || button.Name == "btnPreviousPage") && currentPage == 1)
                 return;
             if ((button.Name == "btnLastPage" || button.Name == "btnNextPage") && currentPage == totalPages)
@@ -321,31 +464,6 @@ namespace Folder_Tagger
             listboxGallery.ItemsSource = thumbnailsList[currentPage - 1];
             UpdateCurrentPageTextBlock();
             ResetScroll();
-        }
-
-        private void ComboBoxPageCapacity_SelectionChanged(object sender, RoutedEventArgs e)
-        {
-            System.Windows.Controls.ComboBox comboBox = (System.Windows.Controls.ComboBox)sender;
-            imagesPerPage = pageCapacity[comboBox.SelectedIndex];
-            if (totalFolders == 0)
-                return;
-            currentPage = 1;
-            totalPages = (int)Math.Ceiling(((double)totalFolders / imagesPerPage));
-
-            List<Thumbnail> newThumbnails = new List<Thumbnail>();
-            foreach (List<Thumbnail> thumbnails in thumbnailsList)
-                newThumbnails.AddRange(thumbnails);
-
-            thumbnailsList.Clear();
-            for (int i = 0; i < totalPages; i++)
-                thumbnailsList.Add(
-                    newThumbnails
-                        .Skip(i * imagesPerPage)
-                        .Take(imagesPerPage)
-                        .ToList()
-                );
-            listboxGallery.ItemsSource = thumbnailsList.ElementAtOrDefault(0);
-            UpdateCurrentPageTextBlock();
         }
     }
 }
