@@ -152,7 +152,7 @@ namespace Folder_Tagger
                     }
                     catch (Exception)
                     {
-                        System.Windows.Forms.MessageBox.Show("The folder " + location + " is being used.");
+                        System.Windows.MessageBox.Show("The folder " + location + " is being used.");
                         continue;
                     }
                 }

@@ -46,7 +46,7 @@ namespace Folder_Tagger
             }
             catch (Exception exception)
             {
-                System.Windows.Forms.MessageBox.Show(exception.Message);
+                MessageBox.Show(exception.Message);
             }
             tbInput.Focus();
         }
