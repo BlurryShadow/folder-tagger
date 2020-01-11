@@ -199,6 +199,8 @@ namespace Folder_Tagger
                     cbBoxArtist.ItemsSource = fc.GetArtists();
                 if (type == "Group")
                     cbBoxGroup.ItemsSource = fc.GetGroups();
+                if (type == "Tag")
+                    allTags = tc.GetTags("all", "mostUsed");
             };
             newWindow.Owner = App.Current.MainWindow;
             newWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
@@ -385,6 +387,7 @@ namespace Folder_Tagger
                     break;
                 default: //Add Tag
                     newWindow = new AddTagWindow(locations);
+                    newWindow.Closed += (newWindowSender, newWindowEvent) => allTags = tc.GetTags("all", "mostUsed");
                     break;
                 case "miRemoveTag":
                     newWindow = new RemoveTagWindow(locations);
