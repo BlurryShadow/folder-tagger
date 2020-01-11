@@ -84,20 +84,19 @@ namespace Folder_Tagger
                 //Updating tag by removing old tag, then add new tag
                 Tag oldTag = tc.GetTagByName(oldTagName, db);
                 folder.Tags.Remove(oldTag);
-                //Only remove old tag if users input empty string
+                //Just remove old tag if users input empty string
                 if (string.IsNullOrEmpty(newTagName))
                 {
                     db.SaveChanges();
                     listboxTag.ItemsSource = tc.GetTags(location);
                     return;
                 }
-                //If new tag does not exists, create it
                 if (newTag == null)
                 {
-                    newTag = new Tag(newTagName);
-                    db.Tags.Add(newTag);
+                    MessageBox.Show('\"' + newTagName + "\" tag does not exist yet!");
+                    tb.Text = oldTagName;
+                    return;
                 }
-                //Otherwise add already existing tag
                 folder.Tags.Add(newTag);
                 db.SaveChanges();
                 tb.Text = newTagName;
