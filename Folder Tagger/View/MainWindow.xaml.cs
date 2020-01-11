@@ -103,7 +103,7 @@ namespace Folder_Tagger
             }
             catch (Exception exception)
             {
-                System.Windows.Forms.MessageBox.Show(exception.Message);
+                MessageBox.Show(exception.Message);
             }
             tbTag.Focus();
         }
@@ -130,8 +130,7 @@ namespace Folder_Tagger
             using(var fbd = new System.Windows.Forms.FolderBrowserDialog())
             {
                 fbd.RootFolder = Environment.SpecialFolder.MyComputer;
-                System.Windows.Forms.DialogResult result = fbd.ShowDialog();
-                if (result == System.Windows.Forms.DialogResult.OK)
+                if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
                     string location = fbd.SelectedPath;
                     if (menuItem.Name == "miAddOneFolder")
@@ -159,18 +158,18 @@ namespace Folder_Tagger
             };
             if (fd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                System.Windows.Forms.DialogResult dialogResult = System.Windows.Forms.MessageBox.Show(
+                MessageBoxResult mbr = MessageBox.Show(
                     "The process might take a long time, are you sure?",
                     "Import Folders Metadata",
-                    System.Windows.Forms.MessageBoxButtons.OKCancel,
-                    System.Windows.Forms.MessageBoxIcon.Question
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question
                 );
-                if (dialogResult == System.Windows.Forms.DialogResult.OK)
+                if (mbr == MessageBoxResult.Yes)
                     using (StreamReader sr = new StreamReader(fd.FileName))
                     {
                         string json = sr.ReadToEnd();
                         fc.ImportMetadata(json);
-                        System.Windows.Forms.MessageBox.Show("Done");
+                        MessageBox.Show("Done");
                     }
             }
         }
@@ -185,7 +184,7 @@ namespace Folder_Tagger
                 using (var sw = File.AppendText(@"Metadata\" + newJSON))
                     sw.Write(json);
             }
-            System.Windows.Forms.MessageBox.Show("Metadata Exported Successfully!");
+            MessageBox.Show("Metadata Exported Successfully!");
         }
 
         private void MenuItemInfo_Clicked(object sender, RoutedEventArgs e)
@@ -195,17 +194,32 @@ namespace Folder_Tagger
             Window newWindow = new InfoWindow(type);
             newWindow.Closed += (newWindowSender, newWindowEvent) =>
             {
+                if (type == "Tag")
+                    allTags = tc.GetTags("all", "mostUsed");
                 if (type == "Artist")
                     cbBoxArtist.ItemsSource = fc.GetArtists();
                 if (type == "Group")
                     cbBoxGroup.ItemsSource = fc.GetGroups();
-                if (type == "Tag")
-                    allTags = tc.GetTags("all", "mostUsed");
             };
             newWindow.Owner = App.Current.MainWindow;
             newWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             newWindow.ShowInTaskbar = false;
             newWindow.ShowDialog();
+        }
+
+        private void MenuItemHelp_Clicked(object sender, RoutedEventArgs e)
+        {
+            string str = "Search Tag:\n" +
+                "  + \"cheerleader\" to include cheerleader tag\n" +
+                "  + \"-nurse\" to exlcude nurse tag\n" +
+                "  + \"no tag\" to search folders that have no tags\n" +
+                "  + \"no artist\" to search folders that do not have artists\n" +
+                "  + \"no group\" to search folders that do not have groups\n" +
+                "  + \"no artist no group\" or \"no group no artist\" to search\n" +
+                "       folders that do not have arists nor groups\n\n" +
+                "Remove Tag:\n" +
+                "  + \"everything\" to remove all tags from selected folders\n";
+            MessageBox.Show(str, "Special Code", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void TextBoxTag_TextChanged(object sender, TextChangedEventArgs e)
@@ -402,12 +416,12 @@ namespace Folder_Tagger
 
         private void MenuItemDeleteFolder_Clicked(object sender, RoutedEventArgs e)
         {
-            System.Windows.Forms.DialogResult dialogResult = System.Windows.Forms.MessageBox.Show(
+            MessageBoxResult mbr = MessageBox.Show(
                 "Are you sure you want to delete these folders?",
                 "Confirm",
-                System.Windows.Forms.MessageBoxButtons.OKCancel,
-                System.Windows.Forms.MessageBoxIcon.Warning);
-            if (dialogResult == System.Windows.Forms.DialogResult.OK)
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+            if (mbr == MessageBoxResult.Yes)
             {
                 totalFolders -= listboxGallery.SelectedItems.Count;
                 UpdateFoldersFoundTextBlock();

@@ -92,6 +92,8 @@
                     Click="MenuItemInfo_Clicked"
                 />
             </MenuItem>
+
+            <MenuItem Header="Help" Click="MenuItemHelp_Clicked" />
         </Menu>
 
         <ToolBar

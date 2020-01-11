@@ -63,8 +63,6 @@ namespace Folder_Tagger
                             break;
                         case "no artist no group":
                         case "no group no artist":
-                        case "no artist group":
-                        case "no group artist":
                             query = query.Where(f => f.Artist == null && f.Group == null);
                             break;
                         default:
