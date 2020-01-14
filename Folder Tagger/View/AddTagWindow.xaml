@@ -18,7 +18,7 @@
 
         <TextBlock
             HorizontalAlignment="Left"
-            Margin="9,5,5,5"
+            Margin="5,0,0,0"
             Grid.Column="0"
             FontSize="12"
             Text="Must Have Tags: Type - Language - Parody - Characters"
