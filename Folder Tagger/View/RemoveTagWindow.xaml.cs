@@ -12,6 +12,7 @@ namespace Folder_Tagger
         private readonly string deleteEveryTagKeyword = "everything";
 
         private readonly FolderController fc = new FolderController();
+        private readonly TagController tc = new TagController();
         public RemoveTagWindow(List<string> locations)
         {
             InitializeComponent();
@@ -40,9 +41,9 @@ namespace Folder_Tagger
                         foreach (string tag in tags)
                         {
                             string currentTag = tag.ToLower().Trim();
-                            Tag deletedTag = db.Tags.Where(t => t.TagName == currentTag).FirstOrDefault();
+                            Tag deletedTag = tc.GetTagByName(currentTag, db);
                             if (deletedTag == null) continue;
-                            fc.RemoveTagFromFolders(deletedTag);
+                            fc.RemoveTagFromFolders(db, deletedTag, location);
                         }
                     }
             Close();

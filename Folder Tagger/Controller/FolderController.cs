@@ -191,7 +191,7 @@ namespace Folder_Tagger
         {
             using (var db = new Model1())
             {
-                var folder = db.Folders.Where(f => f.Location == location).FirstOrDefault();
+                var folder = GetFolderByLocation(location, db);
                 folder.Artist = newArtist;
                 db.SaveChanges();
             }
@@ -218,22 +218,22 @@ namespace Folder_Tagger
         {
             using (var db = new Model1())
             {
-                var folder = db.Folders.Where(f => f.Location == location).FirstOrDefault();
+                var folder = GetFolderByLocation(location, db);
                 folder.Group = newGroup;
                 db.SaveChanges();
             }
         }
 
-        public void RemoveTagFromFolders(Tag t, string location = "all")
+        public void RemoveTagFromFolders(Model1 db, Tag tag, string location = "all")
         {
-            using (var db = new Model1())
+            if (location == "all")
+                db.Folders.ToList().ForEach(f => f.Tags.Remove(tag));
+            else
             {
-                if (location == "all")
-                    db.Folders.ToList().ForEach(f => f.Tags.Remove(t));
-                else
-                    db.Folders.Where(f => f.Location == location).FirstOrDefault().Tags.Remove(t);
-                db.SaveChanges();
+                var folder = GetFolderByLocation(location, db);
+                folder.Tags.Remove(tag);
             }
+            db.SaveChanges();
         }
 
         public void RemoveAllTagsFromFolders(string location = "all")
@@ -243,7 +243,10 @@ namespace Folder_Tagger
                 if (location == "all")
                     db.Folders.ToList().ForEach(f => f.Tags.Clear());
                 else
-                    db.Folders.Where(f => f.Location == location).FirstOrDefault().Tags.Clear();
+                {
+                    var folder = GetFolderByLocation(location, db);
+                    folder.Tags.Clear();
+                }
                 db.SaveChanges();
             }
         }
