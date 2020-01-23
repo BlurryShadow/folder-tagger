@@ -117,16 +117,7 @@ namespace Folder_Tagger
                     return;
                 }
 
-                string thumbnail = null;
-                DirectoryInfo dr = new DirectoryInfo(location);
-                thumbnail = dr.EnumerateFiles()
-                            .Select(t => t.FullName)
-                            .FirstOrDefault(FullName => (FullName.ToLower() == "folder.jpg")
-                                                     || (FullName.ToLower().Contains(".png"))
-                                                     || (FullName.ToLower().Contains(".jpg"))
-                                                     || (FullName.ToLower().Contains(".jpeg"))
-                                                     || (FullName.ToLower().Contains(".bmp")));
-
+                string thumbnail = PickNewThumbnail(location);
                 folder = new Folder(location, name, thumbnail);
                 db.Folders.Add(folder);
                 db.SaveChanges();
@@ -152,8 +143,22 @@ namespace Folder_Tagger
                 foreach (Folder folder in folders)
                     if (!Directory.Exists(folder.Location))
                         db.Folders.Remove(folder);
+                    else if (!File.Exists(folder.Thumbnail))
+                        folder.Thumbnail = PickNewThumbnail(folder.Location);
                 db.SaveChanges();
             }
+        }
+
+        public string PickNewThumbnail(string location)
+        {
+            DirectoryInfo dr = new DirectoryInfo(location);
+            return dr.EnumerateFiles()
+                .Select(t => t.FullName)
+                .FirstOrDefault(FullName => (FullName.ToLower() == "folder.jpg")
+                                            || (FullName.ToLower().Contains(".png"))
+                                            || (FullName.ToLower().Contains(".jpg"))
+                                            || (FullName.ToLower().Contains(".jpeg"))
+                                            || (FullName.ToLower().Contains(".bmp")));
         }
 
         public List<string> GetArtists(string location = "all")
