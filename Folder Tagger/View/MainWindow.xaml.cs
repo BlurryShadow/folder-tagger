@@ -414,38 +414,30 @@ namespace Folder_Tagger
             newWindow.ShowDialog();
         }
 
-        private void MenuItemDeleteFolder_Clicked(object sender, RoutedEventArgs e)
+        private void MenuItemRemoveFolder_Clicked(object sender, RoutedEventArgs e)
         {
-            MessageBoxResult mbr = MessageBox.Show(
-                "Are you sure you want to delete these folders?",
-                "Confirm",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Warning);
-            if (mbr == MessageBoxResult.Yes)
+            totalFolders -= listboxGallery.SelectedItems.Count;
+            UpdateFoldersFoundTextBlock();
+            List<string> removedFolders = 
+                listboxGallery.SelectedItems.Cast<Thumbnail>().ToList()
+                .Select(th => th.Folder).ToList();
+
+            fc.RemoveFolder(removedFolders);
+            thumbnailsList[currentPage - 1].RemoveAll(th => removedFolders.Contains(th.Folder));
+
+            //A whole page was removed
+            if (thumbnailsList[currentPage - 1].Count == 0)
             {
-                totalFolders -= listboxGallery.SelectedItems.Count;
-                UpdateFoldersFoundTextBlock();
-                List<string> deletedFolders = 
-                    listboxGallery.SelectedItems.Cast<Thumbnail>().ToList()
-                    .Select(th => th.Folder).ToList();
-
-                fc.DeleteRealFolders(deletedFolders);
-                thumbnailsList[currentPage - 1].RemoveAll(th => deletedFolders.Contains(th.Folder));
-
-                //A whole page was deleted
-                if (thumbnailsList[currentPage - 1].Count == 0)
-                {
-                    thumbnailsList.RemoveAll(th => th.Count == 0);
-                    thumbnailsList.TrimExcess();
-                    currentPage = 1;
-                    totalPages = thumbnailsList.Count() == 0 ? 1 : thumbnailsList.Count();
-                    UpdateCurrentPageTextBlock();
-                    listboxGallery.ItemsSource = thumbnailsList.ElementAtOrDefault(0);
-                    ResetScroll();
-                }
-                else
-                    listboxGallery.Items.Refresh();
+                thumbnailsList.RemoveAll(th => th.Count == 0);
+                thumbnailsList.TrimExcess();
+                currentPage = 1;
+                totalPages = thumbnailsList.Count() == 0 ? 1 : thumbnailsList.Count();
+                UpdateCurrentPageTextBlock();
+                listboxGallery.ItemsSource = thumbnailsList.ElementAtOrDefault(0);
+                ResetScroll();
             }
+            else
+                listboxGallery.Items.Refresh();
         }
 
         private void TextBlockFolderName_Clicked(object sender, MouseButtonEventArgs e)

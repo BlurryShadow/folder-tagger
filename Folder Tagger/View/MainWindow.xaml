@@ -305,8 +305,8 @@
                                     InputGestureText="Ctrl+R"
                                 />
                                 <MenuItem
-                                    Header="Delete Folder"
-                                    Click="MenuItemDeleteFolder_Clicked"
+                                    Header="Remove Folder"
+                                    Click="MenuItemRemoveFolder_Clicked"
                                 />
                             </ContextMenu>
                         </StackPanel.ContextMenu>

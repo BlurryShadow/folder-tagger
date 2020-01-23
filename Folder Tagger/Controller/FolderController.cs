@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic.FileIO;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -134,7 +133,7 @@ namespace Folder_Tagger
             }
         }
 
-        public void DeleteRealFolders(List<string> locations)
+        public void RemoveFolder(List<string> locations)
         {
             using (var db = new Model1())
                 foreach (string location in locations)
@@ -142,19 +141,6 @@ namespace Folder_Tagger
                     Folder folder = db.Folders.Where(f => f.Location == location).FirstOrDefault();
                     db.Folders.Remove(folder);
                     db.SaveChanges();
-                    try
-                    {
-                        FileSystem.DeleteDirectory(
-                            location,
-                            UIOption.OnlyErrorDialogs,
-                            RecycleOption.SendToRecycleBin
-                        );
-                    }
-                    catch (Exception)
-                    {
-                        System.Windows.MessageBox.Show("The folder " + location + " is being used.");
-                        continue;
-                    }
                 }
         }
 
