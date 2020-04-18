@@ -108,8 +108,8 @@ namespace Folder_Tagger
 
         private void ListBoxAutoComplete_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            //Jump back to TextBox when press Up Key at first element
-            if (e.Key == Key.Up && listboxAutoComplete.SelectedIndex == 0)
+            //Jump back to TextBox when press Up Key at first element or Backspace key
+            if ((e.Key == Key.Up && listboxAutoComplete.SelectedIndex == 0) || e.Key == Key.Back)
                 tbInput.Focus();
 
             //Return to first element when pressed at last one
