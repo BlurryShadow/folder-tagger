@@ -40,6 +40,7 @@ namespace Folder_Tagger
             commandbindingOpenFolder.Executed += (sender, e) => MenuItemOpenFolder_Clicked("miOpenFolderInExplorer", new RoutedEventArgs());
             commandbindingOpenInMangareader.Executed += (sender, e) => MenuItemOpenFolder_Clicked("miOpenFolderInMangareader", new RoutedEventArgs());
             commandbindingAddTag.Executed += (sender, e) => MenuItemContextMenu_Clicked("miAddTag", new RoutedEventArgs());
+            commandbindingCopyTag.Executed += (sender, e) => MenuItemContextMenu_Clicked("miCopyTag", new RoutedEventArgs());
             commandbindingEditArtist.Executed += (sender, e) => MenuItemContextMenu_Clicked("miEditArtist", new RoutedEventArgs());
             commandbindingEditGroup.Executed += (sender, e) => MenuItemContextMenu_Clicked("miEditGroup", new RoutedEventArgs());
             commandbindingEditTag.Executed += (sender, e) => MenuItemContextMenu_Clicked("miEditTag", new RoutedEventArgs());
@@ -373,7 +374,8 @@ namespace Folder_Tagger
 
             //From keyboard shortcut
             string menuItemType = sender.ToString();
-            Window newWindow;
+            Window newWindow = null;
+            bool openNewWindow = true;
 
             //From mouse click
             if (sender.GetType().Equals(typeof(MenuItem)))
@@ -403,15 +405,24 @@ namespace Folder_Tagger
                     newWindow = new AddTagWindow(locations);
                     newWindow.Closed += (newWindowSender, newWindowEvent) => allTags = tc.GetTags("all", "mostUsed");
                     break;
+                case "miCopyTag":
+                    string selectedFolderLocation = locations[0];
+                    string selectedFolderTags = string.Join(", ", tc.GetTags(selectedFolderLocation).Select(t => t.TagName).ToArray());
+                    Clipboard.SetText(selectedFolderTags);
+                    openNewWindow = false;
+                    break;
                 case "miRemoveTag":
                     newWindow = new RemoveTagWindow(locations);
                     break;
             }
 
-            newWindow.Owner = App.Current.MainWindow;
-            newWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            newWindow.ShowInTaskbar = false;
-            newWindow.ShowDialog();
+            if (openNewWindow)
+            {
+                newWindow.Owner = App.Current.MainWindow;
+                newWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                newWindow.ShowInTaskbar = false;
+                newWindow.ShowDialog();
+            }
         }
 
         private void MenuItemRemoveFolder_Clicked(object sender, RoutedEventArgs e)

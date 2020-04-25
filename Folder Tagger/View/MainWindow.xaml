@@ -25,6 +25,7 @@
         <CommandBinding x:Name="commandbindingOpenFolder" Command="{x:Static local:ShortcutCommands.OpenFolder}" />
         <CommandBinding x:Name="commandbindingOpenInMangareader" Command="{x:Static local:ShortcutCommands.OpenInMangareader}" />
         <CommandBinding x:Name="commandbindingAddTag" Command="{x:Static local:ShortcutCommands.AddTag}" />
+        <CommandBinding x:Name="commandbindingCopyTag" Command="{x:Static local:ShortcutCommands.CopyTag}" />
         <CommandBinding x:Name="commandbindingEditArtist" Command="{x:Static local:ShortcutCommands.EditArtist}" />
         <CommandBinding x:Name="commandbindingEditGroup" Command="{x:Static local:ShortcutCommands.EditGroup}" />
         <CommandBinding x:Name="commandbindingEditTag" Command="{x:Static local:ShortcutCommands.EditTag}" />
@@ -271,7 +272,13 @@
                                     Click="MenuItemContextMenu_Clicked"
                                     InputGestureText="Ctrl+E"
                                 />
-                                
+                                <MenuItem
+                                    x:Name="miCopyTag"
+                                    Header="Copy Tag"
+                                    Click="MenuItemContextMenu_Clicked"
+                                    InputGestureText="Ctrl+C"
+                                />
+
                                 <Separator />
                                 
                                 <MenuItem 

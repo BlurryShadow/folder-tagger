@@ -29,6 +29,11 @@ namespace Folder_Tagger
             new KeyGesture(Key.E, ModifierKeys.Control)
         }));
 
+        public static RoutedCommand CopyTag = new RoutedCommand("AddOneFolder", typeof(MainWindow), new InputGestureCollection(new InputGesture[]
+        {
+            new KeyGesture(Key.C, ModifierKeys.Control)
+        }));
+
         public static RoutedCommand EditArtist = new RoutedCommand("AddOneFolder", typeof(MainWindow), new InputGestureCollection(new InputGesture[]
         {
             new KeyGesture(Key.D, ModifierKeys.Control)
