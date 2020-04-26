@@ -362,7 +362,14 @@ namespace Folder_Tagger
             string location = selectedThumbnail.Folder;
 
             if (openIn == "Explorer")
-                Process.Start(location);
+                try
+                {
+                    Process.Start(location);
+                }
+                catch (Exception error)
+                {
+                    MessageBox.Show(error.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             if (openIn == "Mangareader")
                 Process.Start(mangaReaderRoot, '\"' + location + '\"');
         }
