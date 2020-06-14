@@ -414,7 +414,7 @@ namespace Folder_Tagger
                     break;
                 case "miCopyTag":
                     string selectedFolderLocation = locations[0];
-                    string selectedFolderTags = string.Join(", ", tc.GetTags(selectedFolderLocation).Select(t => t.TagName).ToArray());
+                    string selectedFolderTags = string.Join(", ", tc.GetTags(selectedFolderLocation).Select(t => t.TagName).ToArray()) + ", ";
                     Clipboard.SetText(selectedFolderTags);
                     openNewWindow = false;
                     break;
