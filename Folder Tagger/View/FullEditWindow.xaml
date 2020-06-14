@@ -33,10 +33,9 @@
                             Margin="-4,0,-4,0"
                             Tag="{Binding TagName, Mode=OneWay}"
                             Text="{Binding TagName, Mode=OneWay}"
-                            PreviewMouseUp="TextBoxInputInsideListBox_PreviewMouseUp"
-                            GotFocus="TextBoxInputInsideListBox_GotFocus"
                             PreviewKeyDown="TextBoxInputInsideListBox_PreviewKeyDown"
                             LostFocus="TextBoxInputInsideListBox_LostFocus"
+                            PreviewMouseDoubleClick="TextBox_PreviewMouseDoubleClick"
                         />
                     </DataTemplate>
                 </ListBox.ItemTemplate>

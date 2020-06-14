@@ -22,13 +22,7 @@ namespace Folder_Tagger
             PreviewKeyDown += (sender, e) => { if (e.Key == Key.Escape) Close(); };
         }
 
-        private void TextBoxInputInsideListBox_PreviewMouseUp(object sender, MouseButtonEventArgs e) //For editing with mouse
-        {
-            TextBox tb = (TextBox)sender;
-            tb.SelectAll();
-        }
-
-        private void TextBoxInputInsideListBox_GotFocus(object sender, RoutedEventArgs e) //For editing with keyboard
+        private void TextBox_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             TextBox tb = (TextBox)sender;
             tb.SelectAll();
